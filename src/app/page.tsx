@@ -1,101 +1,233 @@
-import Image from "next/image";
+"use client";
+import { GoHome } from "react-icons/go";
+import { MdOutlineLeaderboard } from "react-icons/md";
+import { IoGameControllerOutline } from "react-icons/io5";
+import { FaUserFriends } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import Tasks from "./components/Tasks";
+import LeaderBoard from "./components/LeaderBoard";
+import { Game } from "./components/Game";
+import Friends from "./components/Friends";
+import Onboard from "./components/Onboard";
+import axios from "axios";
+import WebApp from "@twa-dev/sdk";
+import UserProfile from "./components/Profile";
 
-export default function Home() {
+function Home() {
+  const [selectedTab, setSelectedTab]: any = useState();
+  const [tg, setTg] = useState<typeof WebApp | null>(null);
+  const [user, setUser]: any = useState();
+  const [leader, setLeader]: any = useState();
+  const [loading, setLoading] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(true);
+  const [curPage, setCurPage]: any = useState();
+  const [userTasks, setUserTasks]: any = useState();
+  const [tasks, setTasks]: any = useState();
+  const [tasksCat, setTasksCat]: any = useState();
+
+  useEffect(() => {
+    if (selectedTab) {
+      const _tg = window?.Telegram?.WebApp;
+      !_tg.isClosingConfirmationEnabled && _tg.enableClosingConfirmation();
+      _tg.isVerticalSwipesEnabled && _tg.disableVerticalSwipes();
+      setTg(_tg);
+    } else setSelectedTab("Home");
+  }, [selectedTab]);
+
+  useEffect(() => {
+    switch (selectedTab) {
+      case "Leaderboard":
+        if (!leader) return;
+        setCurPage(<LeaderBoard leader={leader} user={user} />);
+        break;
+      case "Game":
+        setCurPage(<Game />);
+        break;
+      case "Friends":
+        setCurPage(<Friends user={user} />);
+        break;
+
+      default:
+        setCurPage(
+          <UserProfile />
+          // <Tasks
+          //   tg={tg}
+          //   getAllInfo={getAllInfo}
+          //   userTasks={userTasks}
+          //   user={user}
+          //   setSelectedTab={setSelectedTab}
+          //   setCurPage={setCurPage}
+          //   claimPoints={claimPoints}
+          //   tasksCat={tasksCat}
+          // />
+        );
+        break;
+    }
+  }, [selectedTab, leader, userTasks, tg, user, tasksCat]);
+
+  const getUser = async () => {
+    try {
+      const res = await axios(
+        "/api/allroute?type=getUser&username=" +
+          tg?.initDataUnsafe.user?.username
+      );
+
+      if (res.status == 200) {
+        setUser(res.data);
+        getTasks();
+        getAllUserTasks(res.data);
+        return;
+      }
+      setLoadingPage(false);
+    } catch (error) {
+      console.log(error);
+      setLoadingPage(false);
+    }
+  };
+
+  const getLeaderBoard = async () => {
+    try {
+      const res = await axios("/api/allroute?type=leaderboard");
+      if (res.status == 200) {
+        setLeader(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAllInfo = async () => {
+    await getUser();
+    await getLeaderBoard();
+    await getTasks();
+  };
+
+  const getTasks = async () => {
+    try {
+      const res = await axios(
+        "/api/allroute?type=getTasksInfo&username=" +
+          tg?.initDataUnsafe.user?.username
+      );
+
+      if (res.status == 200) {
+        setTasks(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAllUserTasks = async (data: any) => {
+    try {
+      const res = await axios("/api/allroute?type=allusertasks&id=" + data.id);
+      if (res.status == 200) {
+        setUserTasks(res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    console.log(tasks);
+    if (tasks && !tasks.error) {
+      let data: any = {};
+      tasks.map((task: any) => {
+        data[`${task.category.name}`] = data[`${task.category.name}`]
+          ? [...data[`${task.category.name}`], task]
+          : [task];
+      });
+      setTasksCat(data);
+      setLoadingPage(false);
+    }
+  }, [tasks]);
+
+  useEffect(() => {
+    if (!tg) return;
+    getAllInfo();
+  }, [tg]);
+
+  const claimPoints = async (type: string, func: (param: boolean) => {}) => {
+    setLoading(true);
+    const res = await (
+      await fetch("/api/claim", {
+        headers: {
+          "content-type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          username: tg?.initDataUnsafe.user?.username,
+          type,
+        }),
+      })
+    ).json();
+
+    if (res.username != null) {
+      setLoading(false);
+      getUser();
+      getLeaderBoard();
+      func(false);
+    }
+    setLoading(false);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      {!loadingPage ? (
+        <div className=" flex-col space-y-2.5 w-full h-[100vh] flex items-center justify-center">
+          <p>Loading ...</p>
+          <span className="loading loading-ring mr-2 loading-lg"></span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      ) : (
+        <div
+          className={`bg-black bg-cover flex flex-col h-[100%] px-4 min-h-screen`}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <div className="flex-1 h-full">{curPage}</div>
+
+          <div className=" flex bg-black h-16 z-12 ">
+            <div className="flex justify-around w-full h-16  bg-black fixed bottom-0 ">
+              <div
+                onClick={() => setSelectedTab("Home")}
+                className={`w-full cursor-pointer justify-center items-center flex flex-col ${
+                  selectedTab == "Home" ? "text-white" : "text-gray-400"
+                }`}
+              >
+                <GoHome />
+                <span>Home</span>
+              </div>
+              <div
+                onClick={() => setSelectedTab("Leaderboard")}
+                className={`w-full cursor-pointer justify-center items-center flex flex-col ${
+                  selectedTab == "Leaderboard" ? "text-white" : "text-gray-400"
+                }`}
+              >
+                <MdOutlineLeaderboard />
+                <span>Leaderboard</span>
+              </div>
+              <div
+                onClick={() => setSelectedTab("Game")}
+                className={`w-full cursor-pointer justify-center items-center flex flex-col ${
+                  selectedTab == "Game" ? "text-white" : "text-gray-400"
+                }`}
+              >
+                <IoGameControllerOutline />
+                <span>Game</span>
+              </div>
+              <div
+                onClick={() => setSelectedTab("Friends")}
+                className={`w-full cursor-pointer justify-center items-center flex flex-col ${
+                  selectedTab == "Friends" ? "text-white" : "text-gray-400"
+                }`}
+              >
+                <FaUserFriends />
+                <span>Friends</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
+
+export default Home;
