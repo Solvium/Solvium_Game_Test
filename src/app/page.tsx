@@ -4,11 +4,8 @@ import { MdOutlineLeaderboard } from "react-icons/md";
 import { IoGameControllerOutline } from "react-icons/io5";
 import { FaUserFriends } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import Tasks from "./components/Tasks";
 import LeaderBoard from "./components/LeaderBoard";
 import { Game } from "./components/Game";
-import Friends from "./components/Friends";
-import Onboard from "./components/Onboard";
 import axios from "axios";
 import WebApp from "@twa-dev/sdk";
 import UserProfile from "./components/Profile";
@@ -43,9 +40,9 @@ function Home() {
       case "Game":
         setCurPage(<Game />);
         break;
-      case "Friends":
-        setCurPage(<Friends user={user} />);
-        break;
+      // case "Friends":
+      //   setCurPage(<Friends user={user} />);
+      //   break;
 
       default:
         setCurPage(
