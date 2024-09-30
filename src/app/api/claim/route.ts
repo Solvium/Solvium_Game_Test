@@ -1,4 +1,4 @@
-import { telegramClient } from "@/app/clients/TelegramApiClient";
+import { telegramClient } from "../../clients/TelegramApiClient";
 import { InlineKeyboardMarkup } from "@grammyjs/types";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
