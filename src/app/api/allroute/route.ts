@@ -1,4 +1,4 @@
-import { telegramClient } from "@/app/clients/TelegramApiClient";
+import { telegramClient } from "../../clients/TelegramApiClient";
 import { InlineKeyboardMarkup } from "@grammyjs/types";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -336,8 +336,8 @@ const replyStart = async (message: any, user: any) => {
           web_app: {
             url:
               process.env.NODE_ENV == "production"
-                ? `https://birb-task.vercel.app/`
-                : "https://gn5dcg8d-3000.uks1.devtunnels.ms/",
+                ? process.env.PROD_URL ?? ""
+                : process.env.TEST_URL ?? "",
           },
         },
       ],

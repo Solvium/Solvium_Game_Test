@@ -34,8 +34,8 @@ let botUsername;
 
   const url =
     process.env.NODE_ENV == "production"
-      ? `https://birb-task.vercel.app/`
-      : "https://gn5dcg8d-3000.uks1.devtunnels.ms/";
+      ? process.env.PROD_URL ?? ""
+      : process.env.TEST_URL ?? "";
 
   console.log(`\n\nSetting bot ${botUsername} webapp url to ${url}`);
 
