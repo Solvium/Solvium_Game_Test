@@ -8,7 +8,7 @@ import {
 
 export function useTonConnect(): {
   sender: Sender;
-  connectWallet: () => {};
+  connectWallet: () => object;
   connected: boolean;
   wallet: string | null;
   network: CHAIN | null;

@@ -392,7 +392,7 @@ export class MainHandler {
 
   private async onDragDrop(dataTransfer: DataTransfer) {
     let loaded = false;
-    //@ts-ignore
+    //@ts-expect-error
     for (const item of dataTransfer.items) {
       switch (item.kind) {
         case "file": {
@@ -408,7 +408,7 @@ export class MainHandler {
         case "string":
           switch (item.type) {
             case "text/uri-list":
-              //@ts-ignore
+              //@ts-expect-error
               for (const row of (await toPromise(item, item.getAsString)).split(
                 "\r\n"
               ))

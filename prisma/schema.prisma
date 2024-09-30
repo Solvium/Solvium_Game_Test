@@ -13,8 +13,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Task {
+  id          Int        @id @default(autoincrement())
+  name        String
+  points      Int
+  link        String?
+  isCompleted Boolean    @default(false)
+  categoryId  Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  UserTasks   UserTask[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  tasks Task[]
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id            Int        @id @default(autoincrement())
+  username      String     @unique
+  name          String?
+  referredBy    String
+  referralCount Int        @default(0)
+  chatId        Int        @default(0)
+  claimCount    Int        @default(0)
+  totalPoints   Int        @default(0)
+  isOfficial    Boolean    @default(false)
+  isPremium     Boolean    @default(false)
+  lastClaim     DateTime   @default(now())
+  UserTasks     UserTask[]
+
+  referrer  User?  @relation("Referrals", fields: [referredBy], references: [username])
+  referrals User[] @relation("Referrals")
+
+  @@index([referredBy])
+}
+
+model UserTask {
+  id          Int     @id @default(autoincrement())
+  userId      Int
+  taskId      Int
+  isCompleted Boolean @default(false)
+  user        User    @relation(fields: [userId], references: [id])
+  task        Task    @relation(fields: [taskId], references: [id])
+
+  @@unique([userId, taskId])
 }

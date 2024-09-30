@@ -36,9 +36,9 @@ export default function App({
       return null;
     }
 
-    var appTgVersion = 7.8;
+    const appTgVersion = 7.8;
 
-    var initParams = sessionStorageGet("initParams");
+    let initParams = sessionStorageGet("initParams");
     if (initParams) {
       if (!initParams.tgWebAppVersion) {
         initParams.tgWebAppVersion = appTgVersion;

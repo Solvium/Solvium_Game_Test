@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     const { username, type } = await req.json();
 
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         username: username,
       },
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         });
 
         if (user?.referredBy) {
-          let invitor = await prisma.user.findUnique({
+          const invitor = await prisma.user.findUnique({
             where: {
               username: user.referredBy,
             },

@@ -128,7 +128,7 @@ function Home() {
   useEffect(() => {
     console.log(tasks);
     if (tasks && !tasks.error) {
-      let data: any = {};
+      const data: any = {};
       tasks.map((task: any) => {
         data[`${task.category.name}`] = data[`${task.category.name}`]
           ? [...data[`${task.category.name}`], task]
@@ -144,7 +144,10 @@ function Home() {
     getAllInfo();
   }, [tg]);
 
-  const claimPoints = async (type: string, func: (param: boolean) => {}) => {
+  const claimPoints = async (
+    type: string,
+    func: (param: boolean) => object
+  ) => {
     setLoading(true);
     const res = await (
       await fetch("/api/claim", {

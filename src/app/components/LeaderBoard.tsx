@@ -5,12 +5,12 @@ const LeaderBoard = ({ leader, user }: any) => {
     return ele.username == user.username;
   });
 
-  var stringToColour = function (str: any) {
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
+  let stringToColour = function (str: any) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    var value = (hash >> (str.length * 8)) & 0xff;
+    let value = (hash >> (str.length * 8)) & 0xff;
     const hue = value * 137.508;
     return `hsl(${hue},70%,65%)`;
   };

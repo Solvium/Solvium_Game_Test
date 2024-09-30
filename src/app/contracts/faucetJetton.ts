@@ -17,7 +17,7 @@ export default class FaucetJetton implements Contract {
   ) {
     const MINT = 21;
     const INTERNAL_TRANSFER = 0x178d4519;
-    // @ts-ignore
+
     const mintTokensBody = beginCell()
       .storeUint(MINT, 32)
       .storeUint(0, 64) // queryid

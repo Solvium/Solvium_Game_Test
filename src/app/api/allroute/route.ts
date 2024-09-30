@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const username = _username ?? message.chat.username;
     if (!username) return NextResponse.json("error", { status: 404 });
 
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         username: username,
       },
@@ -63,25 +63,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(user);
     }
 
-    if (type == "reg4tasks") {
-      const isCreated = await getUserTasks(data);
-      console.log(isCreated);
-      !isCreated && (await registerForTasks(data));
-    }
+    // if (type == "reg4tasks") {
+    //   const isCreated = await getUserTasks(data);
+    //   console.log(isCreated);
+    //   !isCreated && (await registerForTasks(data));
+    // }
 
-    if (type == "completetasks") {
-      await completeTasks(data);
+    // if (type == "completetasks") {
+    //   await completeTasks(data);
 
-      const res = await prisma.user.update({
-        where: {
-          username,
-        },
+    //   const res = await prisma.user.update({
+    //     where: {
+    //       username,
+    //     },
 
-        data: {
-          totalPoints: (user?.totalPoints ?? 0) + data.task.points,
-        },
-      });
-    }
+    //     data: {
+    //       totalPoints: (user?.totalPoints ?? 0) + data.task.points,
+    //     },
+    //   });
+    // }
 
     return NextResponse.json("user");
   } catch (error) {
@@ -104,31 +104,31 @@ export async function GET(req: any) {
             username: username,
           },
         });
-        if (user) {
-          function isDateGreater(d1: Date, d2: Date, days: number) {
-            d1 = new Date(d1);
-            return (
-              Number(new Date(d2)) > d1.setDate(d1.getDate() + (days || 0))
-            );
-          }
+        // if (user) {
+        //   function isDateGreater(d1: Date, d2: Date, days: number) {
+        //     d1 = new Date(d1);
+        //     return (
+        //       Number(new Date(d2)) > d1.setDate(d1.getDate() + (days || 0))
+        //     );
+        //   }
 
-          const lastClaim = new Date(user?.lastClaim ?? Date.now());
+        //   const lastClaim = new Date(user?.lastClaim ?? Date.now());
 
-          if (isDateGreater(lastClaim, new Date(Date.now()), 1)) {
-            user = await prisma.user.update({
-              where: {
-                username: user.username,
-              },
-              data: {
-                claimCount: 0,
-              },
-            });
-          }
+        //   if (isDateGreater(lastClaim, new Date(Date.now()), 1)) {
+        //     user = await prisma.user.update({
+        //       where: {
+        //         username: user.username,
+        //       },
+        //       data: {
+        //         claimCount: 0,
+        //       },
+        //     });
+        //   }
 
-          return NextResponse.json(user);
-        } else {
-          return NextResponse.json("User Not Found", { status: 404 });
-        }
+        // } else {
+        //   return NextResponse.json("User Not Found", { status: 404 });
+        // }
+        return NextResponse.json(user);
       } else {
         return NextResponse.json("No username passed", { status: 500 });
       }
@@ -251,11 +251,11 @@ export async function GET(req: any) {
       }
     }
 
-    if (type == "allusertasks") {
-      console.log(userId);
-      const data = await getAllUserTasks({ userId });
-      return NextResponse.json(data);
-    }
+    // if (type == "allusertasks") {
+    //   console.log(userId);
+    //   const data = await getAllUserTasks({ userId });
+    //   return NextResponse.json(data);
+    // }
 
     return NextResponse.json("users");
   } catch (error) {
@@ -352,68 +352,68 @@ Start earning Birb Points Now🚀`,
   );
 };
 
-const completeTasks = async (data: any) => {
-  const { userId, task } = data;
-  try {
-    await prisma.userTask.update({
-      where: {
-        userId_taskId: {
-          userId: userId,
-          taskId: task.id,
-        },
-      },
-      data: {
-        isCompleted: true,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const completeTasks = async (data: any) => {
+//   const { userId, task } = data;
+//   try {
+//     await prisma.userTask.update({
+//       where: {
+//         userId_taskId: {
+//           userId: userId,
+//           taskId: task.id,
+//         },
+//       },
+//       data: {
+//         isCompleted: true,
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-const registerForTasks = async (data: any) => {
-  const { userId, task } = data;
+// const registerForTasks = async (data: any) => {
+//   const { userId, task } = data;
 
-  try {
-    await prisma.userTask.create({
-      data: {
-        userId: userId,
-        taskId: task.id,
-        isCompleted: false,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+//   try {
+//     await prisma.userTask.create({
+//       data: {
+//         userId: userId,
+//         taskId: task.id,
+//         isCompleted: false,
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-const getUserTasks = async (data: any) => {
-  const { userId, task } = data;
-  try {
-    return await prisma.userTask.findUnique({
-      where: {
-        userId_taskId: {
-          userId: userId,
-          taskId: task.id,
-        },
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
+// const getUserTasks = async (data: any) => {
+//   const { userId, task } = data;
+//   try {
+//     return await prisma.userTask.findUnique({
+//       where: {
+//         userId_taskId: {
+//           userId: userId,
+//           taskId: task.id,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return null;
+//   }
+// };
 
-const getAllUserTasks = async (data: any) => {
-  const { userId } = data;
-  try {
-    return await prisma.userTask.findMany({
-      where: {
-        userId: Number(userId),
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
+// const getAllUserTasks = async (data: any) => {
+//   const { userId } = data;
+//   try {
+//     return await prisma.userTask.findMany({
+//       where: {
+//         userId: Number(userId),
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return null;
+//   }
+// };
