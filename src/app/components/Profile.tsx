@@ -13,8 +13,6 @@ const UserProfile = ({
   tg,
   getAllInfo,
   userTasks,
-  setCurPage,
-  setSelectedTab,
 }: any) => {
   return (
     <div className="backdrop-blur-sm w-full p-[10px] pt-[20px] space-y-4">
@@ -25,8 +23,6 @@ const UserProfile = ({
         userDetails={userDetails}
         tasks={tasks}
         tg={tg}
-        setCurPage={setCurPage}
-        setSelectedTab={setSelectedTab}
         getAllInfo={getAllInfo}
       />
 
