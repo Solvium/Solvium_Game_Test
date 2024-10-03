@@ -19,15 +19,7 @@ model Task {
   points      Int
   link        String?
   isCompleted Boolean    @default(false)
-  categoryId  Int
-  category    Category   @relation(fields: [categoryId], references: [id])
   UserTasks   UserTask[]
-}
-
-model Category {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  tasks Task[]
 }
 
 model User {

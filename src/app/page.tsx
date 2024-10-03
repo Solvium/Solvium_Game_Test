@@ -26,7 +26,6 @@ function Home() {
     if (selectedTab) {
       const _tg = window?.Telegram?.WebApp;
       !_tg.isClosingConfirmationEnabled && _tg.enableClosingConfirmation();
-      _tg.isVerticalSwipesEnabled && _tg.disableVerticalSwipes();
       setTg(_tg);
     } else setSelectedTab("Home");
   }, [selectedTab]);
@@ -40,23 +39,14 @@ function Home() {
       case "Game":
         setCurPage(<Game />);
         break;
-      // case "Friends":
-      //   setCurPage(<Friends user={user} />);
-      //   break;
-
       default:
         setCurPage(
-          <UserProfile />
-          // <Tasks
-          //   tg={tg}
-          //   getAllInfo={getAllInfo}
-          //   userTasks={userTasks}
-          //   user={user}
-          //   setSelectedTab={setSelectedTab}
-          //   setCurPage={setCurPage}
-          //   claimPoints={claimPoints}
-          //   tasksCat={tasksCat}
-          // />
+          <UserProfile
+            userDetails={user}
+            tasks={tasks}
+            getAllInfo={getAllInfo}
+            userTasks={userTasks}
+          />
         );
         break;
     }
@@ -71,6 +61,7 @@ function Home() {
 
       if (res.status == 200) {
         setUser(res.data);
+        // setLoadingPage(false);
         getTasks();
         getAllUserTasks(res.data);
         return;
@@ -125,16 +116,18 @@ function Home() {
     }
   };
 
+  console.log(userTasks);
+
   useEffect(() => {
     console.log(tasks);
     if (tasks && !tasks.error) {
-      const data: any = {};
-      tasks.map((task: any) => {
-        data[`${task.category.name}`] = data[`${task.category.name}`]
-          ? [...data[`${task.category.name}`], task]
-          : [task];
-      });
-      setTasksCat(data);
+      // const data: any = {};
+      // tasks.map((task: any) => {
+      //   data[`${task.category.name}`] = data[`${task.category.name}`]
+      //     ? [...data[`${task.category.name}`], task]
+      //     : [task];
+      // });
+      // setTasksCat(data);
       setLoadingPage(false);
     }
   }, [tasks]);
@@ -173,7 +166,7 @@ function Home() {
 
   return (
     <>
-      {!loadingPage ? (
+      {loadingPage ? (
         <div className=" flex-col space-y-2.5 w-full h-[100vh] flex items-center justify-center">
           <p>Loading ...</p>
           <span className="loading loading-ring mr-2 loading-lg"></span>
@@ -193,7 +186,7 @@ function Home() {
                 }`}
               >
                 <GoHome />
-                <span>Home</span>
+                <span>Profile</span>
               </div>
               <div
                 onClick={() => setSelectedTab("Leaderboard")}
@@ -213,7 +206,7 @@ function Home() {
                 <IoGameControllerOutline />
                 <span>Game</span>
               </div>
-              <div
+              {/* <div
                 onClick={() => setSelectedTab("Friends")}
                 className={`w-full cursor-pointer justify-center items-center flex flex-col ${
                   selectedTab == "Friends" ? "text-white" : "text-gray-400"
@@ -221,7 +214,7 @@ function Home() {
               >
                 <FaUserFriends />
                 <span>Friends</span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

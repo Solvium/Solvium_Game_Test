@@ -146,79 +146,31 @@ export async function GET(req: any) {
     }
 
     if (type == "addTasksInfo") {
-      const categories = [
-        { name: "X Birb and Partners Tasks" },
-        { name: "Telegram Birb and Partners Tasks" },
-        { name: "DeFi Tasks" },
-        { name: "Referral Points" },
-      ];
-
-      // Insert categories into the database
-      await prisma.category.createMany({
-        data: categories,
-        skipDuplicates: true, // Skip if the category already exists
-      });
-
-      console.log("Categories inserted successfully.");
-
-      // Define tasks with category references
       const tasks = [
-        { name: "Follow", points: 20000, isCompleted: false, categoryId: 1 },
-        { name: "Like", points: 15000, isCompleted: false, categoryId: 1 },
-        { name: "Repost", points: 20000, isCompleted: false, categoryId: 1 },
         {
-          name: "Subscribe to Birb Telegram Channel",
+          name: "Follow X",
           points: 20000,
           isCompleted: false,
-          categoryId: 2,
+          link: "https://x.com/Solvium_game",
         },
         {
-          name: "Join Birb Telegram Group",
+          name: "Follow Youtube",
           points: 20000,
           isCompleted: false,
-          categoryId: 2,
+          link: "https://www.youtube.com/@solvium_puzzle",
         },
         {
-          name: "Hold a minimum bal of 10 billion Birb tokens",
-          points: 10000000,
+          name: "Follow Facebook",
+          points: 20000,
           isCompleted: false,
-          categoryId: 3,
+          link: "https://www.facebook.com/profile.php?id=61566560151625&mibextid=LQQJ4d",
         },
+
         {
-          name: "Hold a minimum balance of 100,000,000 points",
-          points: 500000,
+          name: "Join Solvium Telegram Group",
+          points: 20000,
           isCompleted: false,
-          categoryId: 3,
-        },
-        {
-          name: "Provide liquidity Birb/TON on stonfi",
-          points: 10000000,
-          isCompleted: false,
-          categoryId: 3,
-        },
-        {
-          name: "Provide liquidity Birb/TON on Dedust",
-          points: 10000000,
-          isCompleted: false,
-          categoryId: 3,
-        },
-        {
-          name: "Stake Birb token",
-          points: 10000000,
-          isCompleted: false,
-          categoryId: 3,
-        },
-        {
-          name: "Telegram premium users",
-          points: 200000,
-          isCompleted: false,
-          categoryId: 4,
-        },
-        {
-          name: "Telegram users",
-          points: 100000,
-          isCompleted: false,
-          categoryId: 4,
+          link: "https://t.me/solvium_puzzle",
         },
       ];
 
@@ -236,14 +188,7 @@ export async function GET(req: any) {
     }
 
     if (type == "getTasksInfo") {
-      const tasks = await prisma.task.findMany({
-        orderBy: {
-          categoryId: "asc",
-        },
-        include: {
-          category: true,
-        },
-      });
+      const tasks = await prisma.task.findMany({});
       if (tasks) {
         return NextResponse.json(tasks);
       } else {
@@ -251,11 +196,11 @@ export async function GET(req: any) {
       }
     }
 
-    // if (type == "allusertasks") {
-    //   console.log(userId);
-    //   const data = await getAllUserTasks({ userId });
-    //   return NextResponse.json(data);
-    // }
+    if (type == "allusertasks") {
+      console.log(userId);
+      const data = await getAllUserTasks({ userId });
+      return NextResponse.json(data);
+    }
 
     return NextResponse.json("users");
   } catch (error) {
@@ -346,8 +291,8 @@ const replyStart = async (message: any, user: any) => {
 
   await telegramClient.sendMessage(
     message.chat.id,
-    `*Welcome to Birb Tasks\\!*
-Start earning Birb Points Now🚀`,
+    `*Welcome to Solvium Task/Game Bot\\!*
+Start earning Solvium Points Now🚀 while enjoying our game`,
     reply_markup
   );
 };
@@ -404,16 +349,16 @@ Start earning Birb Points Now🚀`,
 //   }
 // };
 
-// const getAllUserTasks = async (data: any) => {
-//   const { userId } = data;
-//   try {
-//     return await prisma.userTask.findMany({
-//       where: {
-//         userId: Number(userId),
-//       },
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return null;
-//   }
-// };
+const getAllUserTasks = async (data: any) => {
+  const { userId } = data;
+  try {
+    return await prisma.userTask.findMany({
+      where: {
+        userId: Number(userId),
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
