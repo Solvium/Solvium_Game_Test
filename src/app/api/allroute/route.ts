@@ -33,8 +33,11 @@ export async function POST(req: NextRequest) {
               data: {
                 referralCount: 0,
                 isPremium: message.from.is_premium ? true : false,
-                name: `${message.chat.first_name} ${message.chat.last_name}`,
+                name: `${message.chat.first_name ?? ""} ${
+                  message.chat.last_name ?? ""
+                }`,
                 referredBy: id[1],
+                chatId: message.from.id,
                 username: message.chat.username!,
                 totalPoints: 0,
               },
@@ -47,7 +50,9 @@ export async function POST(req: NextRequest) {
             data: {
               referralCount: 0,
               referredBy: "null",
-              name: `${message.chat.last_name} ${message.chat.first_name}`,
+              name: `${message.chat.last_name ?? ""} ${
+                message.chat.first_name ?? ""
+              }`,
               username: message.chat.username!,
               totalPoints: 0,
             },
@@ -63,25 +68,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(user);
     }
 
-    // if (type == "reg4tasks") {
-    //   const isCreated = await getUserTasks(data);
-    //   console.log(isCreated);
-    //   !isCreated && (await registerForTasks(data));
-    // }
+    if (type == "reg4tasks") {
+      const isCreated = await getUserTasks(data);
+      console.log(isCreated);
+      !isCreated && (await registerForTasks(data));
+    }
 
-    // if (type == "completetasks") {
-    //   await completeTasks(data);
+    if (type == "completetasks") {
+      await completeTasks(data);
 
-    //   const res = await prisma.user.update({
-    //     where: {
-    //       username,
-    //     },
+      const res = await prisma.user.update({
+        where: {
+          username,
+        },
 
-    //     data: {
-    //       totalPoints: (user?.totalPoints ?? 0) + data.task.points,
-    //     },
-    //   });
-    // }
+        data: {
+          totalPoints: (user?.totalPoints ?? 0) + data.task.points,
+        },
+      });
+    }
 
     return NextResponse.json("user");
   } catch (error) {
@@ -297,57 +302,57 @@ Start earning Solvium Points Now🚀 while enjoying our game`,
   );
 };
 
-// const completeTasks = async (data: any) => {
-//   const { userId, task } = data;
-//   try {
-//     await prisma.userTask.update({
-//       where: {
-//         userId_taskId: {
-//           userId: userId,
-//           taskId: task.id,
-//         },
-//       },
-//       data: {
-//         isCompleted: true,
-//       },
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+const completeTasks = async (data: any) => {
+  const { userId, task } = data;
+  try {
+    await prisma.userTask.update({
+      where: {
+        userId_taskId: {
+          userId: userId,
+          taskId: task.id,
+        },
+      },
+      data: {
+        isCompleted: true,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-// const registerForTasks = async (data: any) => {
-//   const { userId, task } = data;
+const registerForTasks = async (data: any) => {
+  const { userId, task } = data;
 
-//   try {
-//     await prisma.userTask.create({
-//       data: {
-//         userId: userId,
-//         taskId: task.id,
-//         isCompleted: false,
-//       },
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+  try {
+    await prisma.userTask.create({
+      data: {
+        userId: userId,
+        taskId: task.id,
+        isCompleted: false,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-// const getUserTasks = async (data: any) => {
-//   const { userId, task } = data;
-//   try {
-//     return await prisma.userTask.findUnique({
-//       where: {
-//         userId_taskId: {
-//           userId: userId,
-//           taskId: task.id,
-//         },
-//       },
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return null;
-//   }
-// };
+const getUserTasks = async (data: any) => {
+  const { userId, task } = data;
+  try {
+    return await prisma.userTask.findUnique({
+      where: {
+        userId_taskId: {
+          userId: userId,
+          taskId: task.id,
+        },
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
 
 const getAllUserTasks = async (data: any) => {
   const { userId } = data;

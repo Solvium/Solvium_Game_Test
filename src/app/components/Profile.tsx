@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import copy from "./../assets/userProfile/copy.svg";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
@@ -63,7 +63,11 @@ const ProfileHeader = ({ userDetails }: any) => {
       <div className="text-white">
         <div className="flex">
           <p className="text-[20px]">Points: </p>
-          <p className="text-[20px]">{" " + userDetails?.totalPoints}</p>
+          <p className="text-[20px]"> {userDetails?.totalPoints}</p>
+        </div>
+        <div className="flex">
+          <p className="text-[20px]">Total Referrals: </p>
+          <p className="text-[20px]"> {userDetails?.referralCount}</p>
         </div>
       </div>
     </div>
@@ -123,8 +127,6 @@ const Tasks = ({
 
   const [error, setError] = useState("");
 
-  console.log(error);
-
   const sendComplete = async (data: any) => {
     const res = await (
       await fetch("/api/allroute", {
@@ -146,8 +148,10 @@ const Tasks = ({
   };
 
   const ProcessLink = async (data: any) => {
+    console.log(data);
     setLoading({ id: data.id, status: true });
-    const res = await (
+
+    await (
       await fetch("/api/allroute", {
         headers: {
           "content-type": "application/json",
@@ -161,12 +165,8 @@ const Tasks = ({
       })
     ).json();
 
-    // const bal = getrakkiBal(data);
-
-    // localStorage.setItem("rakkiBal", bal?.toString() ?? "0");
-
     getAllInfo();
-    data.link && tg?.openLink(data.link);
+    data.link && window?.open(data.link);
   };
 
   const Verify = async (data: any, type = "") => {
@@ -174,10 +174,10 @@ const Tasks = ({
     setError("");
 
     if (type != "") {
-      if (data.name.toLowerCase().includes("join rakki chat")) {
+      if (data.name.includes("Join Solvium Telegram Group")) {
         try {
           const response = await axios.get(
-            `https://api.telegram.org/bot7506641823:AAE52egqAP2KYXtVYDelwvTd_m7_NAPOCis/getChatMember?chat_id=@Rakki_On_Ton&user_id=${tg?.initDataUnsafe.user?.id}`
+            `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solvium_puzzle&user_id=${userDetails.chatId}`
           );
 
           console.log(response);
@@ -205,12 +205,47 @@ const Tasks = ({
         }
       }
 
-      // sendComplete(data);
+      if (data.name.includes("Join Solvium Chat")) {
+        try {
+          const response = await axios.get(
+            `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solviumupdate&user_id=${userDetails.chatId}`
+          );
+
+          console.log(response);
+          if (response.data.result.user.username == userDetails.username) {
+            if (response.data.result.status == "member") {
+              sendComplete(data);
+              return;
+            } else {
+              setError("You have not Joined Group yet!");
+              setLoading({ id: data.id, status: false });
+              setTimeout(() => {
+                data.link && tg?.openLink(data.link);
+              }, 2000);
+              return;
+            }
+          } else {
+            setError("An error occured, Please try again!");
+            setLoading({ id: data.id, status: false });
+            return;
+          }
+        } catch (error) {
+          setError("An error occured, Please try again!");
+          setLoading({ id: data.id, status: false });
+          return;
+        }
+      }
+
       return;
+      sendComplete(data);
     }
 
     sendComplete(data);
   };
+
+  useEffect(() => {
+    setLoading({ id: 0, status: false });
+  }, [tasks]);
 
   return (
     <div
@@ -233,11 +268,11 @@ const Tasks = ({
               icon = <FaXTwitter className="text-[25px]" />;
               curCat = "x";
               break;
-            case "facebook".toLowerCase():
+            case "Follow Facebook".toLowerCase():
               curCat = "fb";
               icon = <FaFacebook className="text-[25px]" />;
               break;
-            case "youtube".toLowerCase():
+            case "follow Youtube".toLowerCase():
               curCat = "yt";
               icon = <FaYoutube className="text-[25px]" />;
               break;
@@ -258,7 +293,7 @@ const Tasks = ({
             });
 
           if (found) return <div key={task.name + "task"}> </div>;
-          console.log(task);
+
           return (
             <div
               key={task.name + "task"}
@@ -275,6 +310,7 @@ const Tasks = ({
                 <button
                   onClick={() => {
                     if (curCat == "Tg") {
+                      console.log(task);
                       onGoing ? Verify(task, "tg") : ProcessLink(task);
                     } else {
                       onGoing ? Verify(task) : ProcessLink(task);
@@ -283,7 +319,25 @@ const Tasks = ({
                   className="mt-3 text-[13px] border-blue-80 border-[2px] text-white h-8 flex items-center justify-center rounded-lg px-3"
                 >
                   {loading.id == task.id && loading.status ? (
-                    <span className="loading loading-ring loading-sm"></span>
+                    <div role="status">
+                      <svg
+                        aria-hidden="true"
+                        className="inline w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill"
+                        />
+                      </svg>
+                      <span className="sr-only">Loading...</span>
+                    </div>
                   ) : onGoing ? (
                     "Verify"
                   ) : (
