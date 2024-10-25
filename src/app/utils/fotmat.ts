@@ -1,5 +1,6 @@
-import { Address } from "ton-core";
 // import { BigNumber } from "bignumber.js";
+
+import { Address } from "@ton/core";
 
 /**
  * Format TON amount with proper decimal places
