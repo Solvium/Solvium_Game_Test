@@ -340,11 +340,6 @@
   resolved "https://registry.npmjs.org/@rushstack/eslint-patch/-/eslint-patch-1.10.4.tgz"
   integrity sha512-WJgX9nzTqknM393q1QJDJmoW28kUfEnybeTfVNcNAPnIx210RXm2DiXiHzfNPJNIUUb1tJnz/l4QGtJ30PgWmA==
 
-"@scarf/scarf@^1.1.1":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.3.0.tgz#f8c75560d0dace4452dee1e31995e6396e61f3ee"
-  integrity sha512-lHKK8M5CTcpFj2hZDB3wIjb0KAbEOgDmiJGDv1WBRfQgRm/a8/XMEkG/N1iM01xgbUDsPQwi42D+dFo1XPAKew==
-
 "@swc/counter@^0.1.3":
   version "0.1.3"
   resolved "https://registry.npmjs.org/@swc/counter/-/counter-0.1.3.tgz"
@@ -370,6 +365,40 @@
   dependencies:
     "@tanstack/query-core" "4.36.1"
     use-sync-external-store "^1.2.0"
+
+"@ton/core@^0.59.0":
+  version "0.59.0"
+  resolved "https://registry.yarnpkg.com/@ton/core/-/core-0.59.0.tgz#58da9fcaa58e5a0c705b63baf1e86cab6e196689"
+  integrity sha512-LSIkGst7BoY7fMWshejzcH0UJnoW21JGlRrW0ch+6A7Xb/7EuekxgdKym7fHxcry6OIf6FoeFg97lJ960N/Ghg==
+  dependencies:
+    symbol.inspect "1.0.1"
+
+"@ton/crypto-primitives@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@ton/crypto-primitives/-/crypto-primitives-2.1.0.tgz#8c9277c250b59aae3c819e0d6bd61e44d998e9ca"
+  integrity sha512-PQesoyPgqyI6vzYtCXw4/ZzevePc4VGcJtFwf08v10OevVJHVfW238KBdpj1kEDQkxWLeuNHEpTECNFKnP6tow==
+  dependencies:
+    jssha "3.2.0"
+
+"@ton/crypto@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@ton/crypto/-/crypto-3.3.0.tgz#019103df6540fbc1d8102979b4587bc85ff9779e"
+  integrity sha512-/A6CYGgA/H36OZ9BbTaGerKtzWp50rg67ZCH2oIjV1NcrBaCK9Z343M+CxedvM7Haf3f/Ee9EhxyeTp0GKMUpA==
+  dependencies:
+    "@ton/crypto-primitives" "2.1.0"
+    jssha "3.2.0"
+    tweetnacl "1.0.3"
+
+"@ton/ton@^15.1.0":
+  version "15.1.0"
+  resolved "https://registry.yarnpkg.com/@ton/ton/-/ton-15.1.0.tgz#a760b1492dd3e5896238b7154f7377f4e51fa086"
+  integrity sha512-almetcfTu7jLjcNcEEPB7wAc8yl90ES1M//sOr1QE+kv7RbmEvMkaPSc7kFxzs10qrjIPKxlodBJlMSWP5LuVQ==
+  dependencies:
+    axios "^1.6.7"
+    dataloader "^2.0.0"
+    symbol.inspect "1.0.1"
+    teslabot "^1.3.0"
+    zod "^3.21.4"
 
 "@tonconnect/isomorphic-eventsource@^0.0.2":
   version "0.0.2"
@@ -773,16 +802,9 @@ axe-core@^4.10.0:
   resolved "https://registry.npmjs.org/axe-core/-/axe-core-4.10.0.tgz"
   integrity sha512-Mr2ZakwQ7XUAjp7pAwQWRhhK8mQQ6JAaNWSjmjxil0R8BPioMtQsTLOolGYkji1rcL++3dCqZA3zWqpT+9Ew6g==
 
-axios@^0.25.0:
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.25.0.tgz#349cfbb31331a9b4453190791760a8d35b093e0a"
-  integrity sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==
-  dependencies:
-    follow-redirects "^1.14.7"
-
-axios@^1.7.3:
+axios@^1.6.7, axios@^1.7.3:
   version "1.7.7"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.7.7.tgz"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.7.tgz#2f554296f9892a72ac8d8e4c5b79c14a91d0a47f"
   integrity sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==
   dependencies:
     follow-redirects "^1.15.6"
@@ -981,6 +1003,14 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
+css-selector-tokenizer@^0.8:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/css-selector-tokenizer/-/css-selector-tokenizer-0.8.0.tgz#88267ef6238e64f2215ea2764b3e2cf498b845dd"
+  integrity sha512-Jd6Ig3/pe62/qe5SBPTN8h8LeUg/pT4lLgtavPf7updwwHpvFzxvOQBHYj2LZDMjUnBzgvIUSjRcf6oT5HzHFg==
+  dependencies:
+    cssesc "^3.0.0"
+    fastparse "^1.1.2"
+
 cssesc@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz"
@@ -990,6 +1020,21 @@ csstype@^3.0.2:
   version "3.1.3"
   resolved "https://registry.npmjs.org/csstype/-/csstype-3.1.3.tgz"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
+
+culori@^3:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/culori/-/culori-3.3.0.tgz#e33530adbd124d53bd6550394397e695eaaed739"
+  integrity sha512-pHJg+jbuFsCjz9iclQBqyL3B2HLCBF71BwVNujUYEvCeQMvV97R59MNK3R2+jgJ3a1fcZgI9B3vYgz8lzr/BFQ==
+
+daisyui@^4.12.13:
+  version "4.12.13"
+  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-4.12.13.tgz#e386c54dd7a55e77dc865f12e1556b37229dfb4e"
+  integrity sha512-BnXyQoOByUF/7wSdIKubyhXxbtL8gxwY3u2cNMkxGP39TSVJqMmlItqtpY903fQnLI/NokC+bc+ZV+PEPsppPw==
+  dependencies:
+    css-selector-tokenizer "^0.8"
+    culori "^3"
+    picocolors "^1"
+    postcss-js "^4"
 
 damerau-levenshtein@^1.0.8:
   version "1.0.8"
@@ -1560,6 +1605,11 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
+fastparse@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/fastparse/-/fastparse-1.1.2.tgz#91728c5a5942eced8531283c79441ee4122c35a9"
+  integrity sha512-483XLLxTVIwWK3QTrMGRqUfUpoOs/0hbQrl2oz4J0pAcm3A3bu84wxTFqGqkJzewCLdME38xJLJAxBABfQT8sQ==
+
 fastq@^1.6.0:
   version "1.17.1"
   resolved "https://registry.npmjs.org/fastq/-/fastq-1.17.1.tgz"
@@ -1603,7 +1653,7 @@ flatted@^3.2.9:
   resolved "https://registry.npmjs.org/flatted/-/flatted-3.3.1.tgz"
   integrity sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==
 
-follow-redirects@^1.14.7, follow-redirects@^1.15.6:
+follow-redirects@^1.15.6:
   version "1.15.9"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.9.tgz"
   integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==
@@ -1631,11 +1681,6 @@ form-data@^4.0.0:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
-
-fp-ts@^2.11.1:
-  version "2.16.9"
-  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.16.9.tgz#99628fc5e0bb3b432c4a16d8f4455247380bae8a"
-  integrity sha512-+I2+FnVB+tVaxcYyQkHUq7ZdKScaBlX53A41mxQtpIccsfyv8PzdzP7fzp2AY832T4aoK6UZ5WRX/ebGd8uZuQ==
 
 fs-extra@^9.1.0:
   version "9.1.0"
@@ -1872,18 +1917,6 @@ invariant@^2.2.4:
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
   dependencies:
     loose-envify "^1.0.0"
-
-io-ts-reporters@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/io-ts-reporters/-/io-ts-reporters-2.0.1.tgz#0154545aefd115f0f175a41743ed7327d19b1c34"
-  integrity sha512-RVpLstYBsmTGgCW9wJ5KVyN/eRnRUDp87Flt4D1O3aJ7oAnd8csq8aXuu7ZeNK8qEDKmjUl9oUuzfwikaNAMKQ==
-  dependencies:
-    "@scarf/scarf" "^1.1.1"
-
-io-ts@^2.2.16:
-  version "2.2.21"
-  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.21.tgz#4ef754176f7082a1099d04c7d5c4ea53267c530a"
-  integrity sha512-zz2Z69v9ZIC3mMLYWIeoUcwWD6f+O7yP92FMVVaXEOSZH1jnVBmET/urd/uoarD1WGBY4rCj8TAyMPzsGNzMFQ==
 
 is-arguments@^1.1.1:
   version "1.1.1"
@@ -2281,6 +2314,11 @@ lru-cache@^10.2.0:
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-10.4.3.tgz"
   integrity sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==
 
+lucide-react@^0.453.0:
+  version "0.453.0"
+  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.453.0.tgz#d37909a45a29d89680383a202ee861224b05ba6a"
+  integrity sha512-kL+RGZCcJi9BvJtzg2kshO192Ddy9hv3ij+cPrVPWSRzgCWCVazoQJxOjAwgK53NomL07HB7GPHW120FimjNhQ==
+
 merge2@^1.3.0:
   version "1.4.1"
   resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"
@@ -2557,6 +2595,11 @@ path-scurry@^1.10.1, path-scurry@^1.11.1:
     lru-cache "^10.2.0"
     minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
 
+picocolors@^1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.1.1.tgz#3d321af3eab939b083c8f929a1d12cda81c26b6b"
+  integrity sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==
+
 picocolors@^1.0.0, picocolors@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/picocolors/-/picocolors-1.1.0.tgz"
@@ -2591,7 +2634,7 @@ postcss-import@^15.1.0:
     read-cache "^1.0.0"
     resolve "^1.1.7"
 
-postcss-js@^4.0.1:
+postcss-js@^4, postcss-js@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/postcss-js/-/postcss-js-4.0.1.tgz"
   integrity sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==
@@ -3170,42 +3213,6 @@ toggle-selection@^1.0.6:
   resolved "https://registry.npmjs.org/toggle-selection/-/toggle-selection-1.0.6.tgz"
   integrity sha512-BiZS+C1OS8g/q2RRbJmy59xpyghNBqrr6k5L/uKBGRsTfxmu3ffiRnd8mlGPUVayg8pvfi5urfnu8TU7DVOkLQ==
 
-ton-core@^0.46.0:
-  version "0.46.0"
-  resolved "https://registry.yarnpkg.com/ton-core/-/ton-core-0.46.0.tgz#4138606fccf7fa45dc5c6cd6dcf1d1f17b2d4215"
-  integrity sha512-QUOlL98652rsOPTIvB01+MsAgLI1ehvpsngYzNWr7pxHOk4xk64Adq0StTmqGEchkzjhNowIo3gzwGGPrxo3zw==
-  dependencies:
-    symbol.inspect "1.0.1"
-
-ton-crypto-primitives@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/ton-crypto-primitives/-/ton-crypto-primitives-2.0.0.tgz#e85cd68c0d523f6bdf3f306201a76e51b7e9312e"
-  integrity sha512-K+qKjpS0h9sPW6oExcpxnzuQ7nEgHEiDKwIqE/jWD25o8iFGe3FWj1gKxFNbKE9wwYKc5IV8FwrU+raF0KO5nQ==
-  dependencies:
-    jssha "3.2.0"
-
-ton-crypto@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/ton-crypto/-/ton-crypto-3.2.0.tgz#cf8cd5410d8f04b04b359f80415b11efb312c60e"
-  integrity sha512-fltdBNQ45gARMuGMEOjPZWPJ5eSql8p3CA0Dj7tPv5lhU5ziT8SxXLAzDraR9HJ8YpjBHLVvYyhMLRiEwxgtMQ==
-  dependencies:
-    jssha "3.2.0"
-    ton-crypto-primitives "2.0.0"
-    tweetnacl "1.0.3"
-
-ton@13.3.0:
-  version "13.3.0"
-  resolved "https://registry.yarnpkg.com/ton/-/ton-13.3.0.tgz#855425fe368d12cea6c784c156ede70d28639cf7"
-  integrity sha512-ygNZ3a8xgDcftudgmq2lNzFNrQtNhUdmBneLJI8C2iBuD9RAfpnjae4eIpjPLfCsLKH8Nmvh2JOESfM7lvsCSw==
-  dependencies:
-    axios "^0.25.0"
-    dataloader "^2.0.0"
-    fp-ts "^2.11.1"
-    io-ts "^2.2.16"
-    io-ts-reporters "^2.0.0"
-    symbol.inspect "1.0.1"
-    teslabot "^1.3.0"
-
 tonweb@^0.0.66:
   version "0.0.66"
   resolved "https://registry.yarnpkg.com/tonweb/-/tonweb-0.0.66.tgz#e9aa1f81ac2c2a9b0ff692294d58b1dfea516fb4"
@@ -3496,3 +3503,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^3.21.4:
+  version "3.23.8"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
+  integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==

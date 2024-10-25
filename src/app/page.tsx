@@ -25,8 +25,10 @@ function Home() {
   useEffect(() => {
     if (selectedTab) {
       const _tg = window?.Telegram?.WebApp;
-      !_tg.isClosingConfirmationEnabled && _tg.enableClosingConfirmation();
-      setTg(_tg);
+      if (_tg) {
+        !_tg.isClosingConfirmationEnabled && _tg.enableClosingConfirmation();
+        setTg(_tg);
+      }
     } else setSelectedTab("Home");
   }, [selectedTab]);
 

@@ -1,5 +1,5 @@
+import { Sender, SenderArguments } from "@ton/core";
 import { CHAIN } from "@tonconnect/protocol";
-import { Sender, SenderArguments } from "ton-core";
 import {
   ITonConnect,
   useTonConnectUI,

@@ -4,6 +4,9 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
+import DepositModal from "./UI/DepositModal";
+import { TonConnectButton } from "@tonconnect/ui-react";
+import DepositMultiplier from "./UI/TonDeposit";
 
 // import ReactLoading from "react-loading";
 
@@ -16,6 +19,10 @@ const UserProfile = ({
 }: any) => {
   return (
     <div className="backdrop-blur-sm w-full p-[10px] pt-[20px] space-y-4">
+      <div className="flex justify-end">
+        <TonConnectButton />
+      </div>
+
       <ProfileHeader userDetails={userDetails} />
       <Link userDetails={userDetails} />
       <Tasks
@@ -259,6 +266,25 @@ const Tasks = ({
       </h2>
 
       <div className="space-y-3">
+        <div>
+          <div
+            key={"support us task"}
+            className="flex items-center justify-center rounded-md"
+          >
+            <div className="flex w-[90%] p-3 bg-[rgba(0,0,0,0.9)] rounded-lg justify-center items-center border-blue-80 border-[3px]">
+              <div className=" rounded-full overflow-hidden flex items-center justify-center  p-3 text-[18px] ">
+                {/* {icon} */}
+              </div>
+              <div className="flex-1">
+                <p className="text-white">Support TON chain</p>
+                <p className="text-[12px]"></p>
+              </div>
+              <div>
+                <DepositMultiplier />
+              </div>
+            </div>
+          </div>
+        </div>
         {tasks?.map((task: any, i: number) => {
           let curCat = "Tg";
           let icon = <FaTelegram className="text-[25px]" />;
@@ -349,6 +375,33 @@ const Tasks = ({
           );
         })}
       </div>
+    </div>
+  );
+};
+
+const Modal = () => {
+  return (
+    <div>
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box ">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <div className="p-5">
+            <p>Support the project and double your points over the next week</p>
+
+            <div>
+              <p>Amount</p>
+              <input type="text" />
+            </div>
+            <div>
+              <button>Support</button>
+            </div>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };

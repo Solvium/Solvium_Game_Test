@@ -75,6 +75,39 @@ export async function POST(req: NextRequest) {
     }
 
     if (type == "completetasks") {
+      if (!user?.isOfficial) {
+        const res = await prisma.user.update({
+          where: {
+            username,
+          },
+
+          data: {
+            isOfficial: true,
+          },
+        });
+
+        if (user?.referredBy) {
+          const invitor = await prisma.user.findUnique({
+            where: {
+              username: user.referredBy,
+            },
+          });
+
+          if (invitor) {
+            await prisma.user.update({
+              where: {
+                username: invitor.username,
+              },
+              data: {
+                referralCount: invitor.referralCount + 1,
+                totalPoints: invitor.totalPoints + 100000,
+              },
+            });
+          }
+        }
+        return NextResponse.json(res);
+      }
+
       await completeTasks(data);
 
       const res = await prisma.user.update({
