@@ -4,7 +4,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
-import DepositModal from "./UI/DepositModal";
 import { TonConnectButton } from "@tonconnect/ui-react";
 import DepositMultiplier from "./UI/TonDeposit";
 
