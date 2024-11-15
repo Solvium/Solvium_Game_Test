@@ -4,7 +4,7 @@ import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import Script from "next/script";
 import { useEffect } from "react";
 
-const manifestUrl = "/tonconnect-manifest.json";
+const manifestUrl = "https://solvium-game.vercel.app/tonconnect-manifest.json";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
