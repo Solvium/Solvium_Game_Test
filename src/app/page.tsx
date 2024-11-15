@@ -2,7 +2,6 @@
 import { GoHome } from "react-icons/go";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { IoGameControllerOutline } from "react-icons/io5";
-import { FaUserFriends } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import LeaderBoard from "./components/LeaderBoard";
 import { Game } from "./components/Game";

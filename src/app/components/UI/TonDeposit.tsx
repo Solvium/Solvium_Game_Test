@@ -18,26 +18,14 @@ export default function DepositMultiplier() {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("deposit");
-  const [deposits, setDeposits]: any = useState();
   const [selectedDeposit, setSelectedDeposit] = useState(null);
 
   const address = useTonAddress();
-  let totalMultiplier = 2;
 
-  const { getGetAllUserDeposits, ca, handleDeposit } = useMultiplierContract();
-
-  useEffect(() => {
-    console.log(ca);
-    if (!ca || !address) return;
-    const getData = async () => {
-      const deposits = await getGetAllUserDeposits(Address.parse(address));
-      setDeposits(deposits?.values());
-    };
-    getData();
-  }, [ca]);
+  const { deposits, handleDeposit, adminWithdraw } =
+    useMultiplierContract(address);
 
   console.log(deposits);
-
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <button
@@ -60,11 +48,13 @@ export default function DepositMultiplier() {
               </button>
             </div>
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">TON Deposit Multiplier</h1>
+              <h1 className="text-2xl text-center font-bold">
+                TON Deposit Multiplier
+              </h1>
               {/* <TonConnectButton /> */}
             </div>
             {!connected ? (
-              <div className="card bg-base-200 p-8 text-center">
+              <div className="card border-blue-80 border-[2px] p-8 text-center">
                 <h2 className="text-xl mb-4">
                   Connect your wallet to get started
                 </h2>
@@ -130,7 +120,7 @@ export default function DepositMultiplier() {
                           </div>
                         </div>
                         <button
-                          onClick={() => handleDeposit(amount)}
+                          onClick={() => adminWithdraw(amount)}
                           className="btn btn-secondary w-full"
                           // disabled={!amount || parseFloat(amount) < 0.11}
                         >

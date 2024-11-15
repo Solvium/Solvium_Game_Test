@@ -1,6 +1,0 @@
-TG_BOT_TOKEN=7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0
-NODE_ENV=test
-PROD_URL=https://sol-bot-we9q.onrender.com/
-TEST_URL=https://gn5dcg8d-6001.uks1.devtunnels.ms/
-
-DATABASE_URL="postgresql://solvium_game_user:qpwUGw9hBs6FO84XyBUSpjlOkubEERKb@dpg-crrcnr1u0jms73citdkg-a.oregon-postgres.render.com/solvium_game"

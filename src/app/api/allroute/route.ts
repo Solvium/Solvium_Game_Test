@@ -7,7 +7,14 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { username: _username, id, type, data, message } = await req.json();
+    const {
+      username: _username,
+      id,
+      type,
+      data,
+      message,
+      userMultipler,
+    } = await req.json();
 
     const username = _username ?? message.chat.username;
     if (!username) return NextResponse.json("error", { status: 404 });
@@ -26,6 +33,9 @@ export async function POST(req: NextRequest) {
       }
       if (message.text?.startsWith("/start")) {
         const id = message.text.split("/start ");
+
+        console.log(message);
+        console.log(id);
 
         if (id.length > 1) {
           if (!user) {
@@ -53,6 +63,7 @@ export async function POST(req: NextRequest) {
               name: `${message.chat.last_name ?? ""} ${
                 message.chat.first_name ?? ""
               }`,
+              chatId: message.from.id,
               username: message.chat.username!,
               totalPoints: 0,
             },
@@ -100,7 +111,7 @@ export async function POST(req: NextRequest) {
               },
               data: {
                 referralCount: invitor.referralCount + 1,
-                totalPoints: invitor.totalPoints + 100000,
+                totalPoints: invitor.totalPoints + 100,
               },
             });
           }
@@ -116,7 +127,9 @@ export async function POST(req: NextRequest) {
         },
 
         data: {
-          totalPoints: (user?.totalPoints ?? 0) + data.task.points,
+          totalPoints:
+            (user?.totalPoints ?? 0) +
+            data.task.points * (userMultipler > 0 ? userMultipler : 1),
         },
       });
     }
@@ -187,26 +200,26 @@ export async function GET(req: any) {
       const tasks = [
         {
           name: "Follow X",
-          points: 20000,
+          points: 40,
           isCompleted: false,
           link: "https://x.com/Solvium_game",
         },
         {
-          name: "Follow Youtube",
-          points: 20000,
+          name: "Subscribe to Youtube",
+          points: 40,
           isCompleted: false,
           link: "https://www.youtube.com/@solvium_puzzle",
         },
         {
           name: "Follow Facebook",
-          points: 20000,
+          points: 40,
           isCompleted: false,
           link: "https://www.facebook.com/profile.php?id=61566560151625&mibextid=LQQJ4d",
         },
 
         {
           name: "Join Solvium Telegram Group",
-          points: 20000,
+          points: 40,
           isCompleted: false,
           link: "https://t.me/solvium_puzzle",
         },

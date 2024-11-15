@@ -26,6 +26,7 @@ model User {
   id            Int        @id @default(autoincrement())
   username      String     @unique
   name          String?
+  wallet        String?
   referredBy    String
   referralCount Int        @default(0)
   chatId        Int        @default(0)
@@ -36,10 +37,7 @@ model User {
   lastClaim     DateTime   @default(now())
   UserTasks     UserTask[]
 
-  referrer  User?  @relation("Referrals", fields: [referredBy], references: [username])
-  referrals User[] @relation("Referrals")
 
-  @@index([referredBy])
 }
 
 model UserTask {

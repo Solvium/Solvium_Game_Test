@@ -97,30 +97,3 @@ export async function GET(req: any) {
     return NextResponse.json({ error: "Internal Server Error" });
   }
 }
-
-const replyStart = async (message: any, user: any) => {
-  const reply_markup: InlineKeyboardMarkup = {
-    inline_keyboard: [
-      [
-        {
-          text: "Launch WebApp",
-          web_app: {
-            url:
-              (process.env.NODE_ENV == "production"
-                ? `https://birb-task.vercel.app/`
-                : "https://gn5dcg8d-3000.uks1.devtunnels.ms/") +
-              "?username=" +
-              user.username,
-          },
-        },
-      ],
-    ],
-  };
-
-  await telegramClient.sendMessage(
-    message.chat.id,
-    `*You are already Verified\\!*
-Start earning DAO Points Now🚀`,
-    reply_markup
-  );
-};

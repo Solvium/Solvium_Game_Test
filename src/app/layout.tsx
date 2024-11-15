@@ -4,11 +4,8 @@ import "./globals.css";
 import App from "./components/App";
 
 export const metadata: Metadata = {
-  title: "Birb On Ton - Task",
-  description: "Birb Tasks Page, engae and earn with Birb on TON Blockchain",
-  icons: [
-    "https://ipfs.io/ipfs/QmcSQadxGMin8VuZGBVUTSykLTsiNnoacgv2UnNkgjMt38/IMG_8168.jpeg",
-  ],
+  title: "Solvuim Task Bot",
+  description: "Earn with Solvuim Tasks on TON Blockchain",
 };
 
 export default function RootLayout({

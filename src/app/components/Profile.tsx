@@ -4,8 +4,9 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
-import { TonConnectButton } from "@tonconnect/ui-react";
+import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
 import DepositMultiplier from "./UI/TonDeposit";
+import { useMultiplierContract } from "../hooks/useDepositContract";
 
 // import ReactLoading from "react-loading";
 
@@ -130,10 +131,21 @@ const Tasks = ({
   userTasks: any;
 }) => {
   const [loading, setLoading] = useState({ id: 0, status: false });
-
   const [error, setError] = useState("");
+  const address = useTonAddress();
+  const { deposits } = useMultiplierContract(address);
 
   const sendComplete = async (data: any) => {
+    let total = 0;
+    for (let index = 0; index < deposits?.length; index++) {
+      total += Number(deposits[index].multiplier);
+    }
+
+    const userMultipler = total;
+
+    console.log(deposits);
+    console.log(userMultipler);
+
     const res = await (
       await fetch("/api/allroute", {
         headers: {
@@ -143,6 +155,7 @@ const Tasks = ({
         body: JSON.stringify({
           data: { task: data, userId: userDetails.id },
           username: userDetails.username,
+          userMultipler,
           type: "completetasks",
         }),
       })
@@ -179,6 +192,7 @@ const Tasks = ({
     setLoading({ id: data.id, status: true });
     setError("");
 
+    console.log(type);
     if (type != "") {
       if (data.name.includes("Join Solvium Telegram Group")) {
         try {
@@ -297,7 +311,7 @@ const Tasks = ({
               curCat = "fb";
               icon = <FaFacebook className="text-[25px]" />;
               break;
-            case "follow Youtube".toLowerCase():
+            case "Subscribe to Youtube".toLowerCase():
               curCat = "yt";
               icon = <FaYoutube className="text-[25px]" />;
               break;
