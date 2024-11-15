@@ -4,8 +4,7 @@ import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import Script from "next/script";
 import { useEffect } from "react";
 
-const manifestUrl =
-  "https://gn5dcg8d-6001.uks1.devtunnels.ms/tonconnect-manifest.json";
+const manifestUrl = "/tonconnect-manifest.json";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
