@@ -133,7 +133,7 @@ const Farming = ({ userDetails, claimPoints }: any) => {
     total += Number(deposits[index].multiplier);
   }
 
-  const userMultipler = total;
+  const userMultipler = total <= 0 ? 1 : total;
   const hashRate = 0.0035;
 
   const remainingTime =
