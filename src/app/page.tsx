@@ -8,6 +8,7 @@ import { Game } from "./components/Game";
 import axios from "axios";
 import WebApp from "@twa-dev/sdk";
 import UserProfile from "./components/Profile";
+import ContestBoard from "./components/Contest";
 
 function Home() {
   const [selectedTab, setSelectedTab]: any = useState();
@@ -40,6 +41,9 @@ function Home() {
       case "Game":
         setCurPage(<Game />);
         break;
+      case "Contest":
+        setCurPage(<ContestBoard user={user} />);
+        break;
       default:
         setCurPage(
           <UserProfile
@@ -47,6 +51,7 @@ function Home() {
             tasks={tasks}
             getAllInfo={getAllInfo}
             userTasks={userTasks}
+            claimPoints={claimPoints}
           />
         );
         break;
@@ -168,9 +173,8 @@ function Home() {
   return (
     <>
       {loadingPage ? (
-        <div className=" flex-col space-y-2.5 w-full h-[100vh] flex items-center justify-center">
-          <p>Loading ...</p>
-          <span className="loading loading-ring mr-2 loading-lg"></span>
+        <div className="flex justify-center items-center bg-black bg-cover px-4 min-h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       ) : (
         <div
@@ -188,6 +192,15 @@ function Home() {
               >
                 <GoHome />
                 <span>Profile</span>
+              </div>
+              <div
+                onClick={() => setSelectedTab("Contest")}
+                className={`w-full cursor-pointer justify-center items-center flex flex-col ${
+                  selectedTab == "Contest" ? "text-white" : "text-gray-400"
+                }`}
+              >
+                <GoHome />
+                <span>Contest</span>
               </div>
               <div
                 onClick={() => setSelectedTab("Leaderboard")}

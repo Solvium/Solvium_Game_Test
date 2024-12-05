@@ -1,6 +1,8 @@
+import { getCurrentYear, getISOWeekNumber } from "@/app/utils/utils";
 import { telegramClient } from "../../clients/TelegramApiClient";
 import { InlineKeyboardMarkup } from "@grammyjs/types";
 import { PrismaClient } from "@prisma/client";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
@@ -121,17 +123,9 @@ export async function POST(req: NextRequest) {
 
       await completeTasks(data);
 
-      const res = await prisma.user.update({
-        where: {
-          username,
-        },
+      const np = data.task.points * (userMultipler > 0 ? userMultipler : 1);
 
-        data: {
-          totalPoints:
-            (user?.totalPoints ?? 0) +
-            data.task.points * (userMultipler > 0 ? userMultipler : 1),
-        },
-      });
+      await addLeaderboard(user, np);
     }
 
     return NextResponse.json("user");
@@ -257,70 +251,6 @@ export async function GET(req: any) {
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" });
   }
-
-  // async function main() {
-  //   // Create a new user
-  //   const user = await prisma.user.create({
-  //     data: {
-  //       username: "john_doe",
-  //       referralCount: 0,
-  //       totalPoints: 0,
-  //     },
-  //   });
-
-  //   // Create a new task
-  //   const task = await prisma.task.create({
-  //     data: {
-  //       name: "Follow the project on social media",
-  //       points: 10,
-  //     },
-  //   });
-
-  //   // User completes the task
-  //   await prisma.userCompletedTasks.create({
-  //     data: {
-  //       userId: user.id,
-  //       taskId: task.id,
-  //     },
-  //   });
-
-  //   // Update task completion status and referred count
-  //   await prisma.task.update({
-  //     where: { id: task.id },
-  //     data: {
-  //       isCompleted: true,
-  //       referredCount: { increment: 1 },
-  //     },
-  //   });
-
-  //   // Update user total points
-  //   const userWithTasks = await prisma.user.findUnique({
-  //     where: { id: user.id },
-  //     include: { completedTasks: true },
-  //   });
-
-  //   const totalPoints = userWithTasks?.completedTasks.reduce(
-  //     (sum: any, task: any) => sum + task.points,
-  //     0
-  //   );
-
-  //   await prisma.user.update({
-  //     where: { id: user.id },
-  //     data: {
-  //       totalPoints,
-  //     },
-  //   });
-
-  //   console.log("User with tasks:", userWithTasks);
-  // }
-
-  // main()
-  //   .catch((e) => {
-  //     throw e;
-  //   })
-  //   .finally(async () => {
-  //     await prisma.$disconnect();
-  //   });
 }
 
 const replyStart = async (message: any, user: any) => {
@@ -411,5 +341,69 @@ const getAllUserTasks = async (data: any) => {
   } catch (error) {
     console.log(error);
     return null;
+  }
+};
+
+const addLeaderboard = async (user: any, np: number) => {
+  const userId = user.id;
+  const points = np;
+  try {
+    if (!userId || points === undefined) {
+      return NextResponse.json(
+        { error: "User ID and points are required" },
+        { status: 400 }
+      );
+    }
+
+    const currentWeek = getISOWeekNumber(new Date());
+    const currentYear = getCurrentYear();
+
+    // Update weekly score and user's points in a transaction
+    const updatedScore = await prisma.$transaction(async (prisma) => {
+      // Update or create weekly score
+      const weeklyScore = await prisma.weeklyScore.upsert({
+        where: {
+          userId_weekNumber_year: {
+            userId: Number(userId),
+            weekNumber: currentWeek,
+            year: currentYear,
+          },
+        },
+        update: {
+          points: {
+            increment: Number(points),
+          },
+        },
+        create: {
+          userId: Number(userId),
+          weekNumber: currentWeek,
+          year: currentYear,
+          points: Number(points),
+        },
+      });
+
+      // Update user's weekly and total points
+      const updatedUser = await prisma.user.update({
+        where: { id: Number(userId) },
+        data: {
+          weeklyPoints: {
+            increment: Number(points),
+          },
+          totalPoints: {
+            increment: Number(points),
+          },
+        },
+      });
+
+      return { weeklyScore, updatedUser };
+    });
+
+    NextResponse.json(updatedScore, { status: 200 });
+  } catch (error) {
+    console.error("Error adding weekly points:", error);
+    NextResponse.json(
+      { error: "Failed to add weekly points kk" },
+      { status: 500 }
+    );
   }
 };

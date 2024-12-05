@@ -1,31 +1,22 @@
-import { useState, useEffect } from "react";
-import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
-import { Address, fromNano } from "@ton/core";
-import {
-  Wallet,
-  CircleDollarSign,
-  Clock,
-  Star,
-  AlertCircle,
-} from "lucide-react";
+import { useState } from "react";
+import { useTonAddress } from "@tonconnect/ui-react";
+import { fromNano } from "@ton/core";
+import { Wallet, Star } from "lucide-react";
 import { useTonConnect } from "@/app/hooks/useTonConnect";
 import { useMultiplierContract } from "@/app/hooks/useDepositContract";
 import { formatDate } from "@/app/utils/fotmat";
 
 export default function DepositMultiplier() {
-  const { connected, wallet, connectWallet } = useTonConnect();
+  const { connected, connectWallet } = useTonConnect();
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState("");
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("deposit");
-  const [selectedDeposit, setSelectedDeposit] = useState(null);
 
   const address = useTonAddress();
 
-  const { deposits, handleDeposit, adminWithdraw } =
-    useMultiplierContract(address);
+  const { deposits, handleDeposit } = useMultiplierContract(address);
 
-  console.log(deposits);
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <button
@@ -120,7 +111,7 @@ export default function DepositMultiplier() {
                           </div>
                         </div>
                         <button
-                          onClick={() => adminWithdraw(amount)}
+                          onClick={() => handleDeposit(amount)}
                           className="btn btn-secondary w-full"
                           // disabled={!amount || parseFloat(amount) < 0.11}
                         >
@@ -198,12 +189,12 @@ export default function DepositMultiplier() {
       )}
 
       {/* Error Alert */}
-      {error != "" && (
+      {/* {error != "" && (
         <div className="alert alert-error mt-4">
           <AlertCircle size={20} />
           <span>{error}</span>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

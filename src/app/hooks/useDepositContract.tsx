@@ -17,7 +17,7 @@ export function useMultiplierContract(user: string) {
       Address.parse(
         network === CHAIN.MAINNET
           ? "EQBPEDbGdwaLv1DKntg9r6SjFIVplSaSJoJ-TVLe_2rqBOmH"
-          : "EQB8du7ZsKqP_ePHwY2bzqaPSe9HZfDbIqOtI5TlfTFdiQjb"
+          : "kQBJF4GTZjNzFHOVnWYtMor7v4QdrH-vF0qmNmJRc_BGDAmi"
       )
     );
     return client.open(contract) as OpenedContract<SolviumMultiplier>;
@@ -54,8 +54,8 @@ export function useMultiplierContract(user: string) {
     adminWithdraw: async (amount: string) => {
       return multiplierContract?.send(
         sender,
-        { value: toNano(amount) },
-        { $$type: "AdminWithdraw", amount: toNano("") }
+        { value: toNano("0.1") },
+        { $$type: "AdminWithdraw", amount: toNano("1.4") }
       );
     },
   };

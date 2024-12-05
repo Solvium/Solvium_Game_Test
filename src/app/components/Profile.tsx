@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import copy from "./../assets/userProfile/copy.svg";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
@@ -7,8 +7,7 @@ import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
 import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
 import DepositMultiplier from "./UI/TonDeposit";
 import { useMultiplierContract } from "../hooks/useDepositContract";
-
-// import ReactLoading from "react-loading";
+import TimerCountdown from "./Timer";
 
 const UserProfile = ({
   userDetails,
@@ -16,6 +15,7 @@ const UserProfile = ({
   tg,
   getAllInfo,
   userTasks,
+  claimPoints,
 }: any) => {
   return (
     <div className="backdrop-blur-sm w-full p-[10px] pt-[20px] space-y-4">
@@ -25,6 +25,7 @@ const UserProfile = ({
 
       <ProfileHeader userDetails={userDetails} />
       <Link userDetails={userDetails} />
+      <Farming userDetails={userDetails} claimPoints={claimPoints} />
       <Tasks
         userTasks={userTasks}
         userDetails={userDetails}
@@ -69,12 +70,17 @@ const ProfileHeader = ({ userDetails }: any) => {
       </div>
       <div className="text-white">
         <div className="flex">
-          <p className="text-[20px]">Points: </p>
-          <p className="text-[20px]"> {userDetails?.totalPoints}</p>
+          <p className="text-[20px]">
+            <strong>Points:</strong>
+            {}
+          </p>
+          <p className="ml-2 text-[20px]"> {+userDetails?.totalPoints}</p>
         </div>
         <div className="flex">
-          <p className="text-[20px]">Total Referrals: </p>
-          <p className="text-[20px]"> {userDetails?.referralCount}</p>
+          <p className="text-[20px]">
+            <strong>Total Referrals:</strong>{" "}
+          </p>
+          <p className="text-[20px] ml-2"> {userDetails?.referralCount}</p>
         </div>
       </div>
     </div>
@@ -117,6 +123,85 @@ https://t.me/Solvium_bot?start=${userDetails?.username}`}
   );
 };
 
+const Farming = ({ userDetails, claimPoints }: any) => {
+  const [loadingFarm, setLoadingFarm] = useState(false);
+
+  const address = useTonAddress();
+  const { deposits } = useMultiplierContract(address);
+  let total = 0;
+  for (let index = 0; index < deposits?.length; index++) {
+    total += Number(deposits[index].multiplier);
+  }
+
+  const userMultipler = total;
+  const hashRate = 0.0035;
+
+  const remainingTime =
+    new Date(userDetails?.lastClaim).getTime() - new Date().getTime();
+
+  return (
+    <div
+      style={{
+        backgroundColor: "#010c18",
+      }}
+      className=" h-fit flex flex-col md:flex-row justify-between align-middle w-full md:h-fit border-blue-80 border-4 rounded-3xl items-center md:pr-6 creatorsModebuttonbg text-white py-[10px] relative z-[999] home"
+    >
+      <h2 className="  m-5 w-full  flex flex-row justify-center align-middle font-400 font-droidbold text-white   text-center  border-b-blue-80 border-b-2">
+        FARMING
+      </h2>
+
+      <div className="text-white my-3 mb-5">
+        <button
+          disabled={remainingTime > 0 && userDetails?.isMining}
+          style={{
+            opacity: remainingTime > 0 && userDetails?.isMining ? 0.6 : 1,
+          }}
+          onClick={async () => {
+            setLoadingFarm(true);
+            if (userDetails?.isMining) {
+              if (remainingTime <= 0)
+                claimPoints(
+                  "farm claim--" + 18000 * hashRate * userMultipler,
+                  setLoadingFarm
+                );
+              return;
+            }
+            claimPoints("start farming", setLoadingFarm);
+          }}
+          className="mt-3 text-[13px] border-blue-80 border-[2px] text-white h-8 flex items-center justify-center rounded-lg px-3"
+        >
+          {loadingFarm ? (
+            <div className="flex w-16 items-end">
+              <p className="text-[13px] w-full font-bold flex justify-center py-[8px]">
+                <span className="loading loading-ring loading-sm"></span>
+              </p>
+            </div>
+          ) : userDetails?.isMining ? (
+            <>
+              {remainingTime > 0 ? (
+                <div className="flex items-end">
+                  <p className="text-[13px] font-bold flex items-end py-[8px]">
+                    {`Farming... ${(hashRate * userMultipler).toFixed(4)}/s `}
+                    <TimerCountdown time={userDetails?.lastClaim} />
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-end">
+                  <p className="text-[13px] font-bold flex items-end py-[8px]">
+                    Claim {18000 * hashRate * userMultipler}
+                  </p>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-[13px] py-[8px]"> Start farming</p>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const Tasks = ({
   userDetails,
   tasks,
@@ -131,6 +216,7 @@ const Tasks = ({
   userTasks: any;
 }) => {
   const [loading, setLoading] = useState({ id: 0, status: false });
+
   const [error, setError] = useState("");
   const address = useTonAddress();
   const { deposits } = useMultiplierContract(address);
@@ -298,6 +384,7 @@ const Tasks = ({
             </div>
           </div>
         </div>
+
         {tasks?.map((task: any, i: number) => {
           let curCat = "Tg";
           let icon = <FaTelegram className="text-[25px]" />;

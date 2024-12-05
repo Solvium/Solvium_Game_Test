@@ -1,9 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,21 +18,36 @@ model Task {
 }
 
 model User {
-  id            Int        @id @default(autoincrement())
-  username      String     @unique
+  id            Int           @id @default(autoincrement())
+  username      String        @unique
   name          String?
   wallet        String?
   referredBy    String
-  referralCount Int        @default(0)
-  chatId        Int        @default(0)
-  claimCount    Int        @default(0)
-  totalPoints   Int        @default(0)
-  isOfficial    Boolean    @default(false)
-  isPremium     Boolean    @default(false)
-  lastClaim     DateTime   @default(now())
+  referralCount Int           @default(0)
+  chatId        Int           @default(0)
+  claimCount    Int           @default(0)
+  totalPoints   Int           @default(0)
+  isOfficial    Boolean       @default(false)
+  isMining      Boolean       @default(false)
+  isPremium     Boolean       @default(false)
+  lastClaim     DateTime      @default(now())
   UserTasks     UserTask[]
+  weeklyPoints  Int           @default(0)
+  WeeklyScores  WeeklyScore[]
+}
 
+model WeeklyScore {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  weekNumber  Int      // ISO week number
+  year        Int      // Year for clarity
+  points      Int      @default(0) // Points scored by the user in the week
+  rank        Int?     // Rank of the user for the week
+  createdAt   DateTime @default(now())
 
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, weekNumber, year]) // Ensure no duplicate records for the same week
 }
 
 model UserTask {
