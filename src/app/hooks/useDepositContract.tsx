@@ -16,7 +16,7 @@ export function useMultiplierContract(user: string) {
     const contract = new SolviumMultiplier(
       Address.parse(
         network === CHAIN.MAINNET
-          ? "EQBPEDbGdwaLv1DKntg9r6SjFIVplSaSJoJ-TVLe_2rqBOmH"
+          ? "EQBJF4GTZjNzFHOVnWYtMor7v4QdrH-vF0qmNmJRc_BGDLIo"
           : "kQBJF4GTZjNzFHOVnWYtMor7v4QdrH-vF0qmNmJRc_BGDAmi"
       )
     );
