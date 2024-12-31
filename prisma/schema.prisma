@@ -24,7 +24,7 @@ model User {
   wallet        String?
   referredBy    String
   referralCount Int           @default(0)
-  chatId        Int           @default(0)
+  chatId        String?
   claimCount    Int           @default(0)
   totalPoints   Int           @default(0)
   isOfficial    Boolean       @default(false)
@@ -37,15 +37,15 @@ model User {
 }
 
 model WeeklyScore {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  weekNumber  Int      // ISO week number
-  year        Int      // Year for clarity
-  points      Int      @default(0) // Points scored by the user in the week
-  rank        Int?     // Rank of the user for the week
-  createdAt   DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  weekNumber Int // ISO week number
+  year       Int // Year for clarity
+  points     Int      @default(0) // Points scored by the user in the week
+  rank       Int? // Rank of the user for the week
+  createdAt  DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, weekNumber, year]) // Ensure no duplicate records for the same week
 }

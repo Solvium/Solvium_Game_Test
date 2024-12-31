@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
     } = await req.json();
 
     const username = _username ?? message.chat.username;
-    if (!username) return NextResponse.json("error", { status: 404 });
+    if (!username) {
+      replyNoUsername(message, null);
+      return NextResponse.json("error", { status: 404 });
+    }
 
     const user = await prisma.user.findUnique({
       where: {
@@ -49,7 +52,7 @@ export async function POST(req: NextRequest) {
                   message.chat.last_name ?? ""
                 }`,
                 referredBy: id[1],
-                chatId: message.from.id,
+                chatId: message.from.id?.toString(),
                 username: message.chat.username!,
                 totalPoints: 0,
               },
@@ -65,7 +68,7 @@ export async function POST(req: NextRequest) {
               name: `${message.chat.last_name ?? ""} ${
                 message.chat.first_name ?? ""
               }`,
-              chatId: message.from.id,
+              chatId: message.from.id?.toString(),
               username: message.chat.username!,
               totalPoints: 0,
             },
@@ -252,6 +255,16 @@ export async function GET(req: any) {
     return NextResponse.json({ error: "Internal Server Error" });
   }
 }
+
+const replyNoUsername = async (message: any, user: any) => {
+  await telegramClient.sendMessage(
+    message.chat.id,
+    `*Welcome to Solvium Task/Game Bot\\!*
+Start earning Solvium Points Now🚀 while enjoying our game
+
+Kindly add a Username to your telegram account and try again\\!`
+  );
+};
 
 const replyStart = async (message: any, user: any) => {
   const reply_markup: InlineKeyboardMarkup = {
