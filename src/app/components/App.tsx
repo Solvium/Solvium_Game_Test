@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import Script from "next/script";
 import { useEffect } from "react";
+import { WalletProvider } from "../hooks/useNearWallet.context";
 
 const manifestUrl = "https://solvium-game.vercel.app/tonconnect-manifest.json";
 
@@ -53,12 +54,14 @@ export default function App({
   return (
     <TonConnectUIProvider manifestUrl={manifestUrl}>
       <QueryClientProvider client={queryClient}>
-        <html lang="en">
-          <head>
-            <Script src="https://telegram.org/js/telegram-web-app.js"></Script>
-          </head>
-          <body>{children}</body>
-        </html>
+        <WalletProvider>
+          <html lang="en">
+            <head>
+              <Script src="https://telegram.org/js/telegram-web-app.js"></Script>
+            </head>
+            <body>{children}</body>
+          </html>
+        </WalletProvider>
       </QueryClientProvider>
     </TonConnectUIProvider>
   );
