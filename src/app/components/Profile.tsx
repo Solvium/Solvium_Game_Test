@@ -8,6 +8,8 @@ import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
 import DepositMultiplier from "./UI/TonDeposit";
 import { useMultiplierContract } from "../hooks/useDepositContract";
 import TimerCountdown from "./Timer";
+import WalletSelector from "./walletSelector";
+import UnifiedWalletConnector from "./walletSelector";
 
 const UserProfile = ({
   userDetails,
@@ -19,9 +21,14 @@ const UserProfile = ({
 }: any) => {
   return (
     <div className="backdrop-blur-sm w-full p-[10px] pt-[20px] space-y-4">
-      <div className="flex justify-end">
-        <TonConnectButton />
+      <div className="flex justify-end px-4">
+        <UnifiedWalletConnector />
       </div>
+      {/* <div className="backdrop-blur-sm w-full p-[10px] pt-[20px] space-y-4">
+      <div className="flex justify-end">
+        <WalletSelector />
+        {/* <TonConnectButton /> */}
+      {/* </div> */}
 
       <ProfileHeader userDetails={userDetails} />
       <Link userDetails={userDetails} />
@@ -94,7 +101,7 @@ const Link = ({ userDetails }: any) => {
       style={{
         backgroundColor: "#010c18",
       }}
-      className=" h-fit flex flex-col md:flex-row justify-between align-middle w-full md:h-fit border-blue-80 border-4 rounded-3xl items-center md:pr-6 creatorsModebuttonbg text-white py-[10px] relative z-[999] home"
+      className=" h-fit flex flex-col md:flex-row justify-between align-middle w-full md:h-fit border-blue-80 border-4 rounded-3xl items-center md:pr-6 creatorsModebuttonbg text-white py-[10px] relative z-[800] home"
     >
       <h2 className="  m-5 w-full  flex flex-row justify-center align-middle font-400 font-droidbold text-white   text-center  border-b-blue-80 border-b-2">
         INVITE LINK
@@ -106,7 +113,7 @@ https://t.me/Solvium_bot?start=${userDetails?.username}`}</p>
           background:
             "linear-gradient(92.69deg, rgba(3, 36, 73, 0.45) 8.15%, rgba(11, 119, 240, 0.1) 99.96%)",
         }}
-        className="mt-2 bg-blue-900 opacity-90 cursor-pointer flex text-white font-Archivo-Bold border-blue-50 border rounded-xl py-[5px] px-[6px] h-fit z-[10000000000000000]"
+        className="mt-2 bg-blue-900 opacity-90 cursor-pointer flex text-white font-Archivo-Bold border-blue-50 border rounded-xl py-[5px] px-[6px] h-fit z-[1000]"
       >
         <CopyToClipboard
           text={`
@@ -144,7 +151,7 @@ const Farming = ({ userDetails, claimPoints }: any) => {
       style={{
         backgroundColor: "#010c18",
       }}
-      className=" h-fit flex flex-col md:flex-row justify-between align-middle w-full md:h-fit border-blue-80 border-4 rounded-3xl items-center md:pr-6 creatorsModebuttonbg text-white py-[10px] relative z-[999] home"
+      className=" h-fit flex flex-col md:flex-row justify-between align-middle w-full md:h-fit border-blue-80 border-4 rounded-3xl items-center md:pr-6 creatorsModebuttonbg text-white py-[10px] relative z-[800] home"
     >
       <h2 className="  m-5 w-full  flex flex-row justify-center align-middle font-400 font-droidbold text-white   text-center  border-b-blue-80 border-b-2">
         FARMING
