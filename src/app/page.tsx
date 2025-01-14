@@ -62,7 +62,8 @@ function Home() {
     try {
       const res = await axios(
         "/api/allroute?type=getUser&username=" +
-          tg?.initDataUnsafe.user?.username
+          // tg?.initDataUnsafe.user?.username
+          "Ajemark"
       );
 
       if (res.status == 200) {

@@ -1,18 +1,20 @@
 "use client";
+import { useRef } from "react";
+import { MainHandler } from "./puzzle";
 
 export const Game = () => {
-  // const svgRef = useRef<SVGSVGElement | null>(null);
-  // const defRef = useRef<SVGSVGElement | null>(null);
-  // const insRef = useRef<SVGSVGElement | null>(null);
-  // const scriptRef = useRef<HTMLScriptElement | null>(null);
-  // const hudRef = useRef<SVGSVGElement | null>(null);
-  // const menuRef = useRef<SVGSVGElement | null>(null);
-  // const formRef = useRef<HTMLFormElement | null>(null);
-  // const certRef = useRef<SVGGElement | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const defRef = useRef<SVGSVGElement | null>(null);
+  const insRef = useRef<SVGSVGElement | null>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
+  const hudRef = useRef<SVGSVGElement | null>(null);
+  const menuRef = useRef<SVGSVGElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const certRef = useRef<SVGGElement | null>(null);
 
   return (
     <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
-      {/* <svg
+      <svg
         ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
@@ -276,7 +278,7 @@ export const Game = () => {
                 new MainHandler();
               }}
               id="new-game"
-              className="button noscript-hidden"
+              className="button noscript-hidden cursor-pointer"
               x="100"
               y="20"
             >
@@ -346,10 +348,9 @@ export const Game = () => {
         <g className="ui mc"></g>
 
         <script ref={scriptRef} type="application/json" id="data" />
-         
-      </svg> */}
+      </svg>
 
-      <p className=" "> COMING SOON!</p>
+      {/* <p className=" "> COMING SOON!</p> */}
       <div id="gam"></div>
     </div>
   );
