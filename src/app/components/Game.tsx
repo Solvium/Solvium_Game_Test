@@ -278,7 +278,7 @@ export const Game = () => {
                 new MainHandler();
               }}
               id="new-game"
-              className="button noscript-hidden cursor-pointer"
+              className="button noscript-hidden cursor-pointer "
               x="100"
               y="20"
             >
@@ -286,7 +286,7 @@ export const Game = () => {
             </text>
           </g>
         </g>
-        <g className="ui bl">
+        <g className="ui bl hidden">
           <g ref={certRef} id="certificate">
             <rect
               x="10"
