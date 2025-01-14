@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { WalletState, WalletType } from '../types/wallet';
+import { useMemo } from "react";
+import { WalletState } from "../types/wallet";
+import { WalletType } from "@near-wallet-selector/core";
 
 export function useWalletState(
   nearWallet: WalletState,
@@ -13,11 +14,11 @@ export function useWalletState(
         accountId: null,
         balance: null,
         loading: false,
-        error: null
+        error: null,
       };
     }
 
-    const currentWallet = selectedWallet === 'NEAR' ? nearWallet : tonWallet;
+    const currentWallet = selectedWallet === "NEAR" ? nearWallet : tonWallet;
 
     return {
       ...currentWallet,
