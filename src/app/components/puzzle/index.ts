@@ -163,7 +163,7 @@ export class MainHandler {
       fixedPattern: false,
     }).toSvgElements(this.document, this.pathGroup);
 
-    console.log(paths);
+    // console.log(paths);
     const viewWidth = Math.max(640, this.width * 1.5);
     const viewHeight = Math.max(480, this.height * 1.5);
     this.root.setAttribute("viewBox", `0 0 ${viewWidth} ${viewHeight}`);
