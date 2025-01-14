@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { WalletState } from "../types/wallet";
-import { WalletType } from "@near-wallet-selector/core";
 
 export function useWalletState(
   nearWallet: WalletState,
   tonWallet: WalletState,
-  selectedWallet: WalletType | null
+  selectedWallet: string | null
 ) {
   return useMemo(() => {
     if (!selectedWallet) {
