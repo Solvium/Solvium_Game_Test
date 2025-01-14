@@ -382,7 +382,7 @@ const Tasks = ({
                 {/* {icon} */}
               </div>
               <div className="flex-1">
-                <p className="text-white">Support TON chain</p>
+                <p className="text-white">Support on NEAR chain</p>
                 <p className="text-[12px]"></p>
               </div>
               <div>
