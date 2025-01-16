@@ -39,7 +39,7 @@ export default function DepositMultiplier() {
   const getCurrencyLabel = () => (walletType === "TON" ? "TON" : "NEAR");
   const getMinDeposit = () => (walletType === "TON" ? "0.11" : "0.1");
 
- 
+
   const { deposits: nearDeposits, loading: nearLoading } = useNearDeposits();
 
   console.log(nearDeposits, "nearDeposits");

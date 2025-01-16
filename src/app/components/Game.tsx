@@ -1,356 +1,205 @@
-"use client";
+import { useState, useEffect } from "react";
+import { Wheel } from "react-custom-roulette";
+import { useWallet } from "../contexts/WalletContext";
+import { utils } from "near-api-js";
+
+interface ClaimProps {
+  rewardAmount: string;
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
 
 export const Game = () => {
-  // const svgRef = useRef<SVGSVGElement | null>(null);
-  // const defRef = useRef<SVGSVGElement | null>(null);
-  // const insRef = useRef<SVGSVGElement | null>(null);
-  // const scriptRef = useRef<HTMLScriptElement | null>(null);
-  // const hudRef = useRef<SVGSVGElement | null>(null);
-  // const menuRef = useRef<SVGSVGElement | null>(null);
-  // const formRef = useRef<HTMLFormElement | null>(null);
-  // const certRef = useRef<SVGGElement | null>(null);
+  const [mustSpin, setMustSpin] = useState(false);
+  const [prizeNumber, setPrizeNumber] = useState(0);
+  const [winner, setWinner] = useState("");
+  const [hasPlayed, setHasPlayed] = useState(false);
+  const [isClaimed, setIsClaimed] = useState(false);
+  const [spinningSound] = useState(new Audio("../../../public/spin.mp3"));
+  const [isClaimLoading, setIsClaimLoading] = useState(false);
+
+  const {
+    state: { selector, accountId: nearAddress, isConnected: nearConnected },
+    connect: connectNear,
+    disconnect: disconnectNear,
+  } = useWallet();
+  const data = [
+    { option: "0.01", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "0.1", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "1", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "10", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "100", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "1000", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "10000", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "100000", style: { fontSize: 20, fontWeight: "bold" } },
+  ];
+
+  const handleClaimRewardImproved = async ({
+    rewardAmount,
+    onSuccess,
+    onError,
+  }: ClaimProps) => {
+    if (!nearAddress || !selector) {
+      const error = new Error("Wallet not connected");
+      onError?.(error);
+      return;
+    }
+
+    try {
+      const wallet = await selector.wallet();
+
+      const transaction = await wallet.signAndSendTransaction({
+        signerId: nearAddress,
+        receiverId: process.env.NEXT_PUBLIC_CONTRACT_ID!,
+        actions: [
+          {
+            type: "FunctionCall",
+            params: {
+              methodName: "claimWheel",
+              args: {
+                rewardAmount: rewardAmount,
+              },
+              gas: utils.format.parseNearAmount("0.03")!, // 30 TGas
+              deposit: "1",
+            },
+          },
+        ],
+      });
+
+      // Wait for transaction completion
+      await transaction;
+      onSuccess?.();
+      return transaction;
+    } catch (error) {
+      console.error("Failed to claim reward:", error);
+      onError?.(error as Error);
+      throw error;
+    }
+  };
+
+  const handleSpinClick = () => {
+    const newPrizeNumber = Math.floor(Math.random() * data.length);
+    setPrizeNumber(newPrizeNumber);
+    setMustSpin(true);
+    spinningSound.play();
+    setHasPlayed(true);
+  };
+
+  // Update handleClaim function
+  const handleClaim = async () => {
+    if (!winner) return;
+    setIsClaimLoading(true);
+
+    try {
+      await handleClaimRewardImproved({
+        rewardAmount: prizeNumber.toString(),
+        onSuccess: () => {
+          setIsClaimed(true);
+          setIsClaimLoading(false);
+        },
+        onError: (error) => {
+          console.error("Claim failed:", error);
+          setIsClaimLoading(false);
+          alert(`Failed to claim: ${error.message}`);
+        },
+      });
+    } catch (error) {
+      setIsClaimLoading(false);
+      console.error("Claim failed:", error);
+    }
+  };
 
   return (
     <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
-      {/* <svg
-        ref={svgRef}
-        xmlns="http://www.w3.org/2000/svg"
-        version="1.1"
-        viewBox="0 0 640 480"
-        width="100%"
-        height="100%"
-        id="root"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs ref={defRef}>
-          <g id="ps"></g>
-          <g id="ms"></g>
-          <image
-            id="img"
-            width="1"
-            height="1"
-            pointer-events="none"
-            href="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-          />
-          <filter id="shadow">
-            <feDropShadow dx="2" dy="2" stdDeviation="5" />
-          </filter>
-          <filter id="shadowlower">
-            <feDropShadow dx="1" dy="1" stdDeviation="2" />
-          </filter>
-          <radialGradient id="menufade" cx="0" cy="0" fr="1">
-            <stop offset="0%" stop-color="#FFF0" />
-            <stop offset="100%" stop-color="#FFF8" />
-          </radialGradient>
-          <filter
-            id="bevel"
-            filterUnits="objectBoundingBox"
-            x="-10%"
-            y="-10%"
-            width="150%"
-            height="150%"
-          >
-            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
-            <feSpecularLighting
-              in="blur"
-              surfaceScale="5"
-              specularConstant="0.5"
-              specularExponent="10"
-              result="specOut"
-              lighting-color="white"
-            >
-              <fePointLight x="-5000" y="-10000" z="20000" />
-            </feSpecularLighting>
-            <feComposite
-              in="specOut"
-              in2="SourceAlpha"
-              operator="in"
-              result="specOut2"
-            />
-            <feComposite
-              in="SourceGraphic"
-              in2="specOut2"
-              operator="arithmetic"
-              k1="0"
-              k2="1"
-              k3="1"
-              k4="0"
-              result="litPaint"
-            />
-          </filter>
-          <linearGradient
-            id="wood1"
-            x1="500%"
-            x2="0"
-            y1="0"
-            y2="0"
-            spreadMethod="repeat"
-          >
-            <stop offset="0%" stop-color="#eec48780" />
-            <stop offset="3%" stop-color="#f3cf9a80" />
-            <stop offset="6%" stop-color="#f8d8a280" />
-            <stop offset="6%" stop-color="#f3cf9a80" />
-            <stop offset="9%" stop-color="#f3cf9a80" />
-            <stop offset="12%" stop-color="#f1ca8880" />
-            <stop offset="15%" stop-color="#f3cf9a80" />
-            <stop offset="17%" stop-color="#f4d09e80" />
-            <stop offset="19%" stop-color="#f3cf9a80" />
-            <stop offset="21%" stop-color="#f3cf9a80" />
-            <stop offset="23%" stop-color="#faddb080" />
-            <stop offset="25%" stop-color="#faddb080" />
-            <stop offset="27%" stop-color="#f3cf9a80" />
-            <stop offset="29%" stop-color="#eec88a80" />
-            <stop offset="29%" stop-color="#f3cf9a80" />
-            <stop offset="32%" stop-color="#f3cf9a80" />
-            <stop offset="34%" stop-color="#f3cf9a80" />
-            <stop offset="37%" stop-color="#f3cf9a80" />
-            <stop offset="40%" stop-color="#faddb080" />
-            <stop offset="43%" stop-color="#faddb080" />
-            <stop offset="43%" stop-color="#f3cf9a80" />
-            <stop offset="44%" stop-color="#f3cf9a80" />
-            <stop offset="47%" stop-color="#f3cf9a80" />
-            <stop offset="49%" stop-color="#eec88a80" />
-            <stop offset="52%" stop-color="#f3cf9a80" />
-            <stop offset="54%" stop-color="#faddb080" />
-            <stop offset="56%" stop-color="#f4d09e80" />
-            <stop offset="59%" stop-color="#f3cf9a80" />
-            <stop offset="61%" stop-color="#f4d09e80" />
-            <stop offset="64%" stop-color="#faddb080" />
-            <stop offset="64%" stop-color="#f3cf9a80" />
-            <stop offset="66%" stop-color="#f4d09e80" />
-            <stop offset="69%" stop-color="#f3cf9a80" />
-            <stop offset="71%" stop-color="#f8d8a280" />
-            <stop offset="74%" stop-color="#f3cf9a80" />
-            <stop offset="76%" stop-color="#f3cf9a80" />
-            <stop offset="77%" stop-color="#f3cf9a80" />
-            <stop offset="80%" stop-color="#f3cf9a80" />
-            <stop offset="81%" stop-color="#faddb080" />
-            <stop offset="83%" stop-color="#f3cf9a80" />
-            <stop offset="83%" stop-color="#faddb080" />
-            <stop offset="85%" stop-color="#faddb080" />
-            <stop offset="87%" stop-color="#f3cf9a80" />
-            <stop offset="89%" stop-color="#faddb080" />
-            <stop offset="91%" stop-color="#faddb080" />
-            <stop offset="92%" stop-color="#f3cf9a80" />
-            <stop offset="96%" stop-color="#f8d8a280" />
-            <stop offset="97%" stop-color="#f3cf9a80" />
-            <stop offset="98%" stop-color="#f3cf9a80" />
-            <stop offset="100%" stop-color="#f3cf9a80" />
-          </linearGradient>
-          <linearGradient
-            id="wood2"
-            x1="0"
-            x2="30%"
-            y1="0"
-            y2="0"
-            spreadMethod="repeat"
-          >
-            <stop offset="0%" stop-color="#eec4874d" />
-            <stop offset="3%" stop-color="#f3cf9a4d" />
-            <stop offset="6%" stop-color="#f8d8a24d" />
-            <stop offset="6%" stop-color="#f3cf9a4d" />
-            <stop offset="9%" stop-color="#f3cf9a4d" />
-            <stop offset="12%" stop-color="#f1ca884d" />
-            <stop offset="15%" stop-color="#f3cf9a4d" />
-            <stop offset="17%" stop-color="#f4d09e4d" />
-            <stop offset="19%" stop-color="#f3cf9a4d" />
-            <stop offset="21%" stop-color="#f3cf9a4d" />
-            <stop offset="23%" stop-color="#faddb04d" />
-            <stop offset="25%" stop-color="#faddb04d" />
-            <stop offset="27%" stop-color="#f3cf9a4d" />
-            <stop offset="29%" stop-color="#eec88a4d" />
-            <stop offset="29%" stop-color="#f3cf9a4d" />
-            <stop offset="32%" stop-color="#f3cf9a4d" />
-            <stop offset="34%" stop-color="#f3cf9a4d" />
-            <stop offset="37%" stop-color="#f3cf9a4d" />
-            <stop offset="40%" stop-color="#faddb04d" />
-            <stop offset="43%" stop-color="#faddb04d" />
-            <stop offset="43%" stop-color="#f3cf9a4d" />
-            <stop offset="44%" stop-color="#f3cf9a4d" />
-            <stop offset="47%" stop-color="#f3cf9a4d" />
-            <stop offset="49%" stop-color="#eec88a4d" />
-            <stop offset="52%" stop-color="#f3cf9a4d" />
-            <stop offset="54%" stop-color="#faddb04d" />
-            <stop offset="56%" stop-color="#f4d09e4d" />
-            <stop offset="59%" stop-color="#f3cf9a4d" />
-            <stop offset="61%" stop-color="#f4d09e4d" />
-            <stop offset="64%" stop-color="#faddb04d" />
-            <stop offset="64%" stop-color="#f3cf9a4d" />
-            <stop offset="66%" stop-color="#f4d09e4d" />
-            <stop offset="69%" stop-color="#f3cf9a4d" />
-            <stop offset="71%" stop-color="#f8d8a24d" />
-            <stop offset="74%" stop-color="#f3cf9a4d" />
-            <stop offset="76%" stop-color="#f3cf9a4d" />
-            <stop offset="77%" stop-color="#f3cf9a4d" />
-            <stop offset="80%" stop-color="#f3cf9a4d" />
-            <stop offset="81%" stop-color="#faddb04d" />
-            <stop offset="83%" stop-color="#f3cf9a4d" />
-            <stop offset="83%" stop-color="#faddb04d" />
-            <stop offset="85%" stop-color="#faddb04d" />
-            <stop offset="87%" stop-color="#f3cf9a4d" />
-            <stop offset="89%" stop-color="#faddb04d" />
-            <stop offset="91%" stop-color="#faddb04d" />
-            <stop offset="92%" stop-color="#f3cf9a4d" />
-            <stop offset="96%" stop-color="#f8d8a24d" />
-            <stop offset="97%" stop-color="#f3cf9a4d" />
-            <stop offset="98%" stop-color="#f3cf9a4d" />
-            <stop offset="100%" stop-color="#f3cf9a4d" />
-          </linearGradient>
-          <linearGradient
-            id="wood3"
-            x1="2%"
-            x2="0"
-            y1="0"
-            y2="0"
-            spreadMethod="repeat"
-          >
-            <stop offset="0%" stop-color="#eec4874d" />
-            <stop offset="3%" stop-color="#f3cf9a4d" />
-            <stop offset="49%" stop-color="#eec88a4d" />
-            <stop offset="52%" stop-color="#f3cf9a4d" />
-            <stop offset="54%" stop-color="#faddb04d" />
-            <stop offset="56%" stop-color="#f4d09e4d" />
-            <stop offset="59%" stop-color="#f3cf9a33" />
-            <stop offset="61%" stop-color="#f4d09e4d" />
-            <stop offset="64%" stop-color="#faddb04d" />
-            <stop offset="64%" stop-color="#f3cf9a4d" />
-            <stop offset="66%" stop-color="#f4d09e4d" />
-            <stop offset="69%" stop-color="#f3cf9a4d" />
-            <stop offset="71%" stop-color="#f8d8a24d" />
-            <stop offset="74%" stop-color="#f3cf9a4d" />
-            <stop offset="76%" stop-color="#f3cf9a4d" />
-            <stop offset="77%" stop-color="#f3cf9a4d" />
-            <stop offset="80%" stop-color="#f3cf9a4d" />
-            <stop offset="81%" stop-color="#faddb04d" />
-            <stop offset="83%" stop-color="#f3cf9a4d" />
-            <stop offset="83%" stop-color="#faddb04d" />
-            <stop offset="85%" stop-color="#faddb04d" />
-            <stop offset="87%" stop-color="#f3cf9a4d" />
-            <stop offset="89%" stop-color="#faddb04d" />
-            <stop offset="91%" stop-color="#faddb04d" />
-            <stop offset="92%" stop-color="#f3cf9a4d" />
-            <stop offset="96%" stop-color="#f8d8a24d" />
-            <stop offset="97%" stop-color="#f3cf9a4d" />
-            <stop offset="98%" stop-color="#f3cf9a4d" />
-            <stop offset="100%" stop-color="#f3cf9a4d" />
-          </linearGradient>
-          <pattern
-            id="wood"
-            width="150"
-            height="1"
-            patternUnits="userSpaceOnUse"
-          >
-            <rect width="100%" height="100%" fill="#211600" />
-            <rect width="100%" height="100%" fill="url(#wood1)" />
-            <rect width="100%" height="100%" fill="url(#wood2)" />
-            <rect width="100%" height="100%" fill="url(#wood3)" />
-          </pattern>
-        </defs>
-        <g transform="translate(10, 30)">
-          <rect
-            x="-10"
-            y="-30"
-            width="100%"
-            height="100%"
-            fill="url(#wood)"
-            strokeWidth="0"
-          />
-          <g ref={insRef} id="ins"></g>
-        </g>
-        <g className="ui tl">
-          <g ref={hudRef} id="hud">
-            <rect
-              x="0"
-              y="0"
-              width="450"
-              height="30"
-              strokeWidth="0"
-              fill="url(#menufade)"
-              pointer-events="none"
-            />
-            <text id="time" x="10" y="20">
-              --:--
-            </text>
-            <text
-              onClick={() => {
-                new MainHandler();
-              }}
-              id="new-game"
-              className="button noscript-hidden"
-              x="100"
-              y="20"
-            >
-              New Game
-            </text>
-          </g>
-        </g>
-        <g className="ui bl">
-          <g ref={certRef} id="certificate">
-            <rect
-              x="10"
-              y="-250"
-              width="320"
-              height="240"
-              stroke="#0008"
-              strokeWidth="0.1"
-              fill="#FFF"
-              filter="url(#shadow)"
-            />
-            <rect
-              x="30"
-              y="-230"
-              width="280"
-              height="200"
-              stroke="#060"
-              fill="#0000"
-              strokeWidth="0.5"
-            />
-            <rect
-              x="33"
-              y="-227"
-              width="274"
-              height="194"
-              stroke="#060"
-              fill="#0000"
-              strokeWidth="0.5"
-            />
-            <text x="170" y="-190" text-anchor="middle" className="h1">
-              Congratulations!
-            </text>
-            <text x="170" y="-170" text-anchor="middle">
-              You have solved the puzzle in
-            </text>
-            <text x="170" y="-150" text-anchor="middle" id="time-used">
-              --:--
-            </text>
-            <text x="170" y="-120" text-anchor="middle">
-              Puzzle Size
-            </text>
-            <text x="170" y="-100" text-anchor="middle" id="puzzle-size">
-              x×y (n Pieces)
-            </text>
-            <text x="40" y="-60">
-              Since
-            </text>
-            <text x="90" y="-60" id="time-start">
-              &lt;date&gt;
-            </text>
-            <text x="40" y="-40">
-              Until
-            </text>
-            <text x="90" y="-40" id="time-end">
-              &lt;date&gt;
-            </text>
-          </g>
-        </g>
-        <g className="ui mc"></g>
+      <div className="relative animate-pulse">
+        <Wheel
+          mustStartSpinning={mustSpin}
+          prizeNumber={prizeNumber}
+          data={data}
+          onStopSpinning={() => {
+            setMustSpin(false);
+            setWinner(data[prizeNumber].option);
+          }}
+          spinDuration={0.2} // Faster spin
+          backgroundColors={[
+            "#EE4040",
+            "#F0CF50",
+            "#815CD1",
+            "#3DA5E0",
+            "#34A24F",
+            "#F9AA1F",
+            "#EC3F3F",
+            "#FF9000",
+          ]}
+          textColors={["#ffffff"]}
+          fontSize={24}
+          fontWeight={700}
+          innerRadius={20}
+          innerBorderColor="#ffffff"
+          innerBorderWidth={10}
+          outerBorderColor="#ffffff"
+          outerBorderWidth={5}
+          radiusLineColor="#ffffff"
+          radiusLineWidth={2}
+          perpendicularText={true}
+          textDistance={85}
+        />
+      </div>
 
-        <script ref={scriptRef} type="application/json" id="data" />
-         
-      </svg> */}
+      {!hasPlayed && (
+        <button
+          onClick={handleSpinClick}
+          disabled={mustSpin}
+          className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold
+                     hover:bg-blue-700 transition-all transform hover:scale-110
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          SPIN
+        </button>
+      )}
 
-      <p className=" "> COMING SOON!</p>
-      <div id="gam"></div>
+      {winner && !isClaimed && (
+        <div className="flex flex-col items-center gap-4 mt-6">
+          <p className="text-2xl font-bold animate-bounce">
+            You won: {winner}!
+          </p>
+          <button
+            onClick={handleClaim}
+            disabled={isClaimLoading}
+            className="px-6 py-3 bg-green-600 text-white rounded-lg font-bold
+                hover:bg-green-700 transition-all transform hover:scale-110
+                disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isClaimLoading ? "Claiming..." : "CLAIM REWARD"}
+          </button>
+        </div>
+      )}
+
+      {isClaimed && (
+        <div className="mt-6 text-xl text-green-500">
+          Reward claimed successfully!
+        </div>
+      )}
+
+      <style jsx>{`
+        .text-gradient {
+          background: linear-gradient(to right, #ff0000, #00ff00);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: rainbow 3s ease infinite;
+        }
+        @keyframes rainbow {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 25%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+      `}</style>
     </div>
   );
 };
