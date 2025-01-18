@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Wheel } from "react-custom-roulette";
 import { useWallet } from "../contexts/WalletContext";
-import { utils } from "near-api-js";
+import { providers, utils } from "near-api-js";
+import { CodeResult } from "near-api-js/lib/providers/provider";
 
 interface ClaimProps {
   rewardAmount: string;
@@ -34,6 +35,48 @@ export const Game = () => {
     { option: "100000", style: { fontSize: 20, fontWeight: "bold" } },
   ];
 
+  const checkTokenRegistration = useCallback(async () => {
+    const { network } = selector!.options;
+    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+    const { contract } = selector!.store.getState();
+
+    const res = await provider.query<CodeResult>({
+      request_type: "call_function",
+      account_id: "ft.predeployed.examples.testnet",
+      method_name: "storage_balance_of",
+      args_base64: Buffer.from(
+        JSON.stringify({ account_id: nearAddress })
+      ).toString("base64"),
+      finality: "optimistic",
+    });
+    console.log(JSON.parse(Buffer.from(res.result).toString()));
+    return JSON.parse(Buffer.from(res.result).toString());
+  }, [selector, nearAddress]);
+
+  const registerToken = async (tokenId: string) => {
+    if (!nearAddress || !selector) return;
+
+    const wallet = await selector.wallet();
+    return wallet.signAndSendTransaction({
+      signerId: nearAddress,
+      receiverId: tokenId,
+      actions: [
+        {
+          type: "FunctionCall",
+          params: {
+            methodName: "storage_deposit",
+            args: {
+              account_id: nearAddress,
+              registration_only: true,
+            },
+            gas: "30000000000000",
+            deposit: "1250000000000000000000", // 0.00125 NEAR
+          },
+        },
+      ],
+    });
+  };
+
   const handleClaimRewardImproved = async ({
     rewardAmount,
     onSuccess,
@@ -48,6 +91,12 @@ export const Game = () => {
     try {
       const wallet = await selector.wallet();
 
+      let isRegistered = await checkTokenRegistration();
+      console.log("isRegistered", isRegistered);
+
+      if (!isRegistered) {
+        await registerToken("ft.predeployed.examples.testnet");
+      }
       const transaction = await wallet.signAndSendTransaction({
         signerId: nearAddress,
         receiverId: process.env.NEXT_PUBLIC_CONTRACT_ID!,
@@ -58,14 +107,17 @@ export const Game = () => {
               methodName: "claimWheel",
               args: {
                 rewardAmount: rewardAmount,
+                tokenAddress: "ft.predeployed.examples.testnet"!,
               },
-              gas: utils.format.parseNearAmount("0.03")!, // 30 TGas
-              deposit: "1",
+              gas: "300000000000000", //   gas: utils.format.parseNearAmount("0.03")!, // 30 TGas
+              deposit: "0",
             },
           },
         ],
       });
 
+      localStorage.setItem("lastClaimed", Date.now().toString());
+      localStorage.setItem("transaction", JSON.stringify({ transaction }));
       // Wait for transaction completion
       await transaction;
       onSuccess?.();
@@ -92,7 +144,7 @@ export const Game = () => {
 
     try {
       await handleClaimRewardImproved({
-        rewardAmount: prizeNumber.toString(),
+        rewardAmount: data[prizeNumber].option,
         onSuccess: () => {
           setIsClaimed(true);
           setIsClaimLoading(false);
