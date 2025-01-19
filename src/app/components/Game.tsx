@@ -10,6 +10,30 @@ interface ClaimProps {
   onError?: (error: Error) => void;
 }
 
+const CountdownTimer = ({ targetTime }: { targetTime: number }) => {
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const remaining = targetTime - now;
+      setTimeLeft(Math.max(0, remaining));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [targetTime]);
+
+  const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+  return (
+    <div className="text-xl font-bold text-yellow-500">
+      Next spin available in: {hours}h {minutes}m {seconds}s
+    </div>
+  );
+};
+
 export const Game = () => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
@@ -19,6 +43,8 @@ export const Game = () => {
   const [spinningSound] = useState(new Audio("../../../public/spin.mp3"));
   const [isClaimLoading, setIsClaimLoading] = useState(false);
 
+  const [lastPlayed, setLastPlayed] = useState<number | null>(null);
+  const [cooldownTime, setCooldownTime] = useState<number>(0);
   const {
     state: { selector, accountId: nearAddress, isConnected: nearConnected },
     connect: connectNear,
@@ -77,6 +103,20 @@ export const Game = () => {
     });
   };
 
+  // Add useEffect to check last played time
+  useEffect(() => {
+    const lastPlayedTime = localStorage.getItem("lastPlayedTime");
+    if (lastPlayedTime) {
+      setLastPlayed(Number(lastPlayedTime));
+      const now = Date.now();
+      const cooldownEnd = Number(lastPlayedTime) + 24 * 60 * 60 * 1000;
+      if (now < cooldownEnd) {
+        setHasPlayed(true);
+        setCooldownTime(cooldownEnd);
+      }
+    }
+  }, []);
+
   const handleClaimRewardImproved = async ({
     rewardAmount,
     onSuccess,
@@ -97,6 +137,7 @@ export const Game = () => {
       if (!isRegistered) {
         await registerToken("ft.predeployed.examples.testnet");
       }
+
       const transaction = await wallet.signAndSendTransaction({
         signerId: nearAddress,
         receiverId: process.env.NEXT_PUBLIC_CONTRACT_ID!,
@@ -110,7 +151,7 @@ export const Game = () => {
                 tokenAddress: "ft.predeployed.examples.testnet"!,
               },
               gas: "300000000000000", //   gas: utils.format.parseNearAmount("0.03")!, // 30 TGas
-              deposit: "0",
+              deposit: "0.000000001",
             },
           },
         ],
@@ -130,11 +171,18 @@ export const Game = () => {
   };
 
   const handleSpinClick = () => {
+    const now = Date.now();
+    if (lastPlayed && now - lastPlayed < 24 * 60 * 60 * 1000) {
+      return;
+    }
     const newPrizeNumber = Math.floor(Math.random() * data.length);
     setPrizeNumber(newPrizeNumber);
     setMustSpin(true);
     spinningSound.play();
     setHasPlayed(true);
+    setLastPlayed(now);
+    setCooldownTime(now + 24 * 60 * 60 * 1000);
+    localStorage.setItem("lastPlayedTime", now.toString());
   };
 
   // Update handleClaim function
@@ -161,8 +209,17 @@ export const Game = () => {
     }
   };
 
+  // Update JSX to show timer
+
   return (
     <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
+      <h1 className="text-4xl font-bold text-gradient mt-3 mb-2">
+        Wheel of Fortune
+      </h1>
+      <p className="text-lg mt-4 mb-4">
+        Click the SPIN button to spin the wheel and win some gTeam tokens!
+      </p>
+
       <div className="relative animate-pulse">
         <Wheel
           mustStartSpinning={mustSpin}
@@ -172,7 +229,7 @@ export const Game = () => {
             setMustSpin(false);
             setWinner(data[prizeNumber].option);
           }}
-          spinDuration={0.2} // Faster spin
+          spinDuration={0.5} // Faster spin
           backgroundColors={[
             "#EE4040",
             "#F0CF50",
@@ -198,6 +255,9 @@ export const Game = () => {
         />
       </div>
 
+      {hasPlayed && cooldownTime > Date.now() && (
+        <CountdownTimer targetTime={cooldownTime} />
+      )}
       {!hasPlayed && (
         <button
           onClick={handleSpinClick}
@@ -206,7 +266,7 @@ export const Game = () => {
                      hover:bg-blue-700 transition-all transform hover:scale-110
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          SPIN
+          SPIN THE WHEEL
         </button>
       )}
 
