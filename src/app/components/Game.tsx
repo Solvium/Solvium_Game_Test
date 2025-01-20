@@ -45,8 +45,8 @@ export const Game = () => {
 
       background.adjustImagesToPuzzleHeight();
       background.autogenerate({
-        horizontalPiecesCount: 6,
-        verticalPiecesCount: 5,
+        horizontalPiecesCount: 3,
+        verticalPiecesCount: 3,
       });
 
       background.attachSolvedValidator();
@@ -59,7 +59,7 @@ export const Game = () => {
         }, 1500);
       });
 
-      background.shuffle(0.7);
+      background.shuffle(0.3);
       background.draw();
 
       background.onConnect(
@@ -92,21 +92,21 @@ export const Game = () => {
         audio.play();
       });
 
-      window.addEventListener("resize", () => {
-        console.log("resize");
-        var container = document.getElementById("canvas")!;
-        background.resize(container.offsetWidth, container.scrollHeight);
-        background.scale(container.offsetWidth / initialWidth);
-        background.redraw();
-      });
+      // window.addEventListener("resize", () => {
+      //   console.log("resize");
+      //   var container = document.getElementById("canvas")!;
+      //   background.resize(container.offsetWidth, container.scrollHeight);
+      //   background.scale(container.offsetWidth / initialWidth);
+      //   background.redraw();
+      // });
 
-      window.addEventListener("load", () => {
-        console.log("res");
-        var container = document.getElementById("canvas")!;
-        background.resize(container.offsetWidth, container.scrollHeight);
-        background.scale(container.offsetWidth / initialWidth);
-        background.redraw();
-      });
+      // window.addEventListener("load", () => {
+      //   console.log("res");
+      //   var container = document.getElementById("canvas")!;
+      //   background.resize(container.offsetWidth, container.scrollHeight);
+      //   background.scale(container.offsetWidth / initialWidth);
+      //   background.redraw();
+      // });
     };
 
     setPuzzle();
@@ -451,7 +451,9 @@ export const Game = () => {
       </svg> */}
 
       <div className="border-2 border-red-600" id="canvas"></div>
-      <div id="validated-canvas-overlay"></div>
+      <div className="bg-red-500" id="validated-canvas-overlay">
+        <p className="">hurray you won</p>
+      </div>
       <img className="hidden" src="/img.jpg"></img>
 
       {/* <div id="gam"></div> */}
