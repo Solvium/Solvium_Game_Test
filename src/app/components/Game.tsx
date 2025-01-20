@@ -24,8 +24,8 @@ export const Game = () => {
       const dimensions = await getImageDimensions(dali.src);
       console.log(dimensions);
 
-      const initialWidth = window.innerWidth;
-      const initialHeight = window.innerHeight;
+      const initialWidth = window.innerWidth - 50;
+      const initialHeight = window.innerHeight / 2;
 
       const background = new headbreaker.Canvas("canvas", {
         width: initialWidth,
@@ -49,6 +49,7 @@ export const Game = () => {
         verticalPiecesCount: 3,
       });
 
+      background.shuffle(0.3);
       background.attachSolvedValidator();
       background.onValid(() => {
         console.log("valid 567898765");
@@ -59,7 +60,6 @@ export const Game = () => {
         }, 1500);
       });
 
-      background.shuffle(0.3);
       background.draw();
 
       background.onConnect(
