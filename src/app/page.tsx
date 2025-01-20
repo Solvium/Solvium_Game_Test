@@ -9,6 +9,7 @@ import axios from "axios";
 import WebApp from "@twa-dev/sdk";
 import UserProfile from "./components/Profile";
 import ContestBoard from "./components/Contest";
+import { WheelOfFortune } from "./components/Wheel";
 
 function Home() {
   const [selectedTab, setSelectedTab]: any = useState();
@@ -44,6 +45,9 @@ function Home() {
       case "Contest":
         setCurPage(<ContestBoard user={user} />);
         break;
+      case "Wheel":
+        setCurPage(<WheelOfFortune />);
+        break;
       default:
         setCurPage(
           <UserProfile
@@ -60,15 +64,15 @@ function Home() {
 
   const getUser = async () => {
     try {
-      // const res = await axios(
-      //   "/api/allroute?type=getUser&username=" +
-      //     // tg?.initDataUnsafe.user?.username
-      //     "Ajemark"
-      // );
       const res = await axios(
         "/api/allroute?type=getUser&username=" +
-          tg?.initDataUnsafe.user?.username
+          // tg?.initDataUnsafe.user?.username
+          "Ajemark"
       );
+      // const res = await axios(
+      //   "/api/allroute?type=getUser&username=" +
+      //     tg?.initDataUnsafe.user?.username
+      // );
 
       if (res.status == 200) {
         setUser(res.data);
@@ -215,6 +219,15 @@ function Home() {
               >
                 <MdOutlineLeaderboard />
                 <span>Leaderboard</span>
+              </div>
+              <div
+                onClick={() => setSelectedTab("Wheel")}
+                className={`w-full cursor-pointer justify-center items-center flex flex-col ${
+                  selectedTab == "Wheel" ? "text-white" : "text-gray-400"
+                }`}
+              >
+                <IoGameControllerOutline />
+                <span>Wheel</span>
               </div>
               <div
                 onClick={() => setSelectedTab("Game")}
