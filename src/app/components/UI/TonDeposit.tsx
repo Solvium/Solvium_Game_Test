@@ -4,13 +4,14 @@ import { fromNano } from "@ton/core";
 import { Wallet, Star } from "lucide-react";
 import { useTonConnect } from "@/app/hooks/useTonConnect";
 import { useMultiplierContract } from "@/app/hooks/useDepositContract";
-import { formatDate } from "@/app/utils/fotmat";
 import { useWalletStore } from "@/app/hooks/useWalletStore";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { utils, providers } from "near-api-js";
 import { useWallet } from "@/app/contexts/WalletContext";
 import { useNearDeposits } from "@/app/contracts/near_deposits";
-
+import BarLoader from "react-spinners/BarLoader";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import timestampLib from "unix-timestamp";
 // Update interfaces at top of file
 interface Deposit {
   id: number;
@@ -32,18 +33,29 @@ export default function DepositMultiplier() {
   const [amount, setAmount] = useState("");
   const [activeTab, setActiveTab] = useState("deposit");
   const [walletType, setWalletType] = useState<"TON" | "NEAR">("TON");
-
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isDepositing, setIsDepositing] = useState<boolean>(false);
   const tonAddress = useTonAddress();
   const { deposits, handleDeposit } = useMultiplierContract(tonAddress);
 
   const getCurrencyLabel = () => (walletType === "TON" ? "TON" : "NEAR");
   const getMinDeposit = () => (walletType === "TON" ? "0.11" : "0.1");
 
- 
-  const { deposits: nearDeposits, loading: nearLoading } = useNearDeposits();
+  const {
+    deposits: nearDeposits,
+    loading: nearLoading,
+    refetch,
+  } = useNearDeposits();
+
+  //   useEffect(() => {
+  //     const pollInterval = setInterval(() => {
+  //       refetch();
+  //     }, 3000);
+
+  //     return () => clearInterval(pollInterval);
+  //   }, [refetch]);
 
   console.log(nearDeposits, "nearDeposits");
-
 
   const getDeposits = (): Deposit[] => {
     if (walletType === "TON") {
@@ -90,6 +102,7 @@ export default function DepositMultiplier() {
   };
 
   const handleNearDeposit = async (amount: string) => {
+    setIsDepositing(true);
     if (!nearAddress || !selector) return;
 
     try {
@@ -111,41 +124,27 @@ export default function DepositMultiplier() {
           },
         ],
       });
+
+      toast.success("Deposit successful");
+      // Trigger refresh after deposit
+      setRefreshTrigger((prev) => prev + 1);
+      setAmount("");
+
+      // Immediate refetch
+      await refetch();
     } catch (error) {
       console.error("Failed to deposit:", error);
       throw error;
+    } finally {
+      setIsDepositing(false);
     }
   };
-  //   useEffect(() => {
-  //     if (walletType && selectedWallet !== walletType) {
-  //       setSelectedWallet(walletType);
-  //     }
-  //   }, [walletType]);
 
-  //   // When wallet type changes, update selectedWallet
-  //   useEffect(() => {
-  //     if (walletType) {
-  //       setSelectedWallet(walletType);
-  //     }
-  //   }, [walletType, setSelectedWallet]);
-
-  //   console.log(isConnected, "isConnected");
-
-  //   useEffect(() => {
-  //     if (selectedWallet && !isConnected) {
-  //       handleWalletConnect();
-  //     }
-  //   }, [selectedWallet, isConnected]);
-
-  //   const handleStart = () => {
-  //     // Only show modal if no wallet is selected or not connected
-  //     if (!selectedWallet || !isConnected) {
-  //       setIsOpen(true);
-  //       return;
-  //     }
-  //     // If already connected, show deposit interface
-  //     // setIsOpen(true);
-  //   };
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      refetch();
+    }
+  }, [refreshTrigger, refetch]);
 
   const handleSmartDeposit = async (amount: string) => {
     if (walletType === "TON") {
@@ -175,43 +174,50 @@ export default function DepositMultiplier() {
     multiplier: number;
     active: boolean;
   }
-  //   const handleNearDeposit = async (amount: string) => {
-  //     if (!nearAddress) return;
 
-  //     try {
-  //       const { selector } = await useNearWallet();
-  //       const wallet = await selector?.wallet();
+  const formatDate = (timestamp: number | string): string => {
+    try {
+      // Convert milliseconds to seconds for timestampLib
+      const seconds = Number(timestamp) / 1000;
 
-  //       // Convert amount to yoctoNEAR (1 NEAR = 10^24 yoctoNEAR)
-  //       const deposit = utils.format.parseNearAmount(amount);
+      // Use timestampLib to create date
+      const date = timestampLib.toDate(seconds);
 
-  //       const result = await wallet?.signAndSendTransaction({
-  //         signerId: nearAddress,
-  //         receiverId: DEFAULT_CONFIG.contractId,
-  //         actions: [
-  //           {
-  //             type: "FunctionCall",
-  //             params: {
-  //               methodName: "depositToGame",
-  //               args: {},
-  //               gas: "30000000000000",
-  //               deposit: deposit?.toString() || "0",
-  //             },
-  //           },
-  //         ],
-  //       });
+      return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "UTC",
+        timeZoneName: "short",
+      });
+    } catch (error) {
+      console.error("Date formatting error:", error);
+      return "Invalid Date";
+    }
+  };
 
-  //       // Update the deposits list after successful transaction
-  //       if (result) {
-  //         // Optional: Add success notification
-  //         console.log("Deposit successful:", result);
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to deposit:", error);
-  //       throw error;
-  //     }
+  //   const formatDate = (timestamp: number | string): string => {
+  //     const date = new Date(Number(timestamp) * 1000); // Convert to milliseconds
+  //     return date.toLocaleString("en-US", {
+  //       year: "numeric",
+  //       month: "short",
+  //       day: "numeric",
+  //       hour: "2-digit",
+  //       minute: "2-digit",
+  //       timeZoneName: "short",
+  //     });
   //   };
 
+  const isValidAmount = (amount: string): boolean => {
+    const value = parseFloat(amount);
+    if (walletType === "NEAR") {
+      return value >= 0.5;
+    }
+    return value >= 0.11; // TON minimum
+  };
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <button
@@ -281,7 +287,6 @@ export default function DepositMultiplier() {
                     My Deposits
                   </a>
                 </div>
-
                 {activeTab === "deposit" ? (
                   <div className="card bg-base-800 border-blue-80 border-[2px]">
                     <div className="card-body">
@@ -320,11 +325,23 @@ export default function DepositMultiplier() {
                           </div>
                         </div>
                         <button
+                          disabled={
+                            isDepositing || !amount || !isValidAmount(amount)
+                          }
                           onClick={() => handleSmartDeposit(amount)}
                           className="btn btn-secondary w-full"
                           // disabled={!amount || parseFloat(amount) < 0.11}
                         >
-                          Deposit {getCurrencyLabel()}
+                          {amount && !isValidAmount(amount) ? (
+                            `Minimum ${
+                              walletType === "NEAR" ? "0.5 NEAR" : "0.11 TON"
+                            } required`
+                          ) : (
+                            <>
+                              Deposit {getCurrencyLabel()}
+                              {isDepositing && <BarLoader color="#fff" />}
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
@@ -406,6 +423,19 @@ export default function DepositMultiplier() {
                     </div>
                   </div>
                 )}
+                <ToastContainer
+                  position="bottom-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick={false}
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+                  transition={Bounce}
+                />{" "}
               </div>
             )}
           </div>
