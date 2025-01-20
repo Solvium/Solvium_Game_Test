@@ -1,8 +1,14 @@
+"use client";
 import { useState, useEffect, useCallback } from "react";
-import { Wheel } from "react-custom-roulette";
 import { useWallet } from "../contexts/WalletContext";
 import { providers, utils } from "near-api-js";
 import { CodeResult } from "near-api-js/lib/providers/provider";
+
+import dynamic from "next/dynamic";
+const Wheel = dynamic(
+  () => import("react-custom-roulette").then((mod) => mod.Wheel),
+  { ssr: false }
+);
 
 interface ClaimProps {
   rewardAmount: string;
@@ -50,6 +56,7 @@ export const WheelOfFortune = () => {
     connect: connectNear,
     disconnect: disconnectNear,
   } = useWallet();
+
   const data = [
     { option: "0.01", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "0.1", style: { fontSize: 20, fontWeight: "bold" } },
@@ -260,7 +267,7 @@ export const WheelOfFortune = () => {
       )}
       {!hasPlayed && (
         <button
-          onClick={handleSpinClick}
+          onClick={() => handleSpinClick()}
           disabled={mustSpin}
           className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold
                      hover:bg-blue-700 transition-all transform hover:scale-110
@@ -276,7 +283,7 @@ export const WheelOfFortune = () => {
             You won: {winner}!
           </p>
           <button
-            onClick={handleClaim}
+            onClick={() => handleClaim()}
             disabled={isClaimLoading}
             className="px-6 py-3 bg-green-600 text-white rounded-lg font-bold
                 hover:bg-green-700 transition-all transform hover:scale-110

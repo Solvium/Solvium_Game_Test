@@ -1,20 +1,120 @@
 "use client";
-import { useRef } from "react";
-import { MainHandler } from "./puzzle";
+import { useEffect } from "react";
+import { getImageDimensions } from "./puzzle/utils";
+
+const headbreaker = require("headbreaker");
 
 export const Game = () => {
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const defRef = useRef<SVGSVGElement | null>(null);
-  const insRef = useRef<SVGSVGElement | null>(null);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
-  const hudRef = useRef<SVGSVGElement | null>(null);
-  const menuRef = useRef<SVGSVGElement | null>(null);
-  const formRef = useRef<HTMLFormElement | null>(null);
-  const certRef = useRef<SVGGElement | null>(null);
+  // const svgRef = useRef<SVGSVGElement | null>(null);
+  // const defRef = useRef<SVGSVGElement | null>(null);
+  // const insRef = useRef<SVGSVGElement | null>(null);
+  // const scriptRef = useRef<HTMLScriptElement | null>(null);
+  // const hudRef = useRef<SVGSVGElement | null>(null);
+  // const menuRef = useRef<SVGSVGElement | null>(null);
+  // const formRef = useRef<HTMLFormElement | null>(null);
+  // const certRef = useRef<SVGGElement | null>(null);
+
+  useEffect(() => {
+    const setPuzzle = async () => {
+      let audio = new Audio("click.mp3");
+      let dali = new Image();
+      dali.src = "/img.jpg";
+      console.log(dali);
+
+      const dimensions = await getImageDimensions(dali.src);
+      console.log(dimensions);
+
+      const initialWidth = window.innerWidth;
+      const initialHeight = window.innerHeight;
+
+      const background = new headbreaker.Canvas("canvas", {
+        width: initialWidth,
+        height: initialHeight,
+        pieceSize: 80,
+        proximity: 20,
+        borderFill: 10,
+        strokeWidth: 2,
+        lineSoftness: 0.12,
+        preventOffstageDrag: true,
+        // fixed: true,
+        painter: new headbreaker.painters.Konva(),
+        image: dali,
+        // optional, but it must be set in order to activate image scaling
+        maxPiecesCount: { x: 3, y: 7 },
+      });
+
+      background.adjustImagesToPuzzleHeight();
+      background.autogenerate({
+        horizontalPiecesCount: 6,
+        verticalPiecesCount: 5,
+      });
+
+      background.attachSolvedValidator();
+      background.onValid(() => {
+        console.log("valid 567898765");
+        setTimeout(() => {
+          document
+            .getElementById("validated-canvas-overlay")!
+            .setAttribute("class", "active");
+        }, 1500);
+      });
+
+      background.shuffle(0.7);
+      background.draw();
+
+      background.onConnect(
+        (
+          _piece: any,
+          figure: { shape: { stroke: (arg0: string) => void } },
+          _target: any,
+          targetFigure: { shape: { stroke: (arg0: string) => void } }
+        ) => {
+          // play sound
+          audio.play();
+
+          // paint borders on click
+          // of conecting and conected figures
+          figure.shape.stroke("yellow");
+          targetFigure.shape.stroke("yellow");
+          background.redraw();
+
+          setTimeout(() => {
+            // restore border colors
+            // later
+            figure.shape.stroke("black");
+            targetFigure.shape.stroke("black");
+            background.redraw();
+          }, 200);
+        }
+      );
+
+      background.onDisconnect((it: any) => {
+        audio.play();
+      });
+
+      window.addEventListener("resize", () => {
+        console.log("resize");
+        var container = document.getElementById("canvas")!;
+        background.resize(container.offsetWidth, container.scrollHeight);
+        background.scale(container.offsetWidth / initialWidth);
+        background.redraw();
+      });
+
+      window.addEventListener("load", () => {
+        console.log("res");
+        var container = document.getElementById("canvas")!;
+        background.resize(container.offsetWidth, container.scrollHeight);
+        background.scale(container.offsetWidth / initialWidth);
+        background.redraw();
+      });
+    };
+
+    setPuzzle();
+  }, []);
 
   return (
     <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
-      <svg
+      {/* <svg
         ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
@@ -348,10 +448,13 @@ export const Game = () => {
         <g className="ui mc"></g>
 
         <script ref={scriptRef} type="application/json" id="data" />
-      </svg>
+      </svg> */}
 
-      {/* <p className=" "> COMING SOON!</p> */}
-      <div id="gam"></div>
+      <div className="border-2 border-red-600" id="canvas"></div>
+      <div id="validated-canvas-overlay"></div>
+      <img className="hidden" src="/img.jpg"></img>
+
+      {/* <div id="gam"></div> */}
     </div>
   );
 };
