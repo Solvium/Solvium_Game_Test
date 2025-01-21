@@ -34,7 +34,7 @@ const CountdownTimer = ({ targetTime }: { targetTime: number }) => {
   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
   return (
-    <div className="text-xl font-bold text-yellow-500">
+    <div className="text-xl font-bold ">
       Next spin available in: {hours}h {minutes}m {seconds}s
     </div>
   );
@@ -46,7 +46,7 @@ export const WheelOfFortune = () => {
   const [winner, setWinner] = useState("");
   const [hasPlayed, setHasPlayed] = useState(false);
   const [isClaimed, setIsClaimed] = useState(false);
-  const [spinningSound] = useState(new Audio("../../../public/spin.mp3"));
+  const [spinningSound, setSpinningSound] = useState(new Audio());
   const [isClaimLoading, setIsClaimLoading] = useState(false);
 
   const [lastPlayed, setLastPlayed] = useState<number | null>(null);
@@ -112,6 +112,7 @@ export const WheelOfFortune = () => {
 
   // Add useEffect to check last played time
   useEffect(() => {
+    setSpinningSound(new Audio(location.origin + "/spin.mp3"));
     const lastPlayedTime = localStorage.getItem("lastPlayedTime");
     if (lastPlayedTime) {
       setLastPlayed(Number(lastPlayedTime));
@@ -220,9 +221,7 @@ export const WheelOfFortune = () => {
 
   return (
     <div className="flex items-center flex-col h-[85vh] justify-center bg-black w-full text-white">
-      <h1 className="text-4xl font-bold text-gradient mt-3 mb-2">
-        Wheel of Fortune
-      </h1>
+      <h1 className="text-4xl font-bold mt-3 mb-2">Wheel of Fortune</h1>
       <p className="text-lg mt-4 mb-4">
         Click the SPIN button to spin the wheel and win some gTeam tokens!
       </p>

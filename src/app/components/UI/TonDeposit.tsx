@@ -32,7 +32,7 @@ export default function DepositMultiplier() {
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [activeTab, setActiveTab] = useState("deposit");
-  const [walletType, setWalletType] = useState<"TON" | "NEAR">("TON");
+  const [walletType, setWalletType] = useState<"TON" | "NEAR">("NEAR");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isDepositing, setIsDepositing] = useState<boolean>(false);
   const tonAddress = useTonAddress();
@@ -240,17 +240,17 @@ export default function DepositMultiplier() {
             </div>
 
             <div className="tabs tabs-boxed mb-4">
-              <a
+              {/* <a
                 className={`tab ${walletType === "TON" ? "tab-active" : ""}`}
                 onClick={() => setWalletType("TON")}
               >
-                TON Wallet
-              </a>
+                TON
+              </a> */}
               <a
                 className={`tab ${walletType === "NEAR" ? "tab-active" : ""}`}
                 onClick={() => setWalletType("NEAR")}
               >
-                NEAR Wallet
+                NEAR
               </a>
             </div>
 
@@ -261,10 +261,10 @@ export default function DepositMultiplier() {
                 </h2>
                 <button
                   onClick={handleWalletConnect}
-                  className="btn btn-primary"
+                  className="btn btn-primary flex"
                 >
-                  <Wallet className="mr-2" size={20} />
-                  Connect {walletType} Wallet
+                  <Wallet className="mr-2 hidden md:flex" size={20} />
+                  CONNECT
                 </button>
               </div>
             ) : (
@@ -305,7 +305,7 @@ export default function DepositMultiplier() {
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             placeholder={`Enter amount (min. ${getMinDeposit()} ${getCurrencyLabel()})`}
-                            className="input text-black input-bordered w-full"
+                            className="input text-black bg-slate-300 input-bordered w-full"
                           />
                         </div>
                         <div className="card bg-base-500 border-blue-80 border-[2px]">

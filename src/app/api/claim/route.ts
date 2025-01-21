@@ -124,6 +124,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (type.includes("game claim") && user) {
+      console.log(type);
+      const np = type.split("--")[1];
+      const res = await addLeaderboard(user, np);
+      return NextResponse.json(user, { status: 200 });
+    }
+
     return NextResponse.json("user");
   } catch (error) {
     console.error("Error:", error);
@@ -197,7 +204,7 @@ const addLeaderboard = async (user: any, np: number) => {
       return { weeklyScore, updatedUser };
     });
 
-    NextResponse.json(updatedScore, { status: 200 });
+    return updatedScore;
   } catch (error) {
     console.error("Error adding weekly points:", error);
     NextResponse.json(

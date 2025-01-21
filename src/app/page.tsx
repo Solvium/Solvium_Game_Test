@@ -40,7 +40,13 @@ function Home() {
         setCurPage(<LeaderBoard leader={leader} user={user} />);
         break;
       case "Game":
-        setCurPage(<Game />);
+        setCurPage(
+          <Game
+            userDetails={user}
+            getAllInfo={getAllInfo}
+            claimPoints={claimPoints}
+          />
+        );
         break;
       case "Contest":
         setCurPage(<ContestBoard user={user} />);
@@ -51,10 +57,10 @@ function Home() {
       default:
         setCurPage(
           <UserProfile
-            userDetails={user}
             tasks={tasks}
-            getAllInfo={getAllInfo}
             userTasks={userTasks}
+            userDetails={user}
+            getAllInfo={getAllInfo}
             claimPoints={claimPoints}
           />
         );
@@ -131,8 +137,6 @@ function Home() {
     }
   };
 
-  //console.log(userTasks);
-
   useEffect(() => {
     console.log(tasks);
     if (tasks && !tasks.error) {
@@ -156,6 +160,7 @@ function Home() {
     type: string,
     func: (param: boolean) => object
   ) => {
+    console.log(type);
     setLoading(true);
     const res = await (
       await fetch("/api/claim", {
@@ -164,11 +169,13 @@ function Home() {
         },
         method: "POST",
         body: JSON.stringify({
-          username: tg?.initDataUnsafe.user?.username,
+          username: "Ajemark", // tg?.initDataUnsafe.user?.username,
           type,
         }),
       })
     ).json();
+
+    console.log(res);
 
     if (res.username != null) {
       setLoading(false);
@@ -192,7 +199,7 @@ function Home() {
           <div className="flex-1 h-full">{curPage}</div>
 
           <div className=" flex bg-black h-16 z-12 ">
-            <div className="flex justify-around w-full h-16  bg-black fixed bottom-0 ">
+            <div className="flex justify-around w-full h-16 text-[13px] bg-black fixed bottom-0 ">
               <div
                 onClick={() => setSelectedTab("Home")}
                 className={`w-full cursor-pointer justify-center items-center flex flex-col ${
@@ -218,7 +225,7 @@ function Home() {
                 }`}
               >
                 <MdOutlineLeaderboard />
-                <span>Leaderboard</span>
+                <span>Ranks</span>
               </div>
               <div
                 onClick={() => setSelectedTab("Wheel")}

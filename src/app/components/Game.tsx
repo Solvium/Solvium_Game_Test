@@ -1,460 +1,172 @@
 "use client";
-import { useEffect } from "react";
-import { getImageDimensions } from "./puzzle/utils";
+import { useEffect, useState } from "react";
+// import { getImageDimensions } from "./puzzle/utils";
+import { Button } from "@/components/ui/button";
 
 const headbreaker = require("headbreaker");
 
-export const Game = () => {
-  // const svgRef = useRef<SVGSVGElement | null>(null);
-  // const defRef = useRef<SVGSVGElement | null>(null);
-  // const insRef = useRef<SVGSVGElement | null>(null);
-  // const scriptRef = useRef<HTMLScriptElement | null>(null);
-  // const hudRef = useRef<SVGSVGElement | null>(null);
-  // const menuRef = useRef<SVGSVGElement | null>(null);
-  // const formRef = useRef<HTMLFormElement | null>(null);
-  // const certRef = useRef<SVGGElement | null>(null);
+const images = [
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471727/Images%20for%20Solvium/IMG_20250113_110624_783_uqsrgc.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471725/Images%20for%20Solvium/IMG_20250113_110624_844_tmjcyi.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471725/Images%20for%20Solvium/IMG_20250113_110625_209_cabb7l.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110624_607_bsjayw.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110606_244_tl6zqo.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110624_800_g7yp65.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110625_197_z9jpvz.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110625_222_qtuire.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110624_957_fcoxfh.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110624_843_ruqp67.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110625_237_haoopl.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110617_397_fv5byq.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110617_246_l3gxup.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110616_506_lkwstk.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110616_570_cblkkz.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110617_392_sdp0vc.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110616_785_af43y2.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110617_077_nuzgzl.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110617_171_yixvza.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110616_457_gcvsuk.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110606_045_q7krwn.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110617_228_r37nkh.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110606_345_ym5ubh.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110606_541_u1d4ix.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110606_619_rwyvd7.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110605_785_sghbm4.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20250113_110606_627_hqi6lr.jpg",
+  "https://res.cloudinary.com/dwruvre6o/image/upload/v1737471724/Images%20for%20Solvium/IMG_20241228_015311_181_sc9vbn.jpg",
+];
+
+function ImgIndex(min: number, max: number) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+export const Game = ({ claimPoints }: any) => {
+  const [solved, setSolved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [stage, setStage] = useState(1);
+  const [curImg, setCurImg] = useState("");
 
   useEffect(() => {
-    const setPuzzle = async () => {
-      let audio = new Audio("click.mp3");
-      let dali = new Image();
-      dali.src = "/img.jpg";
-      console.log(dali);
-
-      const dimensions = await getImageDimensions(dali.src);
-      console.log(dimensions);
-
-      const initialWidth = window.innerWidth - 50;
-      const initialHeight = window.innerHeight / 2;
-
-      const background = new headbreaker.Canvas("canvas", {
-        width: initialWidth,
-        height: initialHeight,
-        pieceSize: 80,
-        proximity: 20,
-        borderFill: 10,
-        strokeWidth: 2,
-        lineSoftness: 0.12,
-        preventOffstageDrag: true,
-        // fixed: true,
-        painter: new headbreaker.painters.Konva(),
-        image: dali,
-        // optional, but it must be set in order to activate image scaling
-        maxPiecesCount: { x: 3, y: 7 },
-      });
-
-      background.adjustImagesToPuzzleHeight();
-      background.autogenerate({
-        horizontalPiecesCount: 3,
-        verticalPiecesCount: 3,
-      });
-
-      background.shuffle(0.3);
-      background.attachSolvedValidator();
-      background.onValid(() => {
-        console.log("valid 567898765");
-        setTimeout(() => {
-          document
-            .getElementById("validated-canvas-overlay")!
-            .setAttribute("class", "active");
-        }, 1500);
-      });
-
-      background.draw();
-
-      background.onConnect(
-        (
-          _piece: any,
-          figure: { shape: { stroke: (arg0: string) => void } },
-          _target: any,
-          targetFigure: { shape: { stroke: (arg0: string) => void } }
-        ) => {
-          // play sound
-          audio.play();
-
-          // paint borders on click
-          // of conecting and conected figures
-          figure.shape.stroke("yellow");
-          targetFigure.shape.stroke("yellow");
-          background.redraw();
-
-          setTimeout(() => {
-            // restore border colors
-            // later
-            figure.shape.stroke("black");
-            targetFigure.shape.stroke("black");
-            background.redraw();
-          }, 200);
-        }
-      );
-
-      background.onDisconnect((it: any) => {
-        audio.play();
-      });
-
-      // window.addEventListener("resize", () => {
-      //   console.log("resize");
-      //   var container = document.getElementById("canvas")!;
-      //   background.resize(container.offsetWidth, container.scrollHeight);
-      //   background.scale(container.offsetWidth / initialWidth);
-      //   background.redraw();
-      // });
-
-      // window.addEventListener("load", () => {
-      //   console.log("res");
-      //   var container = document.getElementById("canvas")!;
-      //   background.resize(container.offsetWidth, container.scrollHeight);
-      //   background.scale(container.offsetWidth / initialWidth);
-      //   background.redraw();
-      // });
-    };
-
-    setPuzzle();
+    playGame();
   }, []);
+  console.log(curImg);
+  const playGame = async () => {
+    setSolved(false);
+    const img = images[ImgIndex(0, images.length)];
+    let audio = new Audio("click.mp3");
+    let dali = new Image();
+    dali.src = img;
+
+    setCurImg(img);
+
+    console.log(dali);
+
+    const initialWidth = window.innerWidth - 50;
+    const initialHeight = window.innerHeight / 2;
+
+    const background = new headbreaker.Canvas("canvas", {
+      width: initialWidth,
+      height: initialHeight,
+      pieceSize: 60,
+      proximity: 20,
+      borderFill: 10,
+      strokeWidth: 2,
+      lineSoftness: 0.12,
+      preventOffstageDrag: true,
+      fixed: true,
+      painter: new headbreaker.painters.Konva(),
+      image: dali,
+      // maxPiecesCount: { x: 4, y: 7 },
+    });
+
+    background.adjustImagesToPuzzleHeight();
+    background.autogenerate({
+      horizontalPiecesCount: 1 + stage,
+      verticalPiecesCount: 1 + stage,
+    });
+
+    background.shuffle(0.8);
+    background.attachSolvedValidator();
+    background.onValid(() => {
+      setTimeout(() => {
+        setSolved(true);
+        claimPoints("game claim--" + 100 * stage, setSaving);
+        setStage(stage + 1);
+      }, 1500);
+    });
+
+    setTimeout(() => {
+      background.draw();
+    }, 1000);
+
+    background.onConnect(
+      (
+        _piece: any,
+        figure: { shape: { stroke: (arg0: string) => void } },
+        _target: any,
+        targetFigure: { shape: { stroke: (arg0: string) => void } }
+      ) => {
+        // play sound
+        audio.play();
+
+        // paint borders on click
+        // of conecting and conected figures
+        figure.shape.stroke("yellow");
+        targetFigure.shape.stroke("yellow");
+        background.redraw();
+
+        setTimeout(() => {
+          // restore border colors
+          // later
+          figure.shape.stroke("black");
+          targetFigure.shape.stroke("black");
+          background.redraw();
+        }, 200);
+      }
+    );
+
+    background.onDisconnect((it: any) => {
+      audio.play();
+    });
+  };
+
+  console.log(solved);
 
   return (
     <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
-      {/* <svg
-        ref={svgRef}
-        xmlns="http://www.w3.org/2000/svg"
-        version="1.1"
-        viewBox="0 0 640 480"
-        width="100%"
-        height="100%"
-        id="root"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs ref={defRef}>
-          <g id="ps"></g>
-          <g id="ms"></g>
-          <image
-            id="img"
-            width="1"
-            height="1"
-            pointer-events="none"
-            href="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-          />
-          <filter id="shadow">
-            <feDropShadow dx="2" dy="2" stdDeviation="5" />
-          </filter>
-          <filter id="shadowlower">
-            <feDropShadow dx="1" dy="1" stdDeviation="2" />
-          </filter>
-          <radialGradient id="menufade" cx="0" cy="0" fr="1">
-            <stop offset="0%" stop-color="#FFF0" />
-            <stop offset="100%" stop-color="#FFF8" />
-          </radialGradient>
-          <filter
-            id="bevel"
-            filterUnits="objectBoundingBox"
-            x="-10%"
-            y="-10%"
-            width="150%"
-            height="150%"
-          >
-            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
-            <feSpecularLighting
-              in="blur"
-              surfaceScale="5"
-              specularConstant="0.5"
-              specularExponent="10"
-              result="specOut"
-              lighting-color="white"
-            >
-              <fePointLight x="-5000" y="-10000" z="20000" />
-            </feSpecularLighting>
-            <feComposite
-              in="specOut"
-              in2="SourceAlpha"
-              operator="in"
-              result="specOut2"
-            />
-            <feComposite
-              in="SourceGraphic"
-              in2="specOut2"
-              operator="arithmetic"
-              k1="0"
-              k2="1"
-              k3="1"
-              k4="0"
-              result="litPaint"
-            />
-          </filter>
-          <linearGradient
-            id="wood1"
-            x1="500%"
-            x2="0"
-            y1="0"
-            y2="0"
-            spreadMethod="repeat"
-          >
-            <stop offset="0%" stop-color="#eec48780" />
-            <stop offset="3%" stop-color="#f3cf9a80" />
-            <stop offset="6%" stop-color="#f8d8a280" />
-            <stop offset="6%" stop-color="#f3cf9a80" />
-            <stop offset="9%" stop-color="#f3cf9a80" />
-            <stop offset="12%" stop-color="#f1ca8880" />
-            <stop offset="15%" stop-color="#f3cf9a80" />
-            <stop offset="17%" stop-color="#f4d09e80" />
-            <stop offset="19%" stop-color="#f3cf9a80" />
-            <stop offset="21%" stop-color="#f3cf9a80" />
-            <stop offset="23%" stop-color="#faddb080" />
-            <stop offset="25%" stop-color="#faddb080" />
-            <stop offset="27%" stop-color="#f3cf9a80" />
-            <stop offset="29%" stop-color="#eec88a80" />
-            <stop offset="29%" stop-color="#f3cf9a80" />
-            <stop offset="32%" stop-color="#f3cf9a80" />
-            <stop offset="34%" stop-color="#f3cf9a80" />
-            <stop offset="37%" stop-color="#f3cf9a80" />
-            <stop offset="40%" stop-color="#faddb080" />
-            <stop offset="43%" stop-color="#faddb080" />
-            <stop offset="43%" stop-color="#f3cf9a80" />
-            <stop offset="44%" stop-color="#f3cf9a80" />
-            <stop offset="47%" stop-color="#f3cf9a80" />
-            <stop offset="49%" stop-color="#eec88a80" />
-            <stop offset="52%" stop-color="#f3cf9a80" />
-            <stop offset="54%" stop-color="#faddb080" />
-            <stop offset="56%" stop-color="#f4d09e80" />
-            <stop offset="59%" stop-color="#f3cf9a80" />
-            <stop offset="61%" stop-color="#f4d09e80" />
-            <stop offset="64%" stop-color="#faddb080" />
-            <stop offset="64%" stop-color="#f3cf9a80" />
-            <stop offset="66%" stop-color="#f4d09e80" />
-            <stop offset="69%" stop-color="#f3cf9a80" />
-            <stop offset="71%" stop-color="#f8d8a280" />
-            <stop offset="74%" stop-color="#f3cf9a80" />
-            <stop offset="76%" stop-color="#f3cf9a80" />
-            <stop offset="77%" stop-color="#f3cf9a80" />
-            <stop offset="80%" stop-color="#f3cf9a80" />
-            <stop offset="81%" stop-color="#faddb080" />
-            <stop offset="83%" stop-color="#f3cf9a80" />
-            <stop offset="83%" stop-color="#faddb080" />
-            <stop offset="85%" stop-color="#faddb080" />
-            <stop offset="87%" stop-color="#f3cf9a80" />
-            <stop offset="89%" stop-color="#faddb080" />
-            <stop offset="91%" stop-color="#faddb080" />
-            <stop offset="92%" stop-color="#f3cf9a80" />
-            <stop offset="96%" stop-color="#f8d8a280" />
-            <stop offset="97%" stop-color="#f3cf9a80" />
-            <stop offset="98%" stop-color="#f3cf9a80" />
-            <stop offset="100%" stop-color="#f3cf9a80" />
-          </linearGradient>
-          <linearGradient
-            id="wood2"
-            x1="0"
-            x2="30%"
-            y1="0"
-            y2="0"
-            spreadMethod="repeat"
-          >
-            <stop offset="0%" stop-color="#eec4874d" />
-            <stop offset="3%" stop-color="#f3cf9a4d" />
-            <stop offset="6%" stop-color="#f8d8a24d" />
-            <stop offset="6%" stop-color="#f3cf9a4d" />
-            <stop offset="9%" stop-color="#f3cf9a4d" />
-            <stop offset="12%" stop-color="#f1ca884d" />
-            <stop offset="15%" stop-color="#f3cf9a4d" />
-            <stop offset="17%" stop-color="#f4d09e4d" />
-            <stop offset="19%" stop-color="#f3cf9a4d" />
-            <stop offset="21%" stop-color="#f3cf9a4d" />
-            <stop offset="23%" stop-color="#faddb04d" />
-            <stop offset="25%" stop-color="#faddb04d" />
-            <stop offset="27%" stop-color="#f3cf9a4d" />
-            <stop offset="29%" stop-color="#eec88a4d" />
-            <stop offset="29%" stop-color="#f3cf9a4d" />
-            <stop offset="32%" stop-color="#f3cf9a4d" />
-            <stop offset="34%" stop-color="#f3cf9a4d" />
-            <stop offset="37%" stop-color="#f3cf9a4d" />
-            <stop offset="40%" stop-color="#faddb04d" />
-            <stop offset="43%" stop-color="#faddb04d" />
-            <stop offset="43%" stop-color="#f3cf9a4d" />
-            <stop offset="44%" stop-color="#f3cf9a4d" />
-            <stop offset="47%" stop-color="#f3cf9a4d" />
-            <stop offset="49%" stop-color="#eec88a4d" />
-            <stop offset="52%" stop-color="#f3cf9a4d" />
-            <stop offset="54%" stop-color="#faddb04d" />
-            <stop offset="56%" stop-color="#f4d09e4d" />
-            <stop offset="59%" stop-color="#f3cf9a4d" />
-            <stop offset="61%" stop-color="#f4d09e4d" />
-            <stop offset="64%" stop-color="#faddb04d" />
-            <stop offset="64%" stop-color="#f3cf9a4d" />
-            <stop offset="66%" stop-color="#f4d09e4d" />
-            <stop offset="69%" stop-color="#f3cf9a4d" />
-            <stop offset="71%" stop-color="#f8d8a24d" />
-            <stop offset="74%" stop-color="#f3cf9a4d" />
-            <stop offset="76%" stop-color="#f3cf9a4d" />
-            <stop offset="77%" stop-color="#f3cf9a4d" />
-            <stop offset="80%" stop-color="#f3cf9a4d" />
-            <stop offset="81%" stop-color="#faddb04d" />
-            <stop offset="83%" stop-color="#f3cf9a4d" />
-            <stop offset="83%" stop-color="#faddb04d" />
-            <stop offset="85%" stop-color="#faddb04d" />
-            <stop offset="87%" stop-color="#f3cf9a4d" />
-            <stop offset="89%" stop-color="#faddb04d" />
-            <stop offset="91%" stop-color="#faddb04d" />
-            <stop offset="92%" stop-color="#f3cf9a4d" />
-            <stop offset="96%" stop-color="#f8d8a24d" />
-            <stop offset="97%" stop-color="#f3cf9a4d" />
-            <stop offset="98%" stop-color="#f3cf9a4d" />
-            <stop offset="100%" stop-color="#f3cf9a4d" />
-          </linearGradient>
-          <linearGradient
-            id="wood3"
-            x1="2%"
-            x2="0"
-            y1="0"
-            y2="0"
-            spreadMethod="repeat"
-          >
-            <stop offset="0%" stop-color="#eec4874d" />
-            <stop offset="3%" stop-color="#f3cf9a4d" />
-            <stop offset="49%" stop-color="#eec88a4d" />
-            <stop offset="52%" stop-color="#f3cf9a4d" />
-            <stop offset="54%" stop-color="#faddb04d" />
-            <stop offset="56%" stop-color="#f4d09e4d" />
-            <stop offset="59%" stop-color="#f3cf9a33" />
-            <stop offset="61%" stop-color="#f4d09e4d" />
-            <stop offset="64%" stop-color="#faddb04d" />
-            <stop offset="64%" stop-color="#f3cf9a4d" />
-            <stop offset="66%" stop-color="#f4d09e4d" />
-            <stop offset="69%" stop-color="#f3cf9a4d" />
-            <stop offset="71%" stop-color="#f8d8a24d" />
-            <stop offset="74%" stop-color="#f3cf9a4d" />
-            <stop offset="76%" stop-color="#f3cf9a4d" />
-            <stop offset="77%" stop-color="#f3cf9a4d" />
-            <stop offset="80%" stop-color="#f3cf9a4d" />
-            <stop offset="81%" stop-color="#faddb04d" />
-            <stop offset="83%" stop-color="#f3cf9a4d" />
-            <stop offset="83%" stop-color="#faddb04d" />
-            <stop offset="85%" stop-color="#faddb04d" />
-            <stop offset="87%" stop-color="#f3cf9a4d" />
-            <stop offset="89%" stop-color="#faddb04d" />
-            <stop offset="91%" stop-color="#faddb04d" />
-            <stop offset="92%" stop-color="#f3cf9a4d" />
-            <stop offset="96%" stop-color="#f8d8a24d" />
-            <stop offset="97%" stop-color="#f3cf9a4d" />
-            <stop offset="98%" stop-color="#f3cf9a4d" />
-            <stop offset="100%" stop-color="#f3cf9a4d" />
-          </linearGradient>
-          <pattern
-            id="wood"
-            width="150"
-            height="1"
-            patternUnits="userSpaceOnUse"
-          >
-            <rect width="100%" height="100%" fill="#211600" />
-            <rect width="100%" height="100%" fill="url(#wood1)" />
-            <rect width="100%" height="100%" fill="url(#wood2)" />
-            <rect width="100%" height="100%" fill="url(#wood3)" />
-          </pattern>
-        </defs>
-        <g transform="translate(10, 30)">
-          <rect
-            x="-10"
-            y="-30"
-            width="100%"
-            height="100%"
-            fill="url(#wood)"
-            strokeWidth="0"
-          />
-          <g ref={insRef} id="ins"></g>
-        </g>
-        <g className="ui tl">
-          <g ref={hudRef} id="hud">
-            <rect
-              x="0"
-              y="0"
-              width="450"
-              height="30"
-              strokeWidth="0"
-              fill="url(#menufade)"
-              pointer-events="none"
-            />
-            <text id="time" x="10" y="20">
-              --:--
-            </text>
-            <text
+      <div className="relative flex flex-col items-center justify-center">
+        <div
+          className={` ${
+            solved ? "hidden" : "flex"
+          } bg-slate-800 border-slate-300`}
+          id="canvas"
+        ></div>
+
+        <div
+          id="validated-canvas-overlay "
+          className={`  z-[9999999999] w-[60vw] ${
+            !solved ? "hidden" : "flex"
+          } flex-col items-center`}
+        >
+          <p>Huray!!</p>
+          <p>You Solved This Puzzle</p>
+          <p>You have earned {100 * (stage - 1)} SOLV</p>
+          <img className="my-4" src={curImg}></img>
+          {stage > 3 ? (
+            <p>You have finished all stages for today, come back tomorrow</p>
+          ) : (
+            <Button
               onClick={() => {
-                new MainHandler();
+                playGame();
               }}
-              id="new-game"
-              className="button noscript-hidden cursor-pointer "
-              x="100"
-              y="20"
+              className=""
             >
-              New Game
-            </text>
-          </g>
-        </g>
-        <g className="ui bl hidden">
-          <g ref={certRef} id="certificate">
-            <rect
-              x="10"
-              y="-250"
-              width="320"
-              height="240"
-              stroke="#0008"
-              strokeWidth="0.1"
-              fill="#FFF"
-              filter="url(#shadow)"
-            />
-            <rect
-              x="30"
-              y="-230"
-              width="280"
-              height="200"
-              stroke="#060"
-              fill="#0000"
-              strokeWidth="0.5"
-            />
-            <rect
-              x="33"
-              y="-227"
-              width="274"
-              height="194"
-              stroke="#060"
-              fill="#0000"
-              strokeWidth="0.5"
-            />
-            <text x="170" y="-190" text-anchor="middle" className="h1">
-              Congratulations!
-            </text>
-            <text x="170" y="-170" text-anchor="middle">
-              You have solved the puzzle in
-            </text>
-            <text x="170" y="-150" text-anchor="middle" id="time-used">
-              --:--
-            </text>
-            <text x="170" y="-120" text-anchor="middle">
-              Puzzle Size
-            </text>
-            <text x="170" y="-100" text-anchor="middle" id="puzzle-size">
-              x×y (n Pieces)
-            </text>
-            <text x="40" y="-60">
-              Since
-            </text>
-            <text x="90" y="-60" id="time-start">
-              &lt;date&gt;
-            </text>
-            <text x="40" y="-40">
-              Until
-            </text>
-            <text x="90" y="-40" id="time-end">
-              &lt;date&gt;
-            </text>
-          </g>
-        </g>
-        <g className="ui mc"></g>
-
-        <script ref={scriptRef} type="application/json" id="data" />
-      </svg> */}
-
-      <div className="border-2 border-red-600" id="canvas"></div>
-      <div className="bg-red-500" id="validated-canvas-overlay">
-        <p className="">hurray you won</p>
+              Next Game
+            </Button>
+          )}
+        </div>
       </div>
-      <img className="hidden" src="/img.jpg"></img>
 
       {/* <div id="gam"></div> */}
     </div>
