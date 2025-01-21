@@ -81,7 +81,7 @@ const ProfileHeader = ({ userDetails }: any) => {
             <strong>Points:</strong>
             {}
           </p>
-          <p className="ml-2 text-[20px]"> {+userDetails?.totalPoints}</p>
+          <p className="ml-2 text-[20px]"> {+userDetails?.totalPoints} SOLV</p>
         </div>
         <div className="flex">
           <p className="text-[20px]">
@@ -438,7 +438,7 @@ const Tasks = ({
                 </div>
                 <div className="flex-1">
                   <p className="text-white">{task.name}</p>
-                  <p className="text-[12px]">{task.points} RP</p>
+                  <p className="text-[12px]">{task.points} SOLV</p>
                 </div>
                 <button
                   onClick={() => {
