@@ -6,7 +6,7 @@ import { useWallet } from "../contexts/WalletContext";
 const UnifiedWalletConnector = () => {
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState<"TON" | "NEAR" | null>(
-    null
+    NEAR
   );
   const {
     connect: connectNear,
@@ -256,12 +256,12 @@ const UnifiedWalletConnector = () => {
           <div className="bg-[#010c18] p-6 rounded-lg border-2 border-blue-80">
             <h3 className="text-xl text-white mb-4">Select Network</h3>
             <div className="flex gap-4">
-              <button
-                onClick={() => handleNetworkSelect("TON")}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-              >
-                TON
-              </button>
+          //    <button
+            //    onClick={() => handleNetworkSelect("TON")}
+             //   className="px-4 py-2 bg-blue-600 text-white rounded"
+        //      >
+           //     TON
+             // </button>
               <button
                 onClick={() => handleNetworkSelect("NEAR")}
                 className="px-4 py-2 bg-blue-600 text-white rounded"
