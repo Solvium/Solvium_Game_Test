@@ -6,7 +6,7 @@ import { useWallet } from "../contexts/WalletContext";
 const UnifiedWalletConnector = () => {
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState<"TON" | "NEAR" | null>(
-    NEAR
+    "NEAR"
   );
   const {
     connect: connectNear,
