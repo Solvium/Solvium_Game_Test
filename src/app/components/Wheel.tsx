@@ -58,14 +58,15 @@ export const WheelOfFortune = () => {
   } = useWallet();
 
   const data = [
-    { option: "0.01", style: { fontSize: 20, fontWeight: "bold" } },
-    { option: "0.1", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "1", style: { fontSize: 20, fontWeight: "bold" } },
-    { option: "10", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "25", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "50", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "100", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "500", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "1000", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "5000", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "10000", style: { fontSize: 20, fontWeight: "bold" } },
-    { option: "100000", style: { fontSize: 20, fontWeight: "bold" } },
+    // { option: "10000", style: { fontSize: 20, fontWeight: "bold" } },
   ];
 
   const checkTokenRegistration = useCallback(async () => {
@@ -158,8 +159,8 @@ export const WheelOfFortune = () => {
                 rewardAmount: rewardAmount,
                 tokenAddress: "ft.predeployed.examples.testnet"!,
               },
-              gas: "300000000000000", //   gas: utils.format.parseNearAmount("0.03")!, // 30 TGas
-              deposit: "0.000000001",
+              gas: "300000000000000",
+              deposit: "0",
             },
           },
         ],
@@ -171,8 +172,8 @@ export const WheelOfFortune = () => {
       await transaction;
       onSuccess?.();
       return transaction;
-    } catch (error) {
-      console.error("Failed to claim reward:", error);
+    } catch (error: any) {
+      console.error("Failed to claim reward:", error.message);
       onError?.(error as Error);
       throw error;
     }
@@ -197,7 +198,7 @@ export const WheelOfFortune = () => {
   const handleClaim = async () => {
     if (!winner) return;
     setIsClaimLoading(true);
-
+    console.log(data[prizeNumber].option, "data infor   ");
     try {
       await handleClaimRewardImproved({
         rewardAmount: data[prizeNumber].option,
