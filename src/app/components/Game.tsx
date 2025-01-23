@@ -42,41 +42,57 @@ function ImgIndex(min: number, max: number) {
 }
 
 export const Game = ({ claimPoints }: any) => {
+  const [isPlaying, setIsPlaying] = useState(false);
   const [solved, setSolved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [stage, setStage] = useState(1);
-  const [curImg, setCurImg] = useState("");
+  const [curImg, setCurImg] = useState<any>();
+  const [displayImg, setDisplayImg] = useState<any>();
 
   useEffect(() => {
-    playGame();
-  }, []);
-  console.log(curImg);
+    if (isPlaying && !solved) return;
+    const setUp = async () => {
+      const img = await preloadImage(images[ImgIndex(0, images.length - 1)]);
+      setCurImg(img);
+    };
+    setUp();
+  }, [solved]);
+
+  const preloadImage = (src: string) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => resolve(img);
+      img.onerror = (err) => reject(err);
+    });
+  };
+
   const playGame = async () => {
     setSolved(false);
-    const img = images[ImgIndex(0, images.length)];
+    setIsPlaying(true);
+    setDisplayImg(curImg);
     let audio = new Audio("click.mp3");
-    let dali = new Image();
-    dali.src = img;
-
-    setCurImg(img);
-
-    console.log(dali);
 
     const initialWidth = window.innerWidth - 50;
     const initialHeight = window.innerHeight / 2;
 
+    const piecesX = 1 + stage;
+    const piecesY = 1 + stage;
+
+    const pieceSize = Math.min(initialWidth / piecesX, initialHeight / piecesY);
+
     const background = new headbreaker.Canvas("canvas", {
       width: initialWidth,
       height: initialHeight,
-      pieceSize: 60,
-      proximity: 20,
-      borderFill: 10,
-      strokeWidth: 2,
+      pieceSize: Math.round(pieceSize - 20),
+      proximity: 18,
+      borderFill: 8,
+      strokeWidth: 1,
       lineSoftness: 0.12,
       preventOffstageDrag: true,
       fixed: true,
       painter: new headbreaker.painters.Konva(),
-      image: dali,
+      image: curImg,
       // maxPiecesCount: { x: 4, y: 7 },
     });
 
@@ -152,7 +168,7 @@ export const Game = ({ claimPoints }: any) => {
           <p>Huray!!</p>
           <p>You Solved This Puzzle</p>
           <p>You have earned {100 * (stage - 1)} SOLV</p>
-          <img className="my-4" src={curImg}></img>
+          <img className="my-4" src={displayImg?.src}></img>
           {stage > 3 ? (
             <p>You have finished all stages for today, come back tomorrow</p>
           ) : (
@@ -166,6 +182,16 @@ export const Game = ({ claimPoints }: any) => {
             </Button>
           )}
         </div>
+        {!isPlaying && curImg && (
+          <Button
+            onClick={() => {
+              playGame();
+            }}
+            className=""
+          >
+            Play Game
+          </Button>
+        )}
       </div>
 
       {/* <div id="gam"></div> */}
