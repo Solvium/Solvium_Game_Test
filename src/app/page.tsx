@@ -70,15 +70,15 @@ function Home() {
 
   const getUser = async () => {
     try {
-      // const res = await axios(
-      //   "/api/allroute?type=getUser&username=" +
-      //     // tg?.initDataUnsafe.user?.username
-      //     "Ajemark"
-      // );
       const res = await axios(
         "/api/allroute?type=getUser&username=" +
-          tg?.initDataUnsafe.user?.username
+          // tg?.initDataUnsafe.user?.username
+          "Ajemark"
       );
+      // const res = await axios(
+      //   "/api/allroute?type=getUser&username=" +
+      //     tg?.initDataUnsafe.user?.username
+      // );
 
       if (res.status == 200) {
         setUser(res.data);
