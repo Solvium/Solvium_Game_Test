@@ -23,6 +23,9 @@ model User {
   name          String?
   wallet        String?
   referredBy    String
+  level         Int           @default(1)
+  difficulty    Int           @default(1)
+  puzzleCount   Int           @default(1)
   referralCount Int           @default(0)
   chatId        String?
   claimCount    Int           @default(0)

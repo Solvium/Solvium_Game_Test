@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 // import { getImageDimensions } from "./puzzle/utils";
 import { Button } from "@/components/ui/button";
+import { GameTimer } from "./Timer";
 
 const headbreaker = require("headbreaker");
 
@@ -41,13 +42,16 @@ function ImgIndex(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export const Game = ({ claimPoints }: any) => {
+export const Game = ({ claimPoints, userDetails }: any) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [solved, setSolved] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [stage, setStage] = useState(1);
+  const [points, setPoints] = useState(1);
   const [curImg, setCurImg] = useState<any>();
+  const [timer, setTimer] = useState<number>(Date.now());
   const [displayImg, setDisplayImg] = useState<any>();
+
+  const diff = ["", "EASY", "MEDIUM", "EXPERT"];
 
   useEffect(() => {
     if (isPlaying && !solved) return;
@@ -76,15 +80,18 @@ export const Game = ({ claimPoints }: any) => {
     const initialWidth = window.innerWidth - 50;
     const initialHeight = window.innerHeight / 2;
 
-    const piecesX = 1 + stage;
-    const piecesY = 1 + stage;
+    const piecesX = userDetails.level + userDetails.difficulty;
+    const piecesY = userDetails.level + userDetails.difficulty;
 
     const pieceSize = Math.min(initialWidth / piecesX, initialHeight / piecesY);
 
     const background = new headbreaker.Canvas("canvas", {
       width: initialWidth,
       height: initialHeight,
-      pieceSize: Math.round(pieceSize - 20),
+      pieceSize:
+        userDetails.level + userDetails.difficulty == 2
+          ? 80
+          : Math.round(pieceSize - 20),
       proximity: 18,
       borderFill: 8,
       strokeWidth: 1,
@@ -98,21 +105,29 @@ export const Game = ({ claimPoints }: any) => {
 
     background.adjustImagesToPuzzleHeight();
     background.autogenerate({
-      horizontalPiecesCount: 1 + stage,
-      verticalPiecesCount: 1 + stage,
+      horizontalPiecesCount: userDetails.level + userDetails.difficulty,
+      verticalPiecesCount: userDetails.level + userDetails.difficulty,
     });
 
     background.shuffle(0.8);
     background.attachSolvedValidator();
     background.onValid(() => {
+      const timeDiff = (Date.now() - timer) / 1000;
+      const points =
+        timeDiff < 120 ? 100 : timeDiff > 120 && timeDiff < 240 ? 75 : 50;
+
+      console.log(timeDiff);
+      console.log(points);
+
       setTimeout(() => {
+        setPoints(points * userDetails.level);
         setSolved(true);
-        claimPoints("game claim--" + 100 * stage, setSaving);
-        setStage(stage + 1);
+        claimPoints("game claim--" + points * userDetails.level, setSaving);
       }, 1500);
     });
 
     setTimeout(() => {
+      setTimer(Date.now());
       background.draw();
     }, 1000);
 
@@ -147,11 +162,21 @@ export const Game = ({ claimPoints }: any) => {
     });
   };
 
-  console.log(solved);
-
   return (
     <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
       <div className="relative flex flex-col items-center justify-center">
+        <div
+          className={` ${
+            !isPlaying || solved ? "hidden" : "flex"
+          }  bg-slate-800 border-slate-300`}
+        >
+          <GameTimer time={timer ?? Date.now()} />
+          <div>
+            <p>Level: {userDetails?.level}</p>
+            <p>Cur Puzzle: {userDetails?.puzzleCount}</p>
+            <p>cur Difficulty: {diff[userDetails?.difficulty]}</p>
+          </div>
+        </div>
         <div
           className={` ${
             solved ? "hidden" : "flex"
@@ -167,9 +192,9 @@ export const Game = ({ claimPoints }: any) => {
         >
           <p>Huray!!</p>
           <p>You Solved This Puzzle</p>
-          <p>You have earned {100 * (stage - 1)} SOLV</p>
+          <p>You have earned {points} SOLV</p>
           <img className="my-4" src={displayImg?.src}></img>
-          {stage > 3 ? (
+          {userDetails?.level > 3 ? (
             <p>You have finished all stages for today, come back tomorrow</p>
           ) : (
             <Button

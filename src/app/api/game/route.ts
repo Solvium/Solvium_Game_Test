@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, type, data } = await req.json();
+    const { username, type } = await req.json();
 
     const user = await prisma.user.findUnique({
       where: {
@@ -19,14 +19,13 @@ export async function POST(req: NextRequest) {
 
     if (type == "claim welcome") {
       if (!user?.isOfficial) {
-        await addLeaderboard(user, 5500, null);
-
         const res = await prisma.user.update({
           where: {
             username,
           },
 
           data: {
+            totalPoints: (user?.totalPoints ?? 0) + 5500,
             isOfficial: true,
           },
         });
@@ -66,18 +65,15 @@ export async function POST(req: NextRequest) {
         let day = ((user?.claimCount ?? 0) + 1) * 2;
         day = day - 2;
 
-        await addLeaderboard(user, 60 * (day <= 0 ? 1 : day), null);
-
         const res = await prisma.user.update({
           where: {
             username,
           },
 
           data: {
+            totalPoints: (user?.totalPoints ?? 0) + 60 * (day <= 0 ? 1 : day),
             lastClaim: nextClaim,
-            claimCount: {
-              increment: 1,
-            },
+            claimCount: (user?.claimCount ?? 0) + 1,
           },
         });
 
@@ -111,7 +107,7 @@ export async function POST(req: NextRequest) {
       if (new Date(Date.now()) > lastClaim) {
         const np = type.split("--")[1];
 
-        await addLeaderboard(user, np, null);
+        await addLeaderboard(user, np);
 
         const res = await prisma.user.update({
           where: {
@@ -131,8 +127,7 @@ export async function POST(req: NextRequest) {
     if (type.includes("game claim") && user) {
       console.log(type);
       const np = type.split("--")[1];
-
-      const res = await addLeaderboard(user, np, "game");
+      const res = await addLeaderboard(user, np);
       return NextResponse.json(user, { status: 200 });
     }
 
@@ -155,7 +150,7 @@ export async function GET(req: any) {
   }
 }
 
-const addLeaderboard = async (user: any, np: number, type: any) => {
+const addLeaderboard = async (user: any, np: number) => {
   const userId = user.id;
   const points = np;
   try {
@@ -205,26 +200,6 @@ const addLeaderboard = async (user: any, np: number, type: any) => {
           },
         },
       });
-
-      if (type) {
-        const nextLevel = user.puzzleCount >= 5 && user.difficulty >= 3;
-        const nextDiff = user.puzzleCount >= 5 && user.difficulty < 3;
-
-        await prisma.user.update({
-          where: { id: Number(userId) },
-          data: {
-            level: {
-              increment: nextLevel ? 1 : 0,
-            },
-            difficulty: {
-              increment: nextLevel ? -2 : nextDiff ? 1 : 0,
-            },
-            puzzleCount: {
-              increment: nextDiff || nextLevel ? -4 : 1,
-            },
-          },
-        });
-      }
 
       return { weeklyScore, updatedUser };
     });
