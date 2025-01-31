@@ -41,7 +41,7 @@ function ImgIndex(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export const Game = ({ claimPoints }: any) => {
+const Game = ({ claimPoints }: any) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [solved, setSolved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -93,7 +93,6 @@ export const Game = ({ claimPoints }: any) => {
       fixed: true,
       painter: new headbreaker.painters.Konva(),
       image: curImg,
-      // maxPiecesCount: { x: 4, y: 7 },
     });
 
     background.adjustImagesToPuzzleHeight();
@@ -107,7 +106,6 @@ export const Game = ({ claimPoints }: any) => {
     background.onValid(() => {
       setTimeout(() => {
         setSolved(true);
-        claimPoints("game claim--" + 100 * stage, setSaving);
         setStage(stage + 1);
       }, 1500);
     });
@@ -123,18 +121,12 @@ export const Game = ({ claimPoints }: any) => {
         _target: any,
         targetFigure: { shape: { stroke: (arg0: string) => void } }
       ) => {
-        // play sound
         audio.play();
-
-        // paint borders on click
-        // of conecting and conected figures
         figure.shape.stroke("yellow");
         targetFigure.shape.stroke("yellow");
         background.redraw();
 
         setTimeout(() => {
-          // restore border colors
-          // later
           figure.shape.stroke("black");
           targetFigure.shape.stroke("black");
           background.redraw();
@@ -147,54 +139,46 @@ export const Game = ({ claimPoints }: any) => {
     });
   };
 
-  console.log(solved);
-
   return (
-    <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
-      <div className="relative flex flex-col items-center justify-center">
-        <div
-          className={` ${
-            solved ? "hidden" : "flex"
-          } bg-slate-800 border-slate-300`}
-          id="canvas"
-        ></div>
+    <div className="min-h-screen w-full bg-[#0B0B14] py-4 px-4 md:py-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="relative flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
+          <div
+            className={`${
+              solved ? "hidden" : "flex"
+            } bg-[#151524] rounded-lg overflow-hidden shadow-glow-sm`}
+            id="canvas"
+          ></div>
 
-        <div
-          id="validated-canvas-overlay "
-          className={`  z-[9999999999] w-[60vw] ${
-            !solved ? "hidden" : "flex"
-          } flex-col items-center`}
-        >
-          <p>Huray!!</p>
-          <p>You Solved This Puzzle</p>
-          <p>You have earned {100 * (stage - 1)} SOLV</p>
-          <img className="my-4" src={displayImg?.src}></img>
-          {stage > 3 ? (
-            <p>You have finished all stages for today, come back tomorrow</p>
-          ) : (
-            <Button
-              onClick={() => {
-                playGame();
-              }}
-              className=""
+          {!isPlaying && !solved && (
+            <button
+              onClick={playGame}
+              className="mt-6 text-[16px] bg-gradient-radial from-[#4C6FFF] to-[#6C5CE7] text-white h-12 flex items-center justify-center rounded-lg px-8 hover:opacity-90 transition-all shadow-glow-blue animate-glow"
             >
-              Next Game
-            </Button>
+              Start Game
+            </button>
           )}
-        </div>
-        {!isPlaying && curImg && (
-          <Button
-            onClick={() => {
-              playGame();
-            }}
-            className=""
-          >
-            Play Game
-          </Button>
-        )}
-      </div>
 
-      {/* <div id="gam"></div> */}
+          <div
+            id="validated-canvas-overlay"
+            className={`${
+              solved ? "flex" : "hidden"
+            } absolute inset-0 bg-black/50 backdrop-blur-sm items-center justify-center flex-col gap-4`}
+          >
+            <div className="text-2xl font-bold text-white animate-bulb-pulse">
+              Puzzle Solved!
+            </div>
+            <button
+              onClick={playGame}
+              className="text-[16px] bg-gradient-radial from-[#4C6FFF] to-[#6C5CE7] text-white h-12 flex items-center justify-center rounded-lg px-8 hover:opacity-90 transition-all shadow-glow-blue animate-glow"
+            >
+              Next Level
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
+
+export default Game;
