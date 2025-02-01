@@ -386,7 +386,7 @@ const Tasks = ({
                 <p className="text-[12px]"></p>
               </div>
               <div>
-                <DepositMultiplier />
+                <DepositMultiplier user={userDetails} />
               </div>
             </div>
           </div>
