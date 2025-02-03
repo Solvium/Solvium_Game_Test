@@ -9,11 +9,12 @@ import { NextRequest, NextResponse } from "next/server";
 // exhausting your database connection limit.
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log: ["query"],
-  });
+// export const prisma =
+//   globalForPrisma.prisma ||
+//   new PrismaClient({
+//     log: ["query"],
+//   });
+export const prisma = globalForPrisma.prisma || new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
@@ -157,11 +158,14 @@ export async function GET(req: any) {
   try {
     if (type == "getUser") {
       if (!username) {
-        return NextResponse.json({ error: "Username is required" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Username is required" },
+          { status: 400 }
+        );
       }
 
       const user = await prisma.user.findUnique({
-        where: { username }
+        where: { username },
       });
 
       if (!user) {
@@ -174,9 +178,9 @@ export async function GET(req: any) {
     if (type == "leaderboard") {
       const users = await prisma.user.findMany({
         orderBy: { totalPoints: "desc" },
-        take: 100 // Limit to top 100 users for performance
+        take: 100, // Limit to top 100 users for performance
       });
-      
+
       return NextResponse.json(users || []);
     }
 
@@ -187,7 +191,10 @@ export async function GET(req: any) {
 
     if (type == "allusertasks") {
       if (!userId) {
-        return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+        return NextResponse.json(
+          { error: "User ID is required" },
+          { status: 400 }
+        );
       }
 
       try {
@@ -195,14 +202,23 @@ export async function GET(req: any) {
         return NextResponse.json(data || []);
       } catch (error) {
         console.error("Error fetching user tasks:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json(
+          { error: "Internal Server Error" },
+          { status: 500 }
+        );
       }
     }
 
-    return NextResponse.json({ error: "Invalid type parameter" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid type parameter" },
+      { status: 400 }
+    );
   } catch (error) {
     console.error("API Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -298,14 +314,14 @@ const getAllUserTasks = async (userId: string) => {
     if (!userId || isNaN(Number(userId))) {
       throw new Error("Invalid user ID");
     }
-    
+
     return await prisma.userTask.findMany({
       where: {
         userId: Number(userId),
       },
       include: {
-        task: true
-      }
+        task: true,
+      },
     });
   } catch (error) {
     console.error("Error in getAllUserTasks:", error);
