@@ -67,7 +67,7 @@ const ProfileHeader = ({ userDetails }: any) => {
           </div>
         </div>
       </div>
-      
+
       <div className="text-center">
         <h2 className="text-xl font-bold text-white mb-4">
           {userDetails?.username}
@@ -78,11 +78,24 @@ const ProfileHeader = ({ userDetails }: any) => {
               <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
               <div className="relative">
                 <div className="flex items-center justify-center gap-2">
-                  <svg className="w-3.5 h-3.5 text-[#4C6FFF]" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd"/>
+                  <svg
+                    className="w-3.5 h-3.5 text-[#4C6FFF]"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                      clipRule="evenodd"
+                    />
                   </svg>
-                  <p className="text-xs text-[#8E8EA8]">Points: <span className="text-[#4C6FFF] font-bold">{userDetails?.totalPoints || 0}</span></p>
+                  <p className="text-xs text-[#8E8EA8]">
+                    Points:{" "}
+                    <span className="text-[#4C6FFF] font-bold">
+                      {userDetails?.totalPoints || 0}
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -92,10 +105,19 @@ const ProfileHeader = ({ userDetails }: any) => {
               <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
               <div className="relative">
                 <div className="flex items-center justify-center gap-2">
-                  <svg className="w-3.5 h-3.5 text-[#4C6FFF]" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-3.5 h-3.5 text-[#4C6FFF]"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                   </svg>
-                  <p className="text-xs text-[#8E8EA8]">Referrals: <span className="text-[#4C6FFF] font-bold">{userDetails?.referralCount || 0}</span></p>
+                  <p className="text-xs text-[#8E8EA8]">
+                    Referrals:{" "}
+                    <span className="text-[#4C6FFF] font-bold">
+                      {userDetails?.referralCount || 0}
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -111,9 +133,13 @@ const Link = ({ userDetails }: any) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-2">
-        <svg className="w-5 h-5 text-[#4C6FFF]" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
-          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+        <svg
+          className="w-5 h-5 text-[#4C6FFF]"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
         </svg>
         <h2 className="text-lg font-bold text-white">Invite Link</h2>
       </div>
@@ -149,14 +175,23 @@ const Farming = ({ userDetails, claimPoints }: any) => {
 
   const userMultipler = total <= 0 ? 1 : total;
   const hashRate = 0.0035;
-  const remainingTime = new Date(userDetails?.lastClaim).getTime() - new Date().getTime();
+  const remainingTime =
+    new Date(userDetails?.lastClaim).getTime() - new Date().getTime();
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-2">
-        <svg className="w-5 h-5 text-[#4C6FFF]" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9 2a1 1 0 000 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
-          <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+        <svg
+          className="w-5 h-5 text-[#4C6FFF]"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9 2a1 1 0 000 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path
+            fillRule="evenodd"
+            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clipRule="evenodd"
+          />
         </svg>
         <h2 className="text-lg font-bold text-white">Farming</h2>
       </div>
@@ -189,11 +224,15 @@ const Farming = ({ userDetails, claimPoints }: any) => {
             <>
               {remainingTime > 0 ? (
                 <div className="flex items-center gap-2">
-                  <span>{`Mining ${(hashRate * userMultipler).toFixed(4)}/s`}</span>
+                  <span>{`Mining ${(hashRate * userMultipler).toFixed(
+                    4
+                  )}/s`}</span>
                   <TimerCountdown time={userDetails?.lastClaim} />
                 </div>
               ) : (
-                <span>Claim {(18000 * hashRate * userMultipler).toFixed(2)} SOLV</span>
+                <span>
+                  Claim {(18000 * hashRate * userMultipler).toFixed(2)} SOLV
+                </span>
               )}
             </>
           ) : (
@@ -364,9 +403,13 @@ const Tasks = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-2">
-        <svg className="w-5 h-5 text-[#4C6FFF]" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9 2a1 1 0 000 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
-          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+        <svg
+          className="w-5 h-5 text-[#4C6FFF]"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9 2a1 1 0 000 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
         </svg>
         <h2 className="text-lg font-bold text-white">Tasks</h2>
       </div>
@@ -375,7 +418,9 @@ const Tasks = ({
         <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden">
           <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
           <div className="relative">
-            <p className="text-sm font-medium text-[#8E8EA8]">Support on NEAR chain</p>
+            <p className="text-sm font-medium text-[#8E8EA8]">
+              Support on NEAR chain
+            </p>
             <DepositMultiplier />
           </div>
         </div>
@@ -411,7 +456,10 @@ const Tasks = ({
           if (found) return null;
 
           return (
-            <div key={task.name + "task"} className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden">
+            <div
+              key={task.name + "task"}
+              className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden"
+            >
               <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
               <div className="relative flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-[#4C6FFF]/10 flex items-center justify-center">
@@ -420,9 +468,17 @@ const Tasks = ({
                 <div className="flex-1">
                   <p className="text-sm font-medium text-white">{task.name}</p>
                   <div className="flex items-center gap-1">
-                    <svg className="w-3 h-3 text-[#4C6FFF]" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd"/>
+                    <svg
+                      className="w-3 h-3 text-[#4C6FFF]"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <p className="text-xs text-[#4C6FFF]">{task.points} SOLV</p>
                   </div>

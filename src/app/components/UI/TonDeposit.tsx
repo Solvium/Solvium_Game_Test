@@ -21,7 +21,14 @@ interface Deposit {
   active: boolean;
 }
 
-export default function DepositMultiplier() {
+interface DepositResponse {
+  points: number;
+  multiplier: number;
+  weeklyScore: any;
+  user: any;
+}
+
+export default function DepositMultiplier({ user }: any) {
   const { connected: tonConnected, connectWallet: connectTon } =
     useTonConnect();
   const {
@@ -106,8 +113,35 @@ export default function DepositMultiplier() {
     if (!nearAddress || !selector) return;
 
     try {
+      const numAmount = parseFloat(amount);
+      console.log(numAmount, "numAmount");
+      if (isNaN(numAmount)) throw new Error("Invalid amount");
+
       const wallet = await selector.wallet();
       const deposit = utils.format.parseNearAmount(amount);
+
+      // API call first
+      const response = await fetch("/api/deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          amount: numAmount,
+        }),
+      });
+
+      const data = await response.json();
+
+      console.log(data, "data");
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to process deposit");
+      }
+
+      const { points, multiplier } = data as DepositResponse;
+
+      console.log(points, "points");
+      console.log(multiplier, "multiplier");
 
       await wallet.signAndSendTransaction({
         signerId: nearAddress,
