@@ -41,6 +41,8 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          blue: '#4A90E2',
+          purple: '#6C5CE7',
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -53,6 +55,8 @@ const config: Config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          pink: '#FF69B4',
+          green: '#4CAF50',
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

@@ -34,8 +34,11 @@ const CountdownTimer = ({ targetTime }: { targetTime: number }) => {
   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
   return (
-    <div className="text-xl font-bold ">
-      Next spin available in: {hours}h {minutes}m {seconds}s
+    <div className="text-[#6C5CE7] text-center">
+      <div className="text-sm mb-1">Next spin available in</div>
+      <div className="font-semibold">
+        {hours}h {minutes}m {seconds}s
+      </div>
     </div>
   );
 };
@@ -218,107 +221,165 @@ export const WheelOfFortune = () => {
     }
   };
 
-  // Update JSX to show timer
-
   return (
-    <div className="flex items-center flex-col h-[85vh] justify-center bg-black w-full text-white">
-      <h1 className="text-4xl font-bold mt-3 mb-2">Wheel of Fortune</h1>
-      <p className="text-lg mt-4 mb-4">
-        Click the SPIN button to spin the wheel and win some gTeam tokens!
-      </p>
+    <div className="min-h-screen w-full bg-[#0B0B14] py-4 px-4 md:py-6">
+      <div className="max-w-xl mx-auto">
+        <div className="bg-[#151524] rounded-[28px] p-6 shadow-[0_0_30px_rgba(76,111,255,0.1)]">
+          {/* Header with balance */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] flex items-center justify-center">
+                <span className="text-white text-sm font-bold">$</span>
+              </div>
+              <span className="text-white text-lg font-bold">{nearConnected ? "350.00" : "0.00"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-[#1A1A2F] flex items-center justify-center">
+                <span className="text-[#4C6FFF] text-sm">🎲</span>
+              </div>
+            </div>
+          </div>
 
-      <div className="relative animate-pulse">
-        <Wheel
-          mustStartSpinning={mustSpin}
-          prizeNumber={prizeNumber}
-          data={data}
-          onStopSpinning={() => {
-            setMustSpin(false);
-            setWinner(data[prizeNumber].option);
-          }}
-          spinDuration={0.5} // Faster spin
-          backgroundColors={[
-            "#EE4040",
-            "#F0CF50",
-            "#815CD1",
-            "#3DA5E0",
-            "#34A24F",
-            "#F9AA1F",
-            "#EC3F3F",
-            "#FF9000",
-          ]}
-          textColors={["#ffffff"]}
-          fontSize={24}
-          fontWeight={700}
-          innerRadius={20}
-          innerBorderColor="#ffffff"
-          innerBorderWidth={10}
-          outerBorderColor="#ffffff"
-          outerBorderWidth={5}
-          radiusLineColor="#ffffff"
-          radiusLineWidth={2}
-          perpendicularText={true}
-          textDistance={85}
-        />
+          {/* Wheel Title */}
+          <h2 className="text-2xl font-bold text-center text-white mb-8">
+            Spin The Wheel
+          </h2>
+
+          {/* Wheel Container */}
+          <div className="relative flex justify-center mb-8">
+            <div className="relative scale-85 origin-center">
+              {/* The wheel itself - moved to be first in DOM order */}
+              <Wheel
+                mustStartSpinning={mustSpin}
+                prizeNumber={prizeNumber}
+                data={data}
+                backgroundColors={[
+                  '#FF6B6B',  // Red
+                  '#4ECDC4',  // Teal
+                  '#FFD93D',  // Yellow
+                  '#6C5CE7',  // Purple
+                  '#95A5A6',  // Gray
+                  '#2ECC71',  // Green
+                ]}
+                textColors={['#FFFFFF']}
+                outerBorderColor="#2A2A45"
+                outerBorderWidth={3}
+                innerRadius={20}
+                innerBorderColor="#2A2A45"
+                innerBorderWidth={2}
+                radiusLineColor="#2A2A45"
+                radiusLineWidth={1}
+                fontSize={16}
+                perpendicularText={true}
+                textDistance={60}
+                spinDuration={0.5}
+                onStopSpinning={() => {
+                  setMustSpin(false);
+                  setWinner(data[prizeNumber].option);
+                  spinningSound.pause();
+                  spinningSound.currentTime = 0;
+                }}
+              />
+
+              {/* Outer glow effect */}
+              <div className="absolute -inset-[30px] bg-gradient-radial from-[#4C6FFF]/40 to-transparent blur-2xl animate-glow pointer-events-none" />
+              
+              {/* Inner glow effects */}
+              <div className="absolute inset-0">
+                <div className="absolute inset-0 rounded-full bg-gradient-conic from-[#4C6FFF]/30 via-[#6C5CE7]/30 to-[#4C6FFF]/30 animate-wheel-spin pointer-events-none shadow-glow-blue" />
+              </div>
+
+              {/* Glowing bulbs - moved to be last in DOM order and added z-10 */}
+              <div className="absolute inset-0 z-10">
+                {[...Array(12)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-3 h-3"
+                    style={{
+                      top: '50%',
+                      left: '50%',
+                      transform: `rotate(${i * 30}deg) translateY(-145px)`,
+                    }}
+                  >
+                    <div 
+                      className="absolute w-full h-full rounded-full bg-gradient-radial from-white via-white/40 to-transparent shadow-glow-lg animate-bulb-pulse"
+                      style={{
+                        animationDelay: `${i * 0.2}s`
+                      }}
+                    />
+                    <div className="absolute w-2 h-2 top-0.5 left-0.5 rounded-full bg-white shadow-glow-xl" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Center decoration - also added z-10 */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div className="w-12 h-12 rounded-full bg-gradient-radial from-[#4C6FFF] to-[#6C5CE7] shadow-glow-blue animate-glow">
+                  <div className="w-8 h-8 m-2 rounded-full bg-[#151524]">
+                    <div className="w-6 h-6 m-1 rounded-full bg-gradient-radial from-[#4C6FFF] to-[#6C5CE7] shadow-glow-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="space-y-4">
+            {hasPlayed && cooldownTime > Date.now() ? (
+              <div className="bg-[#1A1A2F] rounded-xl p-4 border border-[#2A2A45]">
+                <CountdownTimer targetTime={cooldownTime} />
+              </div>
+            ) : (
+              <button
+                onClick={handleSpinClick}
+                disabled={!nearConnected || hasPlayed || mustSpin}
+                className="w-full py-4 bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] text-white text-lg font-bold rounded-xl 
+                         hover:opacity-90 transition-all duration-300
+                         disabled:opacity-50 disabled:cursor-not-allowed
+                         relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-all duration-1000"></div>
+                <span className="relative">SPIN</span>
+              </button>
+            )}
+
+            {winner && !isClaimed && (
+              <div className="mt-6 text-center">
+                <div className="bg-[#1A1A2F] rounded-xl p-6 border border-[#2A2A45] relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
+                  <div className="relative">
+                    <p className="text-xl font-bold text-[#4C6FFF] mb-4">
+                      You won {winner} tokens!
+                    </p>
+                    <button
+                      onClick={handleClaim}
+                      disabled={isClaimLoading}
+                      className="w-full py-3 bg-[#2ECC71] hover:bg-[#27AE60] text-white font-bold rounded-xl 
+                               transition-all duration-300
+                               disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isClaimLoading ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-t-2 border-white animate-spin rounded-full"></div>
+                          <span>Claiming...</span>
+                        </div>
+                      ) : (
+                        "Claim Reward"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isClaimed && (
+              <div className="mt-6 text-center text-[#2ECC71] font-bold">
+                Reward claimed successfully!
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-
-      {hasPlayed && cooldownTime > Date.now() && (
-        <CountdownTimer targetTime={cooldownTime} />
-      )}
-      {!hasPlayed && (
-        <button
-          onClick={() => handleSpinClick()}
-          disabled={mustSpin}
-          className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold
-                     hover:bg-blue-700 transition-all transform hover:scale-110
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          SPIN THE WHEEL
-        </button>
-      )}
-
-      {winner && !isClaimed && (
-        <div className="flex flex-col items-center gap-4 mt-6">
-          <p className="text-2xl font-bold animate-bounce">
-            You won: {winner}!
-          </p>
-          <button
-            onClick={() => handleClaim()}
-            disabled={isClaimLoading}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg font-bold
-                hover:bg-green-700 transition-all transform hover:scale-110
-                disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isClaimLoading ? "Claiming..." : "CLAIM REWARD"}
-          </button>
-        </div>
-      )}
-
-      {isClaimed && (
-        <div className="mt-6 text-xl text-green-500">
-          Reward claimed successfully!
-        </div>
-      )}
-
-      <style jsx>{`
-        .text-gradient {
-          background: linear-gradient(to right, #ff0000, #00ff00);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: rainbow 3s ease infinite;
-        }
-        @keyframes rainbow {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 25%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-      `}</style>
     </div>
   );
-};
+}; 
