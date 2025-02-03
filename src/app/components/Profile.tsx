@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import copy from "./../assets/userProfile/copy.svg";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+// import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
@@ -149,15 +149,15 @@ const Link = ({ userDetails }: any) => {
           <p className="text-sm text-[#8E8EA8] break-all text-center md:text-left mb-3">
             {`https://t.me/Solvium_bot?start=${userDetails?.username}`}
           </p>
-          <CopyToClipboard
+          {/* <CopyToClipboard
             text={`https://t.me/Solvium_bot?start=${userDetails?.username}`}
             onCopy={() => setCopyState("Copied")}
-          >
+          > */}
             <button className="w-full px-4 py-3 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
               <span>{copyState}</span>
               <img src={copy.src} alt="copy" className="w-4 h-4 invert" />
             </button>
-          </CopyToClipboard>
+          {/* </CopyToClipboard> */}
         </div>
       </div>
     </div>
