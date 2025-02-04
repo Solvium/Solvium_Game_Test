@@ -85,13 +85,13 @@ const ContestBoard = ({ user }: any) => {
 
   return (
     <div className="container mx-auto p-2 max-w-2xl">
-      <Card className="shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-green-500 to-blue-600 text-white">
-          <div className="  justify-between items-center">
-            <CardTitle className="text-2xl font-bold">
+      <Card className="shadow-[0_0_15px_rgba(41,41,69,0.5)] bg-[#151524] border border-[#2A2A45]">
+        <CardHeader className="bg-[#151524] border-b border-[#2A2A45]">
+          <div className="justify-between items-center">
+            <CardTitle className="text-2xl font-bold text-white">
               Weekly Leaderboard
             </CardTitle>
-            <Badge variant="secondary" className="text-sm min-w-fit">
+            <Badge variant="secondary" className="text-sm min-w-fit bg-[#1A1A2F] text-[#4C6FFF] border border-[#2A2A45]">
               Week {currentWeek.weekNumber} / {currentWeek.year}
             </Badge>
           </div>
@@ -103,36 +103,36 @@ const ContestBoard = ({ user }: any) => {
                 key={entry.userId}
                 className={`flex items-center justify-between p-4 rounded-lg mb-2 ${
                   index === 0
-                    ? "bg-yellow-50"
+                    ? "bg-[#1A1A2F] border border-[#2A2A45]"
                     : index === 1
-                    ? "bg-gray-50"
+                    ? "bg-[#1A1A2F] border border-[#2A2A45]"
                     : index === 2
-                    ? "bg-orange-50"
-                    : "bg-blue-50"
+                    ? "bg-[#1A1A2F] border border-[#2A2A45]"
+                    : "bg-[#1A1A2F] border border-[#2A2A45]"
                 }`}
               >
                 <div className="flex items-center">
                   {renderLeaderboardIcon(index + 1)}
-                  <span className="font-semibold text-gray-800">
+                  <span className="font-semibold text-white">
                     {entry.user.name}
                   </span>
                 </div>
                 <div className="flex items-center min-w-fit">
-                  <span className="text-lg font-bold text-green-700 mr-2">
+                  <span className="text-lg font-bold text-[#4C6FFF] mr-2">
                     {entry.points} pts
                   </span>
-                  <Badge variant="outline" className="text-sm">
+                  <Badge variant="outline" className="text-sm bg-[#1A1A2F] text-[#8E8EA8] border border-[#2A2A45]">
                     #{index + 1}
                   </Badge>
                 </div>
               </div>
             ))
           ) : (
-            <div>No data</div>
+            <div className="text-[#8E8EA8]">No data</div>
           )}
         </CardContent>
       </Card>
-      <div className="mt-4 text-sm text-gray-600 text-center">
+      <div className="mt-4 text-sm text-[#8E8EA8] text-center">
         Top performers get special rewards! Keep challenging yourself.
       </div>
     </div>

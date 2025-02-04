@@ -163,45 +163,51 @@ export const Game = ({ claimPoints, userDetails }: any) => {
   };
 
   return (
-    <div className="flex items-center flex-col h-[90vh] justify-center bg-black w-full text-white">
-      <div className="relative flex flex-col items-center justify-center">
+    <div className="flex items-center flex-col h-[90vh] justify-center bg-[#0B0B14] w-full text-white">
+      <div className="relative flex flex-col items-center justify-center w-full">
         <div
           className={` ${
-            !isPlaying || solved ? "hidden" : "flex"
-          }  bg-slate-800 border-slate-300`}
+            !isPlaying ? "hidden" : "flex"
+          } p-4 bg-[#151524] border border-[#2A2A45] rounded-lg shadow-[0_0_15px_rgba(41,41,69,0.5)] gap-4`}
         >
           <GameTimer time={timer ?? Date.now()} />
-          <div>
-            <p>Level: {userDetails?.level}</p>
-            <p>Cur Puzzle: {userDetails?.puzzleCount}</p>
-            <p>cur Difficulty: {diff[userDetails?.difficulty]}</p>
+          <div className="text-[#8E8EA8]">
+            <p>Level: <span className="text-[#4C6FFF] font-bold">{userDetails?.level}</span></p>
+            <p>Cur Puzzle: <span className="text-[#4C6FFF] font-bold">{userDetails?.puzzleCount}</span></p>
+            <p>Cur Difficulty: <span className="text-[#4C6FFF] font-bold">{diff[userDetails?.difficulty]}</span></p>
           </div>
         </div>
+
         <div
-          className={` ${
-            solved ? "hidden" : "flex"
-          } bg-slate-800 border-slate-300`}
+          className={`${
+            !isPlaying ? "hidden" : "block"
+          } bg-[#151524] border border-[#2A2A45] rounded-lg mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
           id="canvas"
+          style={{ minHeight: '400px' }}
         ></div>
 
         <div
-          id="validated-canvas-overlay "
-          className={`  z-[9999999999] w-[60vw] ${
+          id="validated-canvas-overlay"
+          className={`z-[9999999999] w-[60vw] ${
             !solved ? "hidden" : "flex"
-          } flex-col items-center`}
+          } flex-col items-center bg-[#151524] border border-[#2A2A45] rounded-lg p-6 shadow-[0_0_15px_rgba(41,41,69,0.5)] mt-4`}
         >
-          <p>Huray!!</p>
-          <p>You Solved This Puzzle</p>
-          <p>You have earned {points} SOLV</p>
-          <img className="my-4" src={displayImg?.src}></img>
+          <p className="text-2xl font-bold text-[#4C6FFF] mb-2">Huray!!</p>
+          <p className="text-white text-lg mb-2">You Solved This Puzzle</p>
+          <p className="text-[#8E8EA8] mb-4">You have earned <span className="text-[#4C6FFF] font-bold">{points} SOLV</span></p>
+          <img 
+            className="my-4 rounded-lg border border-[#2A2A45] max-w-full h-auto" 
+            src={displayImg?.src} 
+            alt="Completed puzzle"
+          />
           {userDetails?.level > 3 ? (
-            <p>You have finished all stages for today, come back tomorrow</p>
+            <p className="text-[#8E8EA8] text-center">You have finished all stages for today, come back tomorrow</p>
           ) : (
             <Button
               onClick={() => {
                 playGame();
               }}
-              className=""
+              className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white"
             >
               Next Game
             </Button>
@@ -212,14 +218,12 @@ export const Game = ({ claimPoints, userDetails }: any) => {
             onClick={() => {
               playGame();
             }}
-            className=""
+            className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white mt-4"
           >
             Play Game
           </Button>
         )}
       </div>
-
-      {/* <div id="gam"></div> */}
     </div>
   );
 };
