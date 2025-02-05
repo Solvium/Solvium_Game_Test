@@ -62,16 +62,6 @@ export const Game = ({ claimPoints, userDetails }: any) => {
     setUp();
   }, [solved]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isPlaying) {
-        setTimer((prevTime) => prevTime + 1000); // Increment timer by 1 second
-      }
-    }, 1000);
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [isPlaying]);
-
   const preloadImage = (src: string) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -173,46 +163,52 @@ export const Game = ({ claimPoints, userDetails }: any) => {
   };
 
   return (
-    <div className="bg-[#0B0B14] min-h-screen w-full py-4 px-4 md:py-6">
-      <div className="flex flex-col items-center space-y-4 mb-6">
-        <div className="bg-[#151524] rounded-xl p-4 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
-          <div className="flex flex-col items-center">
-            <span className="text-[#8E8EA8] text-sm mb-1">Time Elapsed</span>
-            <span className="text-[#4C6FFF] text-4xl font-bold">
-              {Math.abs(Math.floor((timer - Date.now()) / 1000))}s
-            </span>
+    <div className="bg-[#0B0B14] h-[90vh] flex flex-col items-center justify-center w-full py-4 px-4 md:py-6">
+      <div>
+        <div
+          className={`${
+            !isPlaying || solved ? "hidden" : "block"
+          } flex flex-col items-center space-y-4 mb-6`}
+        >
+          <div className="bg-[#151524] rounded-xl p-4 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+            <div className="flex flex-col items-center">
+              <span className="text-[#8E8EA8] text-sm mb-1">Time Elapsed</span>
+              <span className="text-[#4C6FFF] text-4xl font-bold">
+                <GameTimer time={timer} />
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center space-x-8">
+            <div className="flex flex-col items-center">
+              <span className="text-[#8E8EA8] text-sm mb-1">Level</span>
+              <span className="text-white text-xl font-semibold">
+                {userDetails.level}
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-[#8E8EA8] text-sm mb-1">Puzzle</span>
+              <span className="text-white text-xl font-semibold">
+                {userDetails.puzzleCount}
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-[#8E8EA8] text-sm mb-1">Difficulty</span>
+              <span className="text-white text-xl font-semibold">
+                {diff[userDetails.difficulty]}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-center space-x-8">
-          <div className="flex flex-col items-center">
-            <span className="text-[#8E8EA8] text-sm mb-1">Level</span>
-            <span className="text-white text-xl font-semibold">
-              {userDetails.level}
-            </span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-[#8E8EA8] text-sm mb-1">Puzzle</span>
-            <span className="text-white text-xl font-semibold">
-              {userDetails.puzzleCount}
-            </span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-[#8E8EA8] text-sm mb-1">Difficulty</span>
-            <span className="text-white text-xl font-semibold">
-              {diff[userDetails.difficulty]}
-            </span>
-          </div>
-        </div>
+        <div
+          className={`${
+            !isPlaying || solved ? "hidden" : "block"
+          } bg-[#151524] border border-[#2A2A45] rounded-2xl mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
+          id="canvas"
+          style={{ minHeight: "400px" }}
+        ></div>
       </div>
-
-      <div
-        className={`${
-          !isPlaying ? "hidden" : "block"
-        } bg-[#151524] border border-[#2A2A45] rounded-2xl mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
-        id="canvas"
-        style={{ minHeight: "400px" }}
-      ></div>
 
       <div
         id="validated-canvas-overlay"
@@ -247,14 +243,16 @@ export const Game = ({ claimPoints, userDetails }: any) => {
         )}
       </div>
       {!isPlaying && curImg && (
-        <Button
-          onClick={() => {
-            playGame();
-          }}
-          className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white mt-4"
-        >
-          Play Game
-        </Button>
+        <div className="flex items-center justify-center">
+          <Button
+            onClick={() => {
+              playGame();
+            }}
+            className="bg-[#4C6FFF]  hover:bg-[#4C6FFF]/80 text-white mt-4"
+          >
+            Play Game
+          </Button>
+        </div>
       )}
     </div>
   );
