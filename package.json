@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "set NODE_OPTIONS=--max-old-space-size=4096 && next dev --port 6001",
+    "dev": "next dev --port 6001",
     "build": "yarn configbot && prisma generate && next build",
-    "start": "set NODE_OPTIONS=--max-old-space-size=4096 && next start",
+    "start": "next start",
     "configbot": "node configure.mjs",
     "lint": "next lint"
   },
@@ -26,7 +26,7 @@
     "@tonconnect/ui-react": "^2.0.0-beta.2",
     "@twa-dev/sdk": "^7.10.1",
     "@types/node": "^20",
-    "@types/react": "^18", 
+    "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.3",
@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18", 
+    "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.12",
