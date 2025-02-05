@@ -59,7 +59,7 @@ export const GameTimer = ({ time }: { time: number }) => {
 
   return (
     <div className="ml-2">
-      <h1 className="text-[10px] font-bold">
+      <h1 className="  font-bold">
         {minutes.toString().padStart(2, "0")}:
         {seconds.toString().padStart(2, "0")}
       </h1>

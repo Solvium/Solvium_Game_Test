@@ -85,6 +85,17 @@ const config: Config = {
         "Karantina-Bold": ["Karantina-Bold"],
         "Karantina-Light": ["Karantina-Light"],
         "Karantina-Regular": ["Karantina-Regular"],
+        sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      boxShadow: {
+        'glow-sm': '0 0 10px 2px rgba(255,255,255,0.8)',
+        'glow-md': '0 0 15px 5px rgba(255,255,255,0.8)',
+        'glow-lg': '0 0 20px 10px rgba(255,255,255,0.8)',
       },
       gridTemplateColumns: {
         custom: "minmax(468px, 1fr) minmax(350px, 1fr) minmax(250px, 1fr)",

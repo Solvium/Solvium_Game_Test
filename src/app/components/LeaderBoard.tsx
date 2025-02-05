@@ -17,15 +17,15 @@ const LeaderBoard = ({ leader, user }: any) => {
   };
 
   return (
-    <div className="w-full p-6 bg-primary-purple min-h-screen">
-      <div className="bg-white rounded-[28px] p-6 shadow-lg">
-        <h2 className="text-2xl font-bold text-primary-purple mb-6 text-center">
+    <div className="w-full p-6 bg-[#0B0B14] min-h-screen">
+      <div className="bg-[#151524] border border-[#2A2A45] rounded-lg p-6 shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+        <h2 className="text-2xl font-bold text-[#4C6FFF] mb-6 text-center">
           Leaderboard
         </h2>
 
         <div className="space-y-4">
           <div
-            className="flex items-center p-4 bg-gray-50 rounded-lg"
+            className="flex items-center p-4 bg-[#0B0B14] border border-[#2A2A45] rounded-lg"
           >
             <div
               style={{ background: stringToColour(user?.username) }}
@@ -34,11 +34,11 @@ const LeaderBoard = ({ leader, user }: any) => {
               {user?.name?.slice(0, 2)?.toUpperCase()}
             </div>
             <div className="flex-1 ml-4">
-              <h3 className="font-semibold text-gray-900">{user?.name}</h3>
-              <p className="text-sm text-gray-500">{user?.totalPoints}</p>
+              <h3 className="font-semibold text-white">{user?.name}</h3>
+              <p className="text-sm text-[#8E8EA8]">{user?.totalPoints} SOLV</p>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="font-semibold text-primary-blue">
+              <span className="font-semibold text-[#4C6FFF]">
                 #{myPos + 1}
               </span>
             </div>
@@ -47,7 +47,7 @@ const LeaderBoard = ({ leader, user }: any) => {
             return (
               <div
                 key={lead.username + i + leader}
-                className="flex items-center p-4 bg-gray-50 rounded-lg"
+                className="flex items-center p-4 bg-[#0B0B14] border border-[#2A2A45] rounded-lg"
               >
                 <div
                   style={{ background: stringToColour(lead.username) }}
@@ -56,11 +56,11 @@ const LeaderBoard = ({ leader, user }: any) => {
                   {lead?.name?.slice(0, 2)?.toUpperCase()}
                 </div>
                 <div className="flex-1 ml-4">
-                  <h3 className="font-semibold text-gray-900">{lead?.name}</h3>
-                  <p className="text-sm text-gray-500">{lead.totalPoints}</p>
+                  <h3 className="font-semibold text-white">{lead?.name}</h3>
+                  <p className="text-sm text-[#8E8EA8]">{lead.totalPoints} SOLV</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-primary-blue">
+                  <span className="font-semibold text-[#4C6FFF]">
                     #{i + 1}
                   </span>
                 </div>
