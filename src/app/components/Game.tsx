@@ -62,6 +62,16 @@ export const Game = ({ claimPoints, userDetails }: any) => {
     setUp();
   }, [solved]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isPlaying) {
+        setTimer(prevTime => prevTime + 1000); // Increment timer by 1 second
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [isPlaying]);
+
   const preloadImage = (src: string) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -163,67 +173,79 @@ export const Game = ({ claimPoints, userDetails }: any) => {
   };
 
   return (
-    <div className="flex items-center flex-col h-[90vh] justify-center bg-[#0B0B14] w-full text-white">
-      <div className="relative flex flex-col items-center justify-center w-full">
-        <div
-          className={` ${
-            !isPlaying ? "hidden" : "flex"
-          } p-4 bg-[#151524] border border-[#2A2A45] rounded-lg shadow-[0_0_15px_rgba(41,41,69,0.5)] gap-4`}
-        >
-          <GameTimer time={timer ?? Date.now()} />
-          <div className="text-[#8E8EA8]">
-            <p>Level: <span className="text-[#4C6FFF] font-bold">{userDetails?.level}</span></p>
-            <p>Cur Puzzle: <span className="text-[#4C6FFF] font-bold">{userDetails?.puzzleCount}</span></p>
-            <p>Cur Difficulty: <span className="text-[#4C6FFF] font-bold">{diff[userDetails?.difficulty]}</span></p>
+    <div className="bg-[#0B0B14] min-h-screen w-full py-4 px-4 md:py-6">
+      <div className="flex flex-col items-center space-y-4 mb-6">
+        <div className="bg-[#151524] rounded-xl p-4 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+          <div className="flex flex-col items-center">
+            <span className="text-[#8E8EA8] text-sm mb-1">Time Elapsed</span>
+            <span className="text-[#4C6FFF] text-4xl font-bold">
+              {Math.abs(Math.floor((timer - Date.now()) / 1000))}s
+            </span>
           </div>
         </div>
-
-        <div
-          className={`${
-            !isPlaying ? "hidden" : "block"
-          } bg-[#151524] border border-[#2A2A45] rounded-lg mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
-          id="canvas"
-          style={{ minHeight: '400px' }}
-        ></div>
-
-        <div
-          id="validated-canvas-overlay"
-          className={`z-[9999999999] w-[60vw] ${
-            !solved ? "hidden" : "flex"
-          } flex-col items-center bg-[#151524] border border-[#2A2A45] rounded-lg p-6 shadow-[0_0_15px_rgba(41,41,69,0.5)] mt-4`}
-        >
-          <p className="text-2xl font-bold text-[#4C6FFF] mb-2">Huray!!</p>
-          <p className="text-white text-lg mb-2">You Solved This Puzzle</p>
-          <p className="text-[#8E8EA8] mb-4">You have earned <span className="text-[#4C6FFF] font-bold">{points} SOLV</span></p>
-          <img 
-            className="my-4 rounded-lg border border-[#2A2A45] max-w-full h-auto" 
-            src={displayImg?.src} 
-            alt="Completed puzzle"
-          />
-          {userDetails?.level > 3 ? (
-            <p className="text-[#8E8EA8] text-center">You have finished all stages for today, come back tomorrow</p>
-          ) : (
-            <Button
-              onClick={() => {
-                playGame();
-              }}
-              className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white"
-            >
-              Next Game
-            </Button>
-          )}
+        
+        <div className="flex items-center justify-center space-x-8">
+          <div className="flex flex-col items-center">
+            <span className="text-[#8E8EA8] text-sm mb-1">Level</span>
+            <span className="text-white text-xl font-semibold">{userDetails.level}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[#8E8EA8] text-sm mb-1">Puzzle</span>
+            <span className="text-white text-xl font-semibold">{userDetails.puzzleCount}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[#8E8EA8] text-sm mb-1">Difficulty</span>
+            <span className="text-white text-xl font-semibold">{diff[userDetails.difficulty]}</span>
+          </div>
         </div>
-        {!isPlaying && curImg && (
+      </div>
+
+      <div
+        className={`${
+          !isPlaying ? "hidden" : "block"
+        } bg-[#151524] border border-[#2A2A45] rounded-2xl mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
+        id="canvas"
+        style={{ minHeight: '400px' }}
+      ></div>
+
+      <div
+        id="validated-canvas-overlay"
+        className={`z-[9999999999] w-[60vw] ${
+          !solved ? "hidden" : "flex"
+        } flex-col items-center bg-[#151524] border border-[#2A2A45] rounded-2xl p-6 shadow-[0_0_15px_rgba(41,41,69,0.5)] mt-4`}
+      >
+        <p className="text-2xl font-bold text-[#4C6FFF] mb-2">Huray!!</p>
+        <p className="text-white text-lg mb-2">You Solved This Puzzle</p>
+        <p className="text-[#8E8EA8] mb-4">You have earned <span className="text-[#4C6FFF] font-bold">{points} SOLV</span></p>
+        <img 
+          className="my-4 rounded-lg border border-[#2A2A45] max-w-full h-auto" 
+          src={displayImg?.src} 
+          alt="Completed puzzle"
+        />
+        {userDetails?.level > 3 ? (
+          <p className="text-[#8E8EA8] text-center">You have finished all stages for today, come back tomorrow</p>
+        ) : (
           <Button
             onClick={() => {
               playGame();
             }}
-            className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white mt-4"
+            className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white"
           >
-            Play Game
+            Next Game
+            
           </Button>
         )}
       </div>
+      {!isPlaying && curImg && (
+        <Button
+          onClick={() => {
+            playGame();
+          }}
+          className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white mt-4"
+        >
+          Play Game
+        </Button>
+      )}
     </div>
   );
 };

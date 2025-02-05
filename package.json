@@ -17,7 +17,6 @@
     "@near-wallet-selector/modal-ui": "^8.9.15",
     "@near-wallet-selector/my-near-wallet": "^8.9.15",
     "@orbs-network/ton-access": "^2.2.2",
-    "@prisma/client": "^5.19.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^4.24.4",
     "@ton/core": "^0.59.0",
@@ -43,7 +42,6 @@
     "next": "14.2.12",
     "openai": "^4.80.1",
     "postcss": "^8",
-    "prisma": "^5.19.1",
     "react": "^18",
     "react-copy-to-clipboard": "^5.1.0",
     "react-custom-roulette": "^1.4.1",
@@ -64,13 +62,14 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@prisma/client": "^6.3.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.12",
     "postcss": "^8",
-    "prisma": "^5.19.1",
+    "prisma": "^5.22.0",
     "typescript": "^5"
   },
   "pnpm": {
