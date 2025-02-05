@@ -71,19 +71,6 @@
     "postcss": "^8",
     "prisma": "^5.22.0",
     "typescript": "^5"
-  },
-  "pnpm": {
-    "ignoredBuiltDependencies": [
-      "secp256k1",
-      "@prisma/engines",
-      "prisma",
-      "@prisma/client"
-    ],
-    "onlyBuiltDependencies": [
-      "secp256k1",
-      "@prisma/engines",
-      "prisma",
-      "@prisma/client"
-    ]
   }
+   
 }

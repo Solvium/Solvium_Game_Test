@@ -65,10 +65,10 @@ export const Game = ({ claimPoints, userDetails }: any) => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (isPlaying) {
-        setTimer(prevTime => prevTime + 1000); // Increment timer by 1 second
+        setTimer((prevTime) => prevTime + 1000); // Increment timer by 1 second
       }
     }, 1000);
-    
+
     return () => clearInterval(interval); // Cleanup on unmount
   }, [isPlaying]);
 
@@ -183,19 +183,25 @@ export const Game = ({ claimPoints, userDetails }: any) => {
             </span>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-center space-x-8">
           <div className="flex flex-col items-center">
             <span className="text-[#8E8EA8] text-sm mb-1">Level</span>
-            <span className="text-white text-xl font-semibold">{userDetails.level}</span>
+            <span className="text-white text-xl font-semibold">
+              {userDetails.level}
+            </span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-[#8E8EA8] text-sm mb-1">Puzzle</span>
-            <span className="text-white text-xl font-semibold">{userDetails.puzzleCount}</span>
+            <span className="text-white text-xl font-semibold">
+              {userDetails.puzzleCount}
+            </span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-[#8E8EA8] text-sm mb-1">Difficulty</span>
-            <span className="text-white text-xl font-semibold">{diff[userDetails.difficulty]}</span>
+            <span className="text-white text-xl font-semibold">
+              {diff[userDetails.difficulty]}
+            </span>
           </div>
         </div>
       </div>
@@ -205,7 +211,7 @@ export const Game = ({ claimPoints, userDetails }: any) => {
           !isPlaying ? "hidden" : "block"
         } bg-[#151524] border border-[#2A2A45] rounded-2xl mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
         id="canvas"
-        style={{ minHeight: '400px' }}
+        style={{ minHeight: "400px" }}
       ></div>
 
       <div
@@ -216,14 +222,19 @@ export const Game = ({ claimPoints, userDetails }: any) => {
       >
         <p className="text-2xl font-bold text-[#4C6FFF] mb-2">Huray!!</p>
         <p className="text-white text-lg mb-2">You Solved This Puzzle</p>
-        <p className="text-[#8E8EA8] mb-4">You have earned <span className="text-[#4C6FFF] font-bold">{points} SOLV</span></p>
-        <img 
-          className="my-4 rounded-lg border border-[#2A2A45] max-w-full h-auto" 
-          src={displayImg?.src} 
+        <p className="text-[#8E8EA8] mb-4">
+          You have earned{" "}
+          <span className="text-[#4C6FFF] font-bold">{points} SOLV</span>
+        </p>
+        <img
+          className="my-4 rounded-lg border border-[#2A2A45] max-w-full h-auto"
+          src={displayImg?.src}
           alt="Completed puzzle"
         />
         {userDetails?.level > 3 ? (
-          <p className="text-[#8E8EA8] text-center">You have finished all stages for today, come back tomorrow</p>
+          <p className="text-[#8E8EA8] text-center">
+            You have finished all stages for today, come back tomorrow
+          </p>
         ) : (
           <Button
             onClick={() => {
@@ -232,7 +243,6 @@ export const Game = ({ claimPoints, userDetails }: any) => {
             className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white"
           >
             Next Game
-            
           </Button>
         )}
       </div>
