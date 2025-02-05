@@ -232,6 +232,7 @@ export const Game = ({ claimPoints, userDetails }: any) => {
             className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white"
           >
             Next Game
+            
           </Button>
         )}
       </div>
