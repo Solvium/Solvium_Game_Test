@@ -30,6 +30,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.3",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.13",
     "dotenv": "^16.4.5",
@@ -72,5 +73,4 @@
     "prisma": "^5.22.0",
     "typescript": "^5"
   }
-   
 }

@@ -79,7 +79,7 @@ export const WheelOfFortune = () => {
 
     const res = await provider.query<CodeResult>({
       request_type: "call_function",
-      account_id: "ft.predeployed.examples.testnet",
+      account_id: "dogshit-1408.meme-cooking.near",
       method_name: "storage_balance_of",
       args_base64: Buffer.from(
         JSON.stringify({ account_id: nearAddress })
@@ -147,7 +147,7 @@ export const WheelOfFortune = () => {
       console.log("isRegistered", isRegistered);
 
       if (!isRegistered) {
-        await registerToken("ft.predeployed.examples.testnet");
+        await registerToken("dogshit-1408.meme-cooking.near");
       }
 
       const transaction = await wallet.signAndSendTransaction({
@@ -160,7 +160,7 @@ export const WheelOfFortune = () => {
               methodName: "claimWheel",
               args: {
                 rewardAmount: rewardAmount,
-                tokenAddress: "ft.predeployed.examples.testnet"!,
+                tokenAddress: "dogshit-1408.meme-cooking.near"!,
               },
               gas: "300000000000000",
               deposit: "0",
@@ -185,6 +185,10 @@ export const WheelOfFortune = () => {
   const handleSpinClick = () => {
     const now = Date.now();
     if (lastPlayed && now - lastPlayed < 24 * 60 * 60 * 1000) {
+      return;
+    }
+    if (!nearConnected) {
+      alert("Kindly connect your wallet to continue!!");
       return;
     }
     const newPrizeNumber = Math.floor(Math.random() * data.length);
@@ -231,7 +235,9 @@ export const WheelOfFortune = () => {
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] flex items-center justify-center">
                 <span className="text-white text-sm font-bold">$</span>
               </div>
-              <span className="text-white text-lg font-bold">{nearConnected ? "350.00" : "0.00"}</span>
+              <span className="text-white text-lg font-bold">
+                {nearConnected ? "350.00" : "0.00"}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-[#1A1A2F] flex items-center justify-center">
@@ -254,14 +260,14 @@ export const WheelOfFortune = () => {
                 prizeNumber={prizeNumber}
                 data={data}
                 backgroundColors={[
-                  '#FF6B6B',  // Red
-                  '#4ECDC4',  // Teal
-                  '#FFD93D',  // Yellow
-                  '#6C5CE7',  // Purple
-                  '#95A5A6',  // Gray
-                  '#2ECC71',  // Green
+                  "#FF6B6B", // Red
+                  "#4ECDC4", // Teal
+                  "#FFD93D", // Yellow
+                  "#6C5CE7", // Purple
+                  "#95A5A6", // Gray
+                  "#2ECC71", // Green
                 ]}
-                textColors={['#FFFFFF']}
+                textColors={["#FFFFFF"]}
                 outerBorderColor="#2A2A45"
                 outerBorderWidth={3}
                 innerRadius={20}
@@ -283,7 +289,7 @@ export const WheelOfFortune = () => {
 
               {/* Outer glow effect */}
               <div className="absolute -inset-[30px] bg-gradient-radial from-[#4C6FFF]/40 to-transparent blur-2xl animate-glow pointer-events-none" />
-              
+
               {/* Inner glow effects */}
               <div className="absolute inset-0">
                 <div className="absolute inset-0 rounded-full bg-gradient-conic from-[#4C6FFF]/30 via-[#6C5CE7]/30 to-[#4C6FFF]/30 animate-wheel-spin pointer-events-none shadow-glow-blue" />
@@ -296,15 +302,15 @@ export const WheelOfFortune = () => {
                     key={i}
                     className="absolute w-3 h-3"
                     style={{
-                      top: '50%',
-                      left: '50%',
+                      top: "50%",
+                      left: "50%",
                       transform: `rotate(${i * 30}deg) translateY(-145px)`,
                     }}
                   >
-                    <div 
+                    <div
                       className="absolute w-full h-full rounded-full bg-gradient-radial from-white via-white/40 to-transparent shadow-glow-lg animate-bulb-pulse"
                       style={{
-                        animationDelay: `${i * 0.2}s`
+                        animationDelay: `${i * 0.2}s`,
                       }}
                     />
                     <div className="absolute w-2 h-2 top-0.5 left-0.5 rounded-full bg-white shadow-glow-xl" />
@@ -332,7 +338,7 @@ export const WheelOfFortune = () => {
             ) : (
               <button
                 onClick={handleSpinClick}
-                disabled={!nearConnected || hasPlayed || mustSpin}
+                disabled={hasPlayed || mustSpin}
                 className="w-full py-4 bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] text-white text-lg font-bold rounded-xl 
                          hover:opacity-90 transition-all duration-300
                          disabled:opacity-50 disabled:cursor-not-allowed
@@ -382,4 +388,4 @@ export const WheelOfFortune = () => {
       </div>
     </div>
   );
-}; 
+};

@@ -49,7 +49,7 @@ export const WalletSelectorContextProvider: React.FC<{
   const [isUserSignedIn, setUserSignedIn] = useState(false);
   const init = useCallback(async () => {
     const _selector = await setupWalletSelector({
-      network: "testnet",
+      network: "mainnet",
       //   debug: true,
       modules: [setupMeteorWallet() as WalletModuleFactory],
     });

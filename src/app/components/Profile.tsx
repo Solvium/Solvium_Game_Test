@@ -153,10 +153,10 @@ const Link = ({ userDetails }: any) => {
             text={`https://t.me/Solvium_bot?start=${userDetails?.username}`}
             onCopy={() => setCopyState("Copied")}
           > */}
-            <button className="w-full px-4 py-3 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-              <span>{copyState}</span>
-              <img src={copy.src} alt="copy" className="w-4 h-4 invert" />
-            </button>
+          <button className="w-full px-4 py-3 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+            <span>{copyState}</span>
+            <img src={copy.src} alt="copy" className="w-4 h-4 invert" />
+          </button>
           {/* </CopyToClipboard> */}
         </div>
       </div>
@@ -447,13 +447,26 @@ const Tasks = ({
               break;
           }
 
-          const found = userDetails?.completedTasks?.find(
-            (completedTask: any) =>
-              completedTask.name === task.name &&
-              completedTask.category === curCat
-          );
+          let found = false;
+          let onGoing = false;
 
-          if (found) return null;
+          userTasks?.length > 0 &&
+            userTasks?.map((utask: any) => {
+              if (task.id == utask.taskId) {
+                if (utask.isCompleted) found = true;
+                onGoing = true;
+              }
+            });
+
+          if (found) return <div key={task.name + "task"}> </div>;
+
+          // const found = userDetails?.completedTasks?.find(
+          //   (completedTask: any) =>
+          //     completedTask.name === task.name &&
+          //     completedTask.category === curCat
+          // );
+
+          // if (found) return null;
 
           return (
             <div

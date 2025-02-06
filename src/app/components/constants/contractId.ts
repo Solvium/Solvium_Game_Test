@@ -1,1 +1,1 @@
-export const CONTRACTID: string = "finehare4946.testnet";
+export const CONTRACTID: string = "solviumpuzzlegame.near";
