@@ -24,7 +24,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({
       dispatch({ type: "SET_LOADING" });
 
       const selector = await setupWalletSelector({
-        network: "testnet",
+        network: "mainnet",
         modules: [setupMeteorWallet() as any],
       });
 

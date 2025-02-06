@@ -64,7 +64,7 @@ function Home() {
 
   const getUser = async () => {
     try {
-      const username = tg?.initDataUnsafe?.user?.username ?? "Ajemark";
+      const username = tg?.initDataUnsafe?.user?.username;
       if (!username) {
         console.error("No username available");
         setLoadingPage(false);
@@ -243,7 +243,7 @@ function Home() {
 
           <div className="fixed bottom-0 left-0 right-0 bg-[#151524] border-t border-[#2A2A45] shadow-glow-blue">
             <div className="max-w-[430px] mx-auto">
-              <div className="flex justify-between items-center px-4 py-2">
+              <div className="flex justify-around items-center px-4 py-2">
                 <button
                   onClick={() => handlePageChange("Home")}
                   className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${
@@ -256,7 +256,7 @@ function Home() {
                   <span className="text-xs">Profile</span>
                 </button>
 
-                <button
+                {/* <button
                   onClick={() => handlePageChange("Contest")}
                   className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${
                     selectedTab === "Contest"
@@ -283,7 +283,7 @@ function Home() {
                     />
                   </svg>
                   <span className="text-xs">Contest</span>
-                </button>
+                </button> */}
 
                 <button
                   onClick={() => handlePageChange("Wheel")}
