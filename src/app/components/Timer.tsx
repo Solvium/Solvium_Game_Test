@@ -37,3 +37,32 @@ const TimerCountdown = ({ time }: { time: number }) => {
 };
 
 export default TimerCountdown;
+
+export const GameTimer = ({ time }: { time: number }) => {
+  const startDate = new Date(time);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTime = new Date().getTime();
+      const endTime = startDate.getTime();
+      const remaining = currentTime - endTime;
+
+      setTimeRemaining(remaining);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [startDate]);
+
+  const minutes = Math.floor((timeRemaining / (1000 * 60)) % 60);
+  const seconds = Math.floor((timeRemaining / 1000) % 60);
+
+  return (
+    <div className="ml-2">
+      <h1 className="  font-bold">
+        {minutes.toString().padStart(2, "0")}:
+        {seconds.toString().padStart(2, "0")}
+      </h1>
+    </div>
+  );
+};

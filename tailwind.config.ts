@@ -41,6 +41,8 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          blue: '#4A90E2',
+          purple: '#6C5CE7',
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -53,6 +55,8 @@ const config: Config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          pink: '#FF69B4',
+          green: '#4CAF50',
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -81,8 +85,18 @@ const config: Config = {
         "Karantina-Bold": ["Karantina-Bold"],
         "Karantina-Light": ["Karantina-Light"],
         "Karantina-Regular": ["Karantina-Regular"],
+        sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
-
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      boxShadow: {
+        'glow-sm': '0 0 10px 2px rgba(255,255,255,0.8)',
+        'glow-md': '0 0 15px 5px rgba(255,255,255,0.8)',
+        'glow-lg': '0 0 20px 10px rgba(255,255,255,0.8)',
+      },
       gridTemplateColumns: {
         custom: "minmax(468px, 1fr) minmax(350px, 1fr) minmax(250px, 1fr)",
       },

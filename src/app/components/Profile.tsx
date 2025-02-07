@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import copy from "./../assets/userProfile/copy.svg";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+// import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
@@ -8,6 +8,8 @@ import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
 import DepositMultiplier from "./UI/TonDeposit";
 import { useMultiplierContract } from "../hooks/useDepositContract";
 import TimerCountdown from "./Timer";
+import WalletSelector from "./walletSelector";
+import UnifiedWalletConnector from "./walletSelector";
 
 const UserProfile = ({
   userDetails,
@@ -18,69 +20,108 @@ const UserProfile = ({
   claimPoints,
 }: any) => {
   return (
-    <div className="backdrop-blur-sm w-full p-[10px] pt-[20px] space-y-4">
-      <div className="flex justify-end">
-        <TonConnectButton />
-      </div>
+    <div className="min-h-screen w-full bg-[#0B0B14] py-4 px-4 md:py-6">
+      <div className="max-w-4xl mx-auto space-y-4">
+        <div className="flex justify-end">
+          <UnifiedWalletConnector />
+        </div>
 
-      <ProfileHeader userDetails={userDetails} />
-      <Link userDetails={userDetails} />
-      <Farming userDetails={userDetails} claimPoints={claimPoints} />
-      <Tasks
-        userTasks={userTasks}
-        userDetails={userDetails}
-        tasks={tasks}
-        tg={tg}
-        getAllInfo={getAllInfo}
-      />
+        {/* Profile Header */}
+        <div className="bg-[#151524] rounded-2xl p-6 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+          <ProfileHeader userDetails={userDetails} />
+        </div>
 
-      {/* <Stat userDetails={userDetails} /> */}
-      <div className="flex mt-12 gap-[34px] flex-col md:flex-row w-full">
-        {/* <div className="w-full">
-          <Level userDetails={userDetails} ranks={ranks} />
-          <CreatedGames userDetails={userDetails} myGames={myGames} />
-        </div> */}
+        {/* Invite Link */}
+        <div className="bg-[#151524] rounded-2xl p-6 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+          <Link userDetails={userDetails} />
+        </div>
+
+        {/* Farming Section */}
+        <div className="bg-[#151524] rounded-2xl p-6 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+          <Farming userDetails={userDetails} claimPoints={claimPoints} />
+        </div>
+
+        {/* Tasks Section */}
+        <div className="bg-[#151524] rounded-2xl p-6 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+          <Tasks
+            userTasks={userTasks}
+            userDetails={userDetails}
+            tasks={tasks}
+            tg={tg}
+            getAllInfo={getAllInfo}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
-export default UserProfile;
-
 const ProfileHeader = ({ userDetails }: any) => {
   return (
-    <div
-      style={{
-        background:
-          "linear-gradient(92.69deg, rgba(207, 22, 22, 0.5) 8.15%, rgba(210, 30, 30, 0.1) 99.96%)",
-      }}
-      className="border-4 border-blue-80 w-full rounded-3xl p-4 bg-blue-[#010C18] flex flex-col"
-    >
-      <div className="flex items-center gap-[5px] relative z-10">
-        <div className="rounded-[8px] md:rounded-2xl border-blue-90 border md:border-4">
-          <div className="text-headerbg text-xl font-bold justify-center flex items-center bg-white rounded-[8px] w-[56px] h-[56px] overflow-hidden">
-            <p>{userDetails?.username?.slice(0, 2).toUpperCase()}</p>
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative">
+        <div className="absolute inset-0 bg-[#4C6FFF] rounded-full blur-lg opacity-20"></div>
+        <div className="relative bg-gradient-to-b from-[#4C6FFF] to-[#4C6FFF]/50 p-0.5 rounded-full">
+          <div className="bg-[#151524] rounded-full w-20 h-20 flex items-center justify-center text-2xl font-bold text-white">
+            {userDetails?.username?.slice(0, 2).toUpperCase()}
           </div>
         </div>
-        <div className="font-Archivo_Regular text-sm font-normal flex flex-col gap-4 items-center text-white justify-between">
-          <p className="md:text-[18px] text-red-400 text-[18px] font-normal font-droid">
-            {userDetails?.username}
-          </p>
-        </div>
       </div>
-      <div className="text-white">
-        <div className="flex">
-          <p className="text-[20px]">
-            <strong>Points:</strong>
-            {}
-          </p>
-          <p className="ml-2 text-[20px]"> {+userDetails?.totalPoints}</p>
-        </div>
-        <div className="flex">
-          <p className="text-[20px]">
-            <strong>Total Referrals:</strong>{" "}
-          </p>
-          <p className="text-[20px] ml-2"> {userDetails?.referralCount}</p>
+
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-white mb-4">
+          {userDetails?.username}
+        </h2>
+        <div className="flex gap-4">
+          <div className="text-center h-full">
+            <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden h-full flex flex-col justify-between">
+              <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
+              <div className="relative">
+                <div className="flex items-center justify-center gap-2">
+                  <svg
+                    className="w-3.5 h-3.5 text-[#4C6FFF]"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-xs text-[#8E8EA8]">
+                    Points:{" "}
+                    <span className="text-[#4C6FFF] font-bold">
+                      {userDetails?.totalPoints || 0}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="text-center h-full">
+            <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden h-full flex flex-col justify-between">
+              <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
+              <div className="relative">
+                <div className="flex items-center justify-center gap-2">
+                  <svg
+                    className="w-3.5 h-3.5 text-[#4C6FFF]"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                  </svg>
+                  <p className="text-xs text-[#8E8EA8]">
+                    Referrals:{" "}
+                    <span className="text-[#4C6FFF] font-bold">
+                      {userDetails?.referralCount || 0}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -90,42 +131,41 @@ const ProfileHeader = ({ userDetails }: any) => {
 const Link = ({ userDetails }: any) => {
   const [copyState, setCopyState] = useState("Copy");
   return (
-    <div
-      style={{
-        backgroundColor: "#010c18",
-      }}
-      className=" h-fit flex flex-col md:flex-row justify-between align-middle w-full md:h-fit border-blue-80 border-4 rounded-3xl items-center md:pr-6 creatorsModebuttonbg text-white py-[10px] relative z-[999] home"
-    >
-      <h2 className="  m-5 w-full  flex flex-row justify-center align-middle font-400 font-droidbold text-white   text-center  border-b-blue-80 border-b-2">
-        INVITE LINK
-      </h2>
-      <p className=" text-[14px] md:text-sm font-400 font-Archivo_Regular max-w-xs text-gray-400 ">{`
-https://t.me/Solvium_bot?start=${userDetails?.username}`}</p>
-      <button
-        style={{
-          background:
-            "linear-gradient(92.69deg, rgba(3, 36, 73, 0.45) 8.15%, rgba(11, 119, 240, 0.1) 99.96%)",
-        }}
-        className="mt-2 bg-blue-900 opacity-90 cursor-pointer flex text-white font-Archivo-Bold border-blue-50 border rounded-xl py-[5px] px-[6px] h-fit z-[10000000000000000]"
-      >
-        <CopyToClipboard
-          text={`
-https://t.me/Solvium_bot?start=${userDetails?.username}`}
-          onCopy={() => setCopyState("Copied")}
+    <div className="space-y-4">
+      <div className="flex items-center justify-center gap-2">
+        <svg
+          className="w-5 h-5 text-[#4C6FFF]"
+          fill="currentColor"
+          viewBox="0 0 20 20"
         >
-          <div className="flex">
-            <p className="mr-2">{copyState}</p>
-            <img className="cursor-pointer" src={copy.src} />
-          </div>
-        </CopyToClipboard>
-      </button>
+          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+        </svg>
+        <h2 className="text-lg font-bold text-white">Invite Link</h2>
+      </div>
+      <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
+        <div className="relative">
+          <p className="text-sm text-[#8E8EA8] break-all text-center md:text-left mb-3">
+            {`https://t.me/Solvium_bot?start=${userDetails?.username}`}
+          </p>
+          {/* <CopyToClipboard
+            text={`https://t.me/Solvium_bot?start=${userDetails?.username}`}
+            onCopy={() => setCopyState("Copied")}
+          > */}
+          <button className="w-full px-4 py-3 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+            <span>{copyState}</span>
+            <img src={copy.src} alt="copy" className="w-4 h-4 invert" />
+          </button>
+          {/* </CopyToClipboard> */}
+        </div>
+      </div>
     </div>
   );
 };
 
 const Farming = ({ userDetails, claimPoints }: any) => {
   const [loadingFarm, setLoadingFarm] = useState(false);
-
   const address = useTonAddress();
   const { deposits } = useMultiplierContract(address);
   let total = 0;
@@ -135,22 +175,27 @@ const Farming = ({ userDetails, claimPoints }: any) => {
 
   const userMultipler = total <= 0 ? 1 : total;
   const hashRate = 0.0035;
-
   const remainingTime =
     new Date(userDetails?.lastClaim).getTime() - new Date().getTime();
 
   return (
-    <div
-      style={{
-        backgroundColor: "#010c18",
-      }}
-      className=" h-fit flex flex-col md:flex-row justify-between align-middle w-full md:h-fit border-blue-80 border-4 rounded-3xl items-center md:pr-6 creatorsModebuttonbg text-white py-[10px] relative z-[999] home"
-    >
-      <h2 className="  m-5 w-full  flex flex-row justify-center align-middle font-400 font-droidbold text-white   text-center  border-b-blue-80 border-b-2">
-        FARMING
-      </h2>
-
-      <div className="text-white my-3 mb-5">
+    <div className="space-y-4">
+      <div className="flex items-center justify-center gap-2">
+        <svg
+          className="w-5 h-5 text-[#4C6FFF]"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9 2a1 1 0 000 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path
+            fillRule="evenodd"
+            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clipRule="evenodd"
+          />
+        </svg>
+        <h2 className="text-lg font-bold text-white">Farming</h2>
+      </div>
+      <div className="flex justify-center">
         <button
           disabled={remainingTime > 0 && userDetails?.isMining}
           style={{
@@ -168,33 +213,30 @@ const Farming = ({ userDetails, claimPoints }: any) => {
             }
             claimPoints("start farming", setLoadingFarm);
           }}
-          className="mt-3 text-[13px] border-blue-80 border-[2px] text-white h-8 flex items-center justify-center rounded-lg px-3"
+          className="px-6 py-3 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all text-sm font-medium shadow-sm hover:shadow disabled:opacity-50"
         >
           {loadingFarm ? (
-            <div className="flex w-16 items-end">
-              <p className="text-[13px] w-full font-bold flex justify-center py-[8px]">
-                <span className="loading loading-ring loading-sm"></span>
-              </p>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-t-2 border-white animate-spin rounded-full"></div>
+              <span>Processing...</span>
             </div>
           ) : userDetails?.isMining ? (
             <>
               {remainingTime > 0 ? (
-                <div className="flex items-end">
-                  <p className="text-[13px] font-bold flex items-end py-[8px]">
-                    {`Farming... ${(hashRate * userMultipler).toFixed(4)}/s `}
-                    <TimerCountdown time={userDetails?.lastClaim} />
-                  </p>
+                <div className="flex items-center gap-2">
+                  <span>{`Mining ${(hashRate * userMultipler).toFixed(
+                    4
+                  )}/s`}</span>
+                  <TimerCountdown time={userDetails?.lastClaim} />
                 </div>
               ) : (
-                <div className="flex items-end">
-                  <p className="text-[13px] font-bold flex items-end py-[8px]">
-                    Claim {18000 * hashRate * userMultipler}
-                  </p>
-                </div>
+                <span>
+                  Claim {(18000 * hashRate * userMultipler).toFixed(2)} SOLV
+                </span>
               )}
             </>
           ) : (
-            <p className="text-[13px] py-[8px]"> Start farming</p>
+            <span>Start Mining</span>
           )}
         </button>
       </div>
@@ -215,8 +257,8 @@ const Tasks = ({
   getAllInfo: any;
   userTasks: any;
 }) => {
-  const [loading, setLoading] = useState({ id: 0, status: false });
-
+  const [loading, setLoading] = useState({ id: "", status: false });
+  const [onGoing, setOnGoing] = useState(false);
   const [error, setError] = useState("");
   const address = useTonAddress();
   const { deposits } = useMultiplierContract(address);
@@ -300,12 +342,12 @@ const Tasks = ({
               return;
             }
           } else {
-            setError("An error occured, Please try again!");
+            setError("An error occurred, Please try again!");
             setLoading({ id: data.id, status: false });
             return;
           }
         } catch (error) {
-          setError("An error occured, Please try again!");
+          setError("An error occurred, Please try again!");
           setLoading({ id: data.id, status: false });
           return;
         }
@@ -331,12 +373,12 @@ const Tasks = ({
               return;
             }
           } else {
-            setError("An error occured, Please try again!");
+            setError("An error occurred, Please try again!");
             setLoading({ id: data.id, status: false });
             return;
           }
         } catch (error) {
-          setError("An error occured, Please try again!");
+          setError("An error occurred, Please try again!");
           setLoading({ id: data.id, status: false });
           return;
         }
@@ -350,59 +392,57 @@ const Tasks = ({
   };
 
   useEffect(() => {
-    setLoading({ id: 0, status: false });
+    setLoading({ id: "", status: false });
+  }, [tasks]);
+
+  useEffect(() => {
+    if (!tasks) return;
+    setOnGoing(tasks.some((task: any) => task.status === "ongoing"));
   }, [tasks]);
 
   return (
-    <div
-      style={{
-        backgroundColor: "#010c18",
-      }}
-      className="h-fit flex flex-col w-full border-blue-80 border-4 rounded-3xl text-white py-[10px]"
-    >
-      <h2 className="my-5 w-full flex flex-row justify-center align-middle font-400 font-droidbold text-white text-center border-b-blue-80 border-b-2">
-        TASKS
-      </h2>
+    <div className="space-y-4">
+      <div className="flex items-center justify-center gap-2">
+        <svg
+          className="w-5 h-5 text-[#4C6FFF]"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9 2a1 1 0 000 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+        </svg>
+        <h2 className="text-lg font-bold text-white">Tasks</h2>
+      </div>
 
       <div className="space-y-3">
-        <div>
-          <div
-            key={"support us task"}
-            className="flex items-center justify-center rounded-md"
-          >
-            <div className="flex w-[90%] p-3 bg-[rgba(0,0,0,0.9)] rounded-lg justify-center items-center border-blue-80 border-[3px]">
-              <div className=" rounded-full overflow-hidden flex items-center justify-center  p-3 text-[18px] ">
-                {/* {icon} */}
-              </div>
-              <div className="flex-1">
-                <p className="text-white">Support TON chain</p>
-                <p className="text-[12px]"></p>
-              </div>
-              <div>
-                <DepositMultiplier />
-              </div>
-            </div>
+        <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden">
+          <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
+          <div className="relative">
+            <p className="text-sm font-medium text-[#8E8EA8]">
+              Support on NEAR chain
+            </p>
+            <DepositMultiplier user={userDetails} />
           </div>
         </div>
 
         {tasks?.map((task: any, i: number) => {
           let curCat = "Tg";
-          let icon = <FaTelegram className="text-[25px]" />;
+          let icon = <FaTelegram className="text-[#4C6FFF] text-xl" />;
 
           switch (task.name.toLowerCase()) {
             case "follow x".toLowerCase():
-              icon = <FaXTwitter className="text-[25px]" />;
+              icon = <FaXTwitter className="text-[#4C6FFF] text-xl" />;
               curCat = "x";
               break;
             case "Follow Facebook".toLowerCase():
+            case "Join Facebook Group".toLowerCase():
               curCat = "fb";
-              icon = <FaFacebook className="text-[25px]" />;
+              icon = <FaFacebook className="text-[#4C6FFF] text-xl" />;
               break;
             case "Subscribe to Youtube".toLowerCase():
               curCat = "yt";
-              icon = <FaYoutube className="text-[25px]" />;
+              icon = <FaYoutube className="text-[#4C6FFF] text-xl" />;
               break;
-
             default:
               break;
           }
@@ -420,54 +460,57 @@ const Tasks = ({
 
           if (found) return <div key={task.name + "task"}> </div>;
 
+          // const found = userDetails?.completedTasks?.find(
+          //   (completedTask: any) =>
+          //     completedTask.name === task.name &&
+          //     completedTask.category === curCat
+          // );
+
+          // if (found) return null;
+
           return (
             <div
               key={task.name + "task"}
-              className="flex items-center justify-center rounded-md"
+              className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden"
             >
-              <div className="flex w-[90%] p-3 bg-[rgba(0,0,0,0.9)] rounded-lg justify-center items-center border-blue-80 border-[3px]">
-                <div className=" rounded-full overflow-hidden flex items-center justify-center  p-3 text-[18px] ">
+              <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
+              <div className="relative flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#4C6FFF]/10 flex items-center justify-center">
                   {icon}
                 </div>
                 <div className="flex-1">
-                  <p className="text-white">{task.name}</p>
-                  <p className="text-[12px]">{task.points} RP</p>
+                  <p className="text-sm font-medium text-white">{task.name}</p>
+                  <div className="flex items-center gap-1">
+                    <svg
+                      className="w-3 h-3 text-[#4C6FFF]"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <p className="text-xs text-[#4C6FFF]">{task.points} SOLV</p>
+                  </div>
                 </div>
                 <button
                   onClick={() => {
-                    if (curCat == "Tg") {
-                      console.log(task);
-                      onGoing ? Verify(task, "tg") : ProcessLink(task);
-                    } else {
-                      onGoing ? Verify(task) : ProcessLink(task);
-                    }
+                    setLoading({ id: task.id, status: true });
+                    onGoing ? Verify(task) : ProcessLink(task);
                   }}
-                  className="mt-3 text-[13px] border-blue-80 border-[2px] text-white h-8 flex items-center justify-center rounded-lg px-3"
+                  className="px-4 py-2 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all text-sm font-medium disabled:opacity-50"
+                  disabled={loading.id == task.id && loading.status}
                 >
                   {loading.id == task.id && loading.status ? (
-                    <div role="status">
-                      <svg
-                        aria-hidden="true"
-                        className="inline w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                        viewBox="0 0 100 101"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                          fill="currentFill"
-                        />
-                      </svg>
-                      <span className="sr-only">Loading...</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-t-2 border-white animate-spin rounded-full"></div>
+                      <span>Processing...</span>
                     </div>
-                  ) : onGoing ? (
-                    "Verify"
                   ) : (
-                    "Start"
+                    <span>{onGoing ? "Verify" : "Start"}</span>
                   )}
                 </button>
               </div>
@@ -505,3 +548,5 @@ const Modal = () => {
     </div>
   );
 };
+
+export default UserProfile;

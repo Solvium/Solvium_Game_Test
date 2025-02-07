@@ -99,6 +99,7 @@ export class MainHandler {
     // this.root
     //   .querySelector("#save-game")
     //   ?.addEventListener("click", this.save.bind(this));
+
     this.imageElement = root.querySelector<SVGImageElement>("image#img")!;
 
     window.addEventListener("resize", this.onWindowResize.bind(this));
@@ -113,6 +114,7 @@ export class MainHandler {
 
   async updateImage(blobOrSrc: string | Blob) {
     const src = blobOrSrc instanceof Blob ? await getUrl(blobOrSrc) : blobOrSrc;
+    console.log(src);
     const { width, height } = await getImageDimensions(src);
     this.imageUrl = src;
     this.width = width;
@@ -160,6 +162,8 @@ export class MainHandler {
       radius: Math.min(this.width / this._xc, this.height / this._yc) / 5,
       fixedPattern: false,
     }).toSvgElements(this.document, this.pathGroup);
+
+    // console.log(paths);
     const viewWidth = Math.max(640, this.width * 1.5);
     const viewHeight = Math.max(480, this.height * 1.5);
     this.root.setAttribute("viewBox", `0 0 ${viewWidth} ${viewHeight}`);
@@ -168,6 +172,7 @@ export class MainHandler {
     this.imageElement.setAttribute("height", this.height.toString());
     const defs = this.document.createDocumentFragment();
     const instanceGroup = this.document.createDocumentFragment();
+
     for (const path of paths) {
       const mask = defs.appendChild(
         this.document.createElementNS(NS_SVG, "mask")
@@ -177,23 +182,27 @@ export class MainHandler {
       const maskPath = mask.appendChild(
         this.document.createElementNS(NS_SVG, "use")
       );
+
       maskPath.href.baseVal = `#${path.id}`;
 
       const instance = instanceGroup.appendChild(
         this.document.createElementNS(NS_SVG, "g")
       );
+
       instance.id = `${path.id}-i`;
       instance.classList.add("draggable");
 
       const base = instance.appendChild(
         this.document.createElementNS(NS_SVG, "use")
       );
+
       base.href.baseVal = `#${this.imageElement.id}`;
       base.setAttribute("mask", `url(#${mask.id})`);
 
       const decoPath = instance.appendChild(
         this.document.createElementNS(NS_SVG, "use")
       );
+
       decoPath.classList.add("handler", "pzoverlay");
       decoPath.href.baseVal = `#${path.id}`;
 
@@ -213,6 +222,7 @@ export class MainHandler {
           );
       }
     }
+
     this.masksElement.appendChild(defs);
     this.instanceGroup.appendChild(instanceGroup);
     this.serializeToData();

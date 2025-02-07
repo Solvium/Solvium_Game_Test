@@ -1,11 +1,19 @@
 import { getCurrentYear, getISOWeekNumber } from "@/app/utils/utils";
 import { telegramClient } from "../../clients/TelegramApiClient";
 import { InlineKeyboardMarkup } from "@grammyjs/types";
-import { PrismaClient } from "@prisma/client";
-import axios from "axios";
+import { PrismaClient } from "@prisma/client"; 
 import { NextRequest, NextResponse } from "next/server";
+ 
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-const prisma = new PrismaClient();
+// export const prisma =
+//   globalForPrisma.prisma ||
+//   new PrismaClient({
+//     log: ["query"],
+//   });
+  const prisma = globalForPrisma.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 export async function POST(req: NextRequest) {
   try {
@@ -146,113 +154,68 @@ export async function GET(req: any) {
 
   try {
     if (type == "getUser") {
-      if (username) {
-        let user = await prisma.user.findUnique({
-          where: {
-            username: username,
-          },
-        });
-        // if (user) {
-        //   function isDateGreater(d1: Date, d2: Date, days: number) {
-        //     d1 = new Date(d1);
-        //     return (
-        //       Number(new Date(d2)) > d1.setDate(d1.getDate() + (days || 0))
-        //     );
-        //   }
-
-        //   const lastClaim = new Date(user?.lastClaim ?? Date.now());
-
-        //   if (isDateGreater(lastClaim, new Date(Date.now()), 1)) {
-        //     user = await prisma.user.update({
-        //       where: {
-        //         username: user.username,
-        //       },
-        //       data: {
-        //         claimCount: 0,
-        //       },
-        //     });
-        //   }
-
-        // } else {
-        //   return NextResponse.json("User Not Found", { status: 404 });
-        // }
-        return NextResponse.json(user);
-      } else {
-        return NextResponse.json("No username passed", { status: 500 });
+      if (!username) {
+        return NextResponse.json(
+          { error: "Username is required" },
+          { status: 400 }
+        );
       }
+
+      const user = await prisma.user.findUnique({
+        where: { username },
+      });
+
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      return NextResponse.json(user);
     }
 
     if (type == "leaderboard") {
       const users = await prisma.user.findMany({
         orderBy: { totalPoints: "desc" },
-      });
-      if (users) {
-        return NextResponse.json(users);
-      } else {
-        return NextResponse.json("User Not Found", { status: 404 });
-      }
-    }
-
-    if (type == "addTasksInfo") {
-      const tasks = [
-        {
-          name: "Follow X",
-          points: 40,
-          isCompleted: false,
-          link: "https://x.com/Solvium_game",
-        },
-        {
-          name: "Subscribe to Youtube",
-          points: 40,
-          isCompleted: false,
-          link: "https://www.youtube.com/@solvium_puzzle",
-        },
-        {
-          name: "Follow Facebook",
-          points: 40,
-          isCompleted: false,
-          link: "https://www.facebook.com/profile.php?id=61566560151625&mibextid=LQQJ4d",
-        },
-
-        {
-          name: "Join Solvium Telegram Group",
-          points: 40,
-          isCompleted: false,
-          link: "https://t.me/solvium_puzzle",
-        },
-      ];
-
-      // Insert tasks into the database
-      await prisma.task.createMany({
-        data: tasks,
-        skipDuplicates: true,
+        take: 100, // Limit to top 100 users for performance
       });
 
-      if (tasks) {
-        return NextResponse.json(tasks);
-      } else {
-        return NextResponse.json("User Not Found", { status: 404 });
-      }
+      return NextResponse.json(users || []);
     }
 
     if (type == "getTasksInfo") {
       const tasks = await prisma.task.findMany({});
-      if (tasks) {
-        return NextResponse.json(tasks);
-      } else {
-        return NextResponse.json("User Not Found", { status: 404 });
-      }
+      return NextResponse.json(tasks || []);
     }
 
     if (type == "allusertasks") {
-      console.log(userId);
-      const data = await getAllUserTasks({ userId });
-      return NextResponse.json(data);
+      if (!userId) {
+        return NextResponse.json(
+          { error: "User ID is required" },
+          { status: 400 }
+        );
+      }
+
+      try {
+        const data = await getAllUserTasks(userId);
+        return NextResponse.json(data || []);
+      } catch (error) {
+        console.error("Error fetching user tasks:", error);
+        return NextResponse.json(
+          { error: "Internal Server Error" },
+          { status: 500 }
+        );
+      }
     }
 
-    return NextResponse.json("users");
+    return NextResponse.json(
+      { error: "Invalid type parameter" },
+      { status: 400 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" });
+    console.error("API Error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -343,17 +306,23 @@ const getUserTasks = async (data: any) => {
   }
 };
 
-const getAllUserTasks = async (data: any) => {
-  const { userId } = data;
+const getAllUserTasks = async (userId: string) => {
   try {
+    if (!userId || isNaN(Number(userId))) {
+      throw new Error("Invalid user ID");
+    }
+
     return await prisma.userTask.findMany({
       where: {
         userId: Number(userId),
       },
+      include: {
+        task: true,
+      },
     });
   } catch (error) {
-    console.log(error);
-    return null;
+    console.error("Error in getAllUserTasks:", error);
+    throw error;
   }
 };
 
