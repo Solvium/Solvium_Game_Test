@@ -1,12 +1,9 @@
 import { getCurrentYear, getISOWeekNumber } from "@/app/utils/utils";
 import { telegramClient } from "../../clients/TelegramApiClient";
 import { InlineKeyboardMarkup } from "@grammyjs/types";
-import { PrismaClient } from "@prisma/client";
-import axios from "axios";
+import { PrismaClient } from "@prisma/client"; 
 import { NextRequest, NextResponse } from "next/server";
-
-// PrismaClient is attached to the `global` object in development to prevent
-// exhausting your database connection limit.
+ 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 // export const prisma =
