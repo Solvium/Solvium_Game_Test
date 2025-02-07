@@ -5,6 +5,8 @@ import { providers, utils } from "near-api-js";
 import { CodeResult } from "near-api-js/lib/providers/provider";
 
 import dynamic from "next/dynamic";
+import { MEME_TOKEN_ADDRESS } from "./constants/contractId";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
   { ssr: false }
@@ -84,7 +86,7 @@ export const WheelOfFortune = () => {
 
     const res = await provider.query<CodeResult>({
       request_type: "call_function",
-      account_id: "dogshit-1408.meme-cooking.near",
+      account_id: MEME_TOKEN_ADDRESS,
       method_name: "storage_balance_of",
       args_base64: Buffer.from(
         JSON.stringify({ account_id: nearAddress })
@@ -134,11 +136,13 @@ export const WheelOfFortune = () => {
     }
 
     const unclaimedPrize = localStorage.getItem("unclaimedPrize");
-    if (unclaimedPrize) {
+    const lastClaimedTime = localStorage.getItem("lastClaimed");
+    if (unclaimedPrize && !lastClaimedTime) {
       const prize = JSON.parse(unclaimedPrize);
       setWinner(prize.winner);
       setPrizeNumber(prize.prizeNumber);
       setUnclaimed(prize);
+      setIsClaimed(false);
     }
   }, []);
 
@@ -160,7 +164,7 @@ export const WheelOfFortune = () => {
       console.log("isRegistered", isRegistered);
 
       if (!isRegistered) {
-        await registerToken("dogshit-1408.meme-cooking.near");
+        await registerToken(MEME_TOKEN_ADDRESS);
       }
 
       const transaction = await wallet.signAndSendTransaction({
@@ -173,7 +177,7 @@ export const WheelOfFortune = () => {
               methodName: "claimWheel",
               args: {
                 rewardAmount: rewardAmount,
-                tokenAddress: "dogshit-1408.meme-cooking.near"!,
+                tokenAddress: MEME_TOKEN_ADDRESS!,
               },
               gas: "300000000000000",
               deposit: "0",
@@ -214,6 +218,34 @@ export const WheelOfFortune = () => {
     localStorage.setItem("lastPlayedTime", now.toString());
   };
 
+  const parseErrorMessage = (error: any): string => {
+    try {
+      if (typeof error === "string") {
+        return error;
+      }
+
+      if (error.message) {
+        try {
+          const parsed = JSON.parse(error.message);
+          if (parsed.kind?.kind?.FunctionCallError?.ExecutionError) {
+            const fullError = parsed.kind.kind.FunctionCallError.ExecutionError;
+            // Extract message between "Smart contract panicked:" and first "\n"
+            const match = fullError.match(
+              /Smart contract panicked: (.*?)(?:\n|$)/
+            );
+            return match ? match[1] : fullError;
+          }
+        } catch {
+          return error.message;
+        }
+      }
+
+      return "Unknown error occurred";
+    } catch {
+      return "Failed to parse error message";
+    }
+  };
+
   // Update handleClaim function
   const handleClaim = async () => {
     if (!winner) return;
@@ -224,14 +256,16 @@ export const WheelOfFortune = () => {
         rewardAmount: data[prizeNumber].option,
         onSuccess: () => {
           setIsClaimed(true);
-          setIsClaimLoading(false);
+          localStorage.setItem("lastClaimed", Date.now().toString());
           localStorage.removeItem("unclaimedPrize");
+          setIsClaimLoading(false);
           setUnclaimed(null);
         },
         onError: (error) => {
           console.error("Claim failed:", error);
           setIsClaimLoading(false);
-          alert(`Failed to claim: ${error.message}`);
+          toast.error(`Failed to claim: ${parseErrorMessage(error)}`);
+          alert(`Failed to claim:${parseErrorMessage(error)} `);
         },
       });
     } catch (error) {
@@ -262,9 +296,13 @@ export const WheelOfFortune = () => {
           </div>
 
           {/* Wheel Title */}
-          <h2 className="text-2xl font-bold text-center text-white mb-8">
+          <h2 className="text-2xl font-bold text-center text-white mb-1">
             Spin The Wheel
           </h2>
+          <p className="mb-8 text-sm text-center text-[#6C5CE7]">
+            {" "}
+            You need to have made atleast a deposit before playing
+          </p>
 
           {/* Wheel Container */}
           <div className="relative flex justify-center mb-8">
@@ -296,14 +334,14 @@ export const WheelOfFortune = () => {
                 spinDuration={0.5}
                 onStopSpinning={() => {
                   setMustSpin(false);
-                  localStorage.setItem(
-                    "unclaimedPrize",
-                    JSON.stringify({
-                      winner: data[prizeNumber].option,
-                      prizeNumber: prizeNumber,
-                    })
-                  );
-                  setWinner(data[prizeNumber].option);
+                  const prize = {
+                    winner: data[prizeNumber].option,
+                    prizeNumber: prizeNumber,
+                  };
+                  localStorage.setItem("unclaimedPrize", JSON.stringify(prize));
+                  setUnclaimed(prize);
+                  setIsClaimed(false);
+                  setWinner(prize.winner);
                   spinningSound.pause();
                   spinningSound.currentTime = 0;
                 }}
@@ -371,7 +409,7 @@ export const WheelOfFortune = () => {
               </button>
             )}
 
-            {winner && !isClaimed && (
+            {(winner || unclaimed) && !isClaimed && (
               <div className="mt-6 text-center">
                 <div className="bg-[#1A1A2F] rounded-xl p-6 border border-[#2A2A45] relative overflow-hidden">
                   <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
@@ -408,6 +446,19 @@ export const WheelOfFortune = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </div>
   );
 };

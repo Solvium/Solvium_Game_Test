@@ -342,12 +342,12 @@ const Tasks = ({
               return;
             }
           } else {
-            setError("An error occured, Please try again!");
+            setError("An error occurred, Please try again!");
             setLoading({ id: data.id, status: false });
             return;
           }
         } catch (error) {
-          setError("An error occured, Please try again!");
+          setError("An error occurred, Please try again!");
           setLoading({ id: data.id, status: false });
           return;
         }
@@ -373,12 +373,12 @@ const Tasks = ({
               return;
             }
           } else {
-            setError("An error occured, Please try again!");
+            setError("An error occurred, Please try again!");
             setLoading({ id: data.id, status: false });
             return;
           }
         } catch (error) {
-          setError("An error occured, Please try again!");
+          setError("An error occurred, Please try again!");
           setLoading({ id: data.id, status: false });
           return;
         }
