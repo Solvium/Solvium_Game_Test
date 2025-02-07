@@ -9,7 +9,7 @@ import {
   initialState,
   walletReducer,
 } from "../components/reducers/useNearWallet.reducer";
-import { CONTRACTID } from "../components/constants/contractId";
+import { BLOCKCHAIN_NET, CONTRACTID } from "../components/constants/contractId";
 import { map } from "rxjs";
 
 export const WalletContext = createContext<WalletContextValue | null>(null);
@@ -24,8 +24,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({
       dispatch({ type: "SET_LOADING" });
 
       const selector = await setupWalletSelector({
-        network: "mainnet",
-        modules: [setupMeteorWallet() as any],
+        network: BLOCKCHAIN_NET,
+        modules: [setupMeteorWallet({}) as any],
       });
 
       const modal = setupModal(selector, {

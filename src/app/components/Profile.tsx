@@ -421,7 +421,7 @@ const Tasks = ({
             <p className="text-sm font-medium text-[#8E8EA8]">
               Support on NEAR chain
             </p>
-            <DepositMultiplier />
+            <DepositMultiplier user={userDetails} />
           </div>
         </div>
 

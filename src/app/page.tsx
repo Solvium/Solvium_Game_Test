@@ -71,9 +71,13 @@ function Home() {
         return;
       }
 
+      //   /api/allroute?type=getTasksInfo&username=ArizeJoel
       const res = await axios(
         "/api/allroute?type=getUser&username=" + username
       );
+      //   const res = await axios(
+      //     "/api/allroute?type=getUser&username=" + "A"
+      //   );
 
       if (res.status === 200 && res.data) {
         setUser(res.data);

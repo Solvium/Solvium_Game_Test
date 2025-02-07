@@ -49,6 +49,11 @@ export const WheelOfFortune = () => {
   const [winner, setWinner] = useState("");
   const [hasPlayed, setHasPlayed] = useState(false);
   const [isClaimed, setIsClaimed] = useState(false);
+  const [unclaimed, setUnclaimed] = useState<{
+    winner: string;
+    prizeNumber: number;
+  } | null>(null);
+
   const [spinningSound, setSpinningSound] = useState(new Audio());
   const [isClaimLoading, setIsClaimLoading] = useState(false);
 
@@ -126,6 +131,14 @@ export const WheelOfFortune = () => {
         setHasPlayed(true);
         setCooldownTime(cooldownEnd);
       }
+    }
+
+    const unclaimedPrize = localStorage.getItem("unclaimedPrize");
+    if (unclaimedPrize) {
+      const prize = JSON.parse(unclaimedPrize);
+      setWinner(prize.winner);
+      setPrizeNumber(prize.prizeNumber);
+      setUnclaimed(prize);
     }
   }, []);
 
@@ -212,6 +225,8 @@ export const WheelOfFortune = () => {
         onSuccess: () => {
           setIsClaimed(true);
           setIsClaimLoading(false);
+          localStorage.removeItem("unclaimedPrize");
+          setUnclaimed(null);
         },
         onError: (error) => {
           console.error("Claim failed:", error);
@@ -281,6 +296,13 @@ export const WheelOfFortune = () => {
                 spinDuration={0.5}
                 onStopSpinning={() => {
                   setMustSpin(false);
+                  localStorage.setItem(
+                    "unclaimedPrize",
+                    JSON.stringify({
+                      winner: data[prizeNumber].option,
+                      prizeNumber: prizeNumber,
+                    })
+                  );
                   setWinner(data[prizeNumber].option);
                   spinningSound.pause();
                   spinningSound.currentTime = 0;
@@ -339,7 +361,7 @@ export const WheelOfFortune = () => {
               <button
                 onClick={handleSpinClick}
                 disabled={hasPlayed || mustSpin}
-                className="w-full py-4 bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] text-white text-lg font-bold rounded-xl 
+                className="w-full py-4 bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] text-white text-lg font-bold rounded-xl
                          hover:opacity-90 transition-all duration-300
                          disabled:opacity-50 disabled:cursor-not-allowed
                          relative overflow-hidden group"
@@ -360,7 +382,7 @@ export const WheelOfFortune = () => {
                     <button
                       onClick={handleClaim}
                       disabled={isClaimLoading}
-                      className="w-full py-3 bg-[#2ECC71] hover:bg-[#27AE60] text-white font-bold rounded-xl 
+                      className="w-full py-3 bg-[#2ECC71] hover:bg-[#27AE60] text-white font-bold rounded-xl
                                transition-all duration-300
                                disabled:opacity-50 disabled:cursor-not-allowed"
                     >

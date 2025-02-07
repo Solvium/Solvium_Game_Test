@@ -71,13 +71,31 @@ export default function DepositMultiplier({ user }: any) {
 
     if (!nearDeposits?.deposits) return [];
 
-    return Object.values(nearDeposits.deposits).map((deposit) => ({
-      id: deposit.id,
-      amount: utils.format.formatNearAmount(deposit.amount),
-      startTime: Number(deposit.startTime) / 1000000, // Convert to milliseconds
-      multiplier: Number(deposit.multiplier) / 1e16, // Convert to decimal
-      active: deposit.active,
-    }));
+    const ONE_WEEK_IN_SECONDS = 604800;
+
+    const isDepositActive = (startTimeInMs: number) => {
+      const startTimeInSeconds = startTimeInMs / 1000; // Convert ms to seconds
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+      const endTimeInSeconds = startTimeInSeconds + ONE_WEEK_IN_SECONDS;
+
+      // Return true only if current time is less than end time
+      return currentTimeInSeconds <= endTimeInSeconds;
+    };
+
+    return Object.values(nearDeposits.deposits)
+      .map((deposit) => {
+        const startTimeInMs = Number(deposit.startTime) / 1000000; // Convert to milliseconds
+
+        return {
+          id: deposit.id,
+          amount: utils.format.formatNearAmount(deposit.amount),
+          endTime: startTimeInMs + ONE_WEEK_IN_SECONDS * 1000,
+          startTime: startTimeInMs,
+          multiplier: Number(deposit.multiplier) / 1e16,
+          active: isDepositActive(startTimeInMs),
+        };
+      })
+      .sort((a, b) => b.startTime - a.startTime); // Sort by newest first
   };
 
   // Update currentDeposits type
@@ -114,13 +132,28 @@ export default function DepositMultiplier({ user }: any) {
 
     try {
       const numAmount = parseFloat(amount);
-      console.log(numAmount, "numAmount");
+  
       if (isNaN(numAmount)) throw new Error("Invalid amount");
 
       const wallet = await selector.wallet();
       const deposit = utils.format.parseNearAmount(amount);
 
-      // API call first
+      await wallet.signAndSendTransaction({
+        signerId: nearAddress,
+        receiverId: process.env.NEXT_PUBLIC_CONTRACT_ID!,
+        actions: [
+          {
+            type: "FunctionCall",
+            params: {
+              methodName: "depositToGame",
+              args: {},
+              gas: "30000000000000",
+              deposit: deposit || "0",
+            },
+          },
+        ],
+      });
+
       const response = await fetch("/api/deposit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -139,25 +172,6 @@ export default function DepositMultiplier({ user }: any) {
       }
 
       const { points, multiplier } = data as DepositResponse;
-
-      console.log(points, "points");
-      console.log(multiplier, "multiplier");
-
-      await wallet.signAndSendTransaction({
-        signerId: nearAddress,
-        receiverId: process.env.NEXT_PUBLIC_CONTRACT_ID!,
-        actions: [
-          {
-            type: "FunctionCall",
-            params: {
-              methodName: "depositToGame",
-              args: {},
-              gas: "30000000000000",
-              deposit: deposit || "0",
-            },
-          },
-        ],
-      });
 
       toast.success("Deposit successful");
       // Trigger refresh after deposit
@@ -197,10 +211,6 @@ export default function DepositMultiplier({ user }: any) {
       : `${utils.format.formatNearAmount(amount)} NEAR`;
   };
 
-  const isDepositActive = (startTime: number) => {
-    const endTime = Number(startTime) + 604800; // 7 days in seconds
-    return Date.now() < endTime * 1000;
-  };
   interface Deposit {
     id: string | number;
     amount: string;
@@ -233,18 +243,6 @@ export default function DepositMultiplier({ user }: any) {
     }
   };
 
-  //   const formatDate = (timestamp: number | string): string => {
-  //     const date = new Date(Number(timestamp) * 1000); // Convert to milliseconds
-  //     return date.toLocaleString("en-US", {
-  //       year: "numeric",
-  //       month: "short",
-  //       day: "numeric",
-  //       hour: "2-digit",
-  //       minute: "2-digit",
-  //       timeZoneName: "short",
-  //     });
-  //   };
-
   const isValidAmount = (amount: string): boolean => {
     const value = parseFloat(amount);
     if (walletType === "NEAR") {
@@ -262,7 +260,7 @@ export default function DepositMultiplier({ user }: any) {
       </button>
 
       {isOpen && (
-        <div className="fixed z-[999] top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.7)] flex items-center justify-center">
+        <div className="fixed z-[50] top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.7)] flex items-center justify-center">
           <div className="border-blue-80 border-[2px] w-[85%] mx-auto bg-black p-5">
             {/* Wallet Type Selector */}
             <div className="p-2">
@@ -289,7 +287,7 @@ export default function DepositMultiplier({ user }: any) {
             </div>
 
             {!isConnected ? (
-              <div className="card border-blue-80 border-[2px] p-8 text-center">
+              <div className="card border-blue-80 border-[2px] p-8 text-center z-0">
                 <h2 className="text-xl mb-4">
                   Connect your {walletType} wallet to get started
                 </h2>
@@ -444,8 +442,7 @@ export default function DepositMultiplier({ user }: any) {
                                   <p>
                                     End Time:{" "}
                                     {formatDate(
-                                      Number(deposit.startTime.toString()) +
-                                        604800
+                                      deposit.startTime + 604800 * 1000
                                     )}
                                   </p>
                                 </div>
