@@ -300,25 +300,7 @@ export const WheelOfFortune = () => {
     <div className="min-h-screen w-full bg-[#0B0B14] py-4 px-4 md:py-6">
       <div className="max-w-xl mx-auto">
         <div className="bg-[#151524] rounded-[28px] p-6 shadow-[0_0_30px_rgba(76,111,255,0.1)]">
-          {/* Header with balance */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] flex items-center justify-center">
-                <span className="text-white text-sm font-bold">$</span>
-              </div>
-              <span className="text-white text-lg font-bold">
-                {nearConnected ? "350.00" : "0.00"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#1A1A2F] flex items-center justify-center">
-                <span className="text-[#4C6FFF] text-sm">🎲</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Wheel Title */}
-          <h2 className="text-2xl font-bold text-center text-white mb-1">
+          <h2 className="text-2xl mt-10 font-bold text-center text-white mb-1">
             Spin The Wheel
           </h2>
           <p className="mb-8 text-sm text-center text-[#6C5CE7]">
