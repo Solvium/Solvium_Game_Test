@@ -1,7 +1,8 @@
 import { NetworkId } from "@near-wallet-selector/core";
 
-// export const CONTRACTID: string = "finehare4946.testnet";
-export const CONTRACTID: string = "solviumpuzzlegame.near";
+// export const CONTRACTID: string = "finesport.testnet";
+
+export const CONTRACTID: string = "solviumpuzzle.near";
 // export const BLOCKCHAIN_NET: NetworkId = "testnet";
 export const BLOCKCHAIN_NET: NetworkId = "mainnet";
 // export const MEME_TOKEN_ADDRESS: string = "ft.predeployed.examples.testnet";

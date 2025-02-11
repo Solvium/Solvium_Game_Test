@@ -43,7 +43,22 @@ export const getUserDeposits = async (
       finality: "optimistic",
     });
 
-    return JSON.parse(Buffer.from(res.result).toString());
+    const resSec = await provider.query<CodeResult>({
+      request_type: "call_function",
+      account_id: "solviumpuzzlegame.near",
+      method_name: "getUserDepositSummary",
+      args_base64: Buffer.from(JSON.stringify({ user: accountId })).toString(
+        "base64"
+      ),
+      finality: "optimistic",
+    });
+
+    const result = {
+      ...JSON.parse(Buffer.from(res.result).toString()),
+      ...JSON.parse(Buffer.from(resSec.result).toString()),
+    };
+
+    return result;
   } catch (error) {
     console.error("Failed to fetch deposits:", error);
     throw error;
@@ -66,6 +81,7 @@ export function useNearDeposits() {
     try {
       setLoading(true);
       const results = await getUserDeposits(selector, accountId);
+      console.log("results", results);
       setDeposits(results);
     } catch (error) {
       console.error("Error fetching deposits:", error);
