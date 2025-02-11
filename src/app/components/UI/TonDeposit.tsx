@@ -132,7 +132,7 @@ export default function DepositMultiplier({ user }: any) {
 
     try {
       const numAmount = parseFloat(amount);
-  
+
       if (isNaN(numAmount)) throw new Error("Invalid amount");
 
       const wallet = await selector.wallet();
@@ -164,8 +164,6 @@ export default function DepositMultiplier({ user }: any) {
       });
 
       const data = await response.json();
-
-      console.log(data, "data");
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to process deposit");

@@ -5,7 +5,7 @@ import { providers, utils } from "near-api-js";
 import { CodeResult } from "near-api-js/lib/providers/provider";
 
 import dynamic from "next/dynamic";
-import { MEME_TOKEN_ADDRESS } from "./constants/contractId";
+import { CONTRACTID, MEME_TOKEN_ADDRESS } from "./constants/contractId";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
@@ -72,10 +72,12 @@ export const WheelOfFortune = () => {
     { option: "25", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "50", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "100", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "250", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "500", style: { fontSize: 20, fontWeight: "bold" } },
     { option: "1000", style: { fontSize: 20, fontWeight: "bold" } },
+    { option: "2000", style: { fontSize: 20, fontWeight: "bold" } },
+
     { option: "5000", style: { fontSize: 20, fontWeight: "bold" } },
-    { option: "10000", style: { fontSize: 20, fontWeight: "bold" } },
     // { option: "10000", style: { fontSize: 20, fontWeight: "bold" } },
   ];
 
@@ -166,10 +168,10 @@ export const WheelOfFortune = () => {
       if (!isRegistered) {
         await registerToken(MEME_TOKEN_ADDRESS);
       }
-
+      console.log(rewardAmount, MEME_TOKEN_ADDRESS, "rewardAmount");
       const transaction = await wallet.signAndSendTransaction({
         signerId: nearAddress,
-        receiverId: process.env.NEXT_PUBLIC_CONTRACT_ID!,
+        receiverId: CONTRACTID!,
         actions: [
           {
             type: "FunctionCall",
@@ -186,12 +188,32 @@ export const WheelOfFortune = () => {
         ],
       });
 
-      localStorage.setItem("lastClaimed", Date.now().toString());
-      localStorage.setItem("transaction", JSON.stringify({ transaction }));
       // Wait for transaction completion
       await transaction;
+
+      // Execute the transfer transaction immediately after claimWheel
+      const executeTransferTx = await wallet.signAndSendTransaction({
+        signerId: nearAddress,
+        receiverId: CONTRACTID!,
+        actions: [
+          {
+            type: "FunctionCall",
+            params: {
+              methodName: "execute_transfer",
+              args: {},
+              gas: "300000000000000",
+              deposit: "0",
+            },
+          },
+        ],
+      });
+
+      // Wait for the execute_transfer transaction to complete
+      await executeTransferTx;
+      localStorage.setItem("lastClaimed", Date.now().toString());
+      localStorage.setItem("transaction", JSON.stringify({ transaction }));
       onSuccess?.();
-      return transaction;
+      return { transaction, executeTransferTx };
     } catch (error: any) {
       console.error("Failed to claim reward:", error.message);
       onError?.(error as Error);
