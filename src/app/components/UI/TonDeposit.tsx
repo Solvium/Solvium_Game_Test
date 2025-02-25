@@ -13,7 +13,7 @@ import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import timestampLib from "unix-timestamp";
 // Update interfaces at top of file
-interface Deposit {
+export interface Deposit {
   id: number;
   amount: string;
   startTime: number;

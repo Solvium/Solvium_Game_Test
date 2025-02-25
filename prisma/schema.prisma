@@ -21,13 +21,15 @@ model User {
   id            Int           @id @default(autoincrement())
   username      String        @unique
   name          String?
-  wallet        String?
+  wallet        String?       @unique
   referredBy    String
+  chain         String?
   level         Int           @default(1)
   difficulty    Int           @default(1)
   puzzleCount   Int           @default(1)
   referralCount Int           @default(0)
   chatId        String?
+  spinCount     Int           @default(0)
   claimCount    Int           @default(0)
   totalPoints   Int           @default(0)
   isOfficial    Boolean       @default(false)

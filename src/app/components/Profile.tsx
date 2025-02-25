@@ -5,11 +5,13 @@ import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
 import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
-import DepositMultiplier from "./UI/TonDeposit";
+import DepositMultiplier, { Deposit } from "./UI/TonDeposit";
 import { useMultiplierContract } from "../hooks/useDepositContract";
 import TimerCountdown from "./Timer";
 import WalletSelector from "./walletSelector";
 import UnifiedWalletConnector from "./walletSelector";
+import { useNearDeposits } from "../contracts/near_deposits";
+import { utils } from "near-api-js";
 
 const UserProfile = ({
   userDetails,
@@ -263,10 +265,44 @@ const Tasks = ({
   const address = useTonAddress();
   const { deposits } = useMultiplierContract(address);
 
+  const {
+    deposits: nearDeposits,
+    loading: nearLoading,
+    refetch,
+  } = useNearDeposits();
+
+  const getDeposits = (): number => {
+    let total = 0;
+    if (!nearDeposits?.deposits) return total;
+
+    const ONE_WEEK_IN_SECONDS = 604800;
+
+    const isDepositActive = (startTimeInMs: number) => {
+      const startTimeInSeconds = startTimeInMs / 1000; // Convert ms to seconds
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+      const endTimeInSeconds = startTimeInSeconds + ONE_WEEK_IN_SECONDS;
+
+      // Return true only if current time is less than end time
+      return currentTimeInSeconds <= endTimeInSeconds;
+    };
+
+    Object.values(nearDeposits.deposits).map((deposit) => {
+      const startTimeInMs = Number(deposit.startTime) / 1000000; // Convert to milliseconds
+
+      if (isDepositActive(startTimeInMs))
+        total += Number(deposit.multiplier) / 1e16;
+    });
+    return total;
+  };
+
   const sendComplete = async (data: any) => {
     let total = 0;
-    for (let index = 0; index < deposits?.length; index++) {
-      total += Number(deposits[index].multiplier);
+    if (nearDeposits?.deposits) {
+      total = getDeposits();
+    } else if (deposits?.length > 0) {
+      for (let index = 0; index < deposits?.length; index++) {
+        total += Number(deposits[index].multiplier);
+      }
     }
 
     const userMultipler = total;
