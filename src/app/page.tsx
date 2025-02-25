@@ -118,7 +118,7 @@ function Home() {
     if (user.wallet) return;
 
     const updateWallet = async () => {
-      const res = await axios("/api/claim", {
+      const res = await axios("/api/allroute", {
         headers: {
           "content-type": "application/json",
         },
