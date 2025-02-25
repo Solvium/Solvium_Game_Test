@@ -4,11 +4,17 @@ import { MdOutlineLeaderboard } from "react-icons/md";
 import { useEffect, useState } from "react";
 import LeaderBoard from "./components/LeaderBoard";
 import { Game } from "./components/Game";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import WebApp from "@twa-dev/sdk";
 import UserProfile from "./components/Profile";
 import ContestBoard from "./components/Contest";
 import { WheelOfFortune } from "./components/Wheel";
+import { useNearDeposits } from "./contracts/near_deposits";
+import { useMultiplierContract } from "./hooks/useDepositContract";
+import { useTonAddress } from "@tonconnect/ui-react";
+import { useTonConnect } from "./hooks/useTonConnect";
+import { useWallet } from "./contexts/WalletContext";
+import { WelcomeModal } from "./components/WelcomeModal";
 
 function Home() {
   const [selectedTab, setSelectedTab]: any = useState();
@@ -21,6 +27,46 @@ function Home() {
   const [userTasks, setUserTasks]: any = useState();
   const [tasks, setTasks]: any = useState();
   const [tasksCat, setTasksCat]: any = useState();
+
+  const [openModal, setOpenModal] = useState(true);
+
+  const { connected: tonConnected } = useTonConnect();
+  const {
+    state: { selector, accountId: nearAddress, isConnected: nearConnected },
+  } = useWallet();
+
+  const address = useTonAddress();
+  const { deposits } = useMultiplierContract(address);
+
+  const {
+    deposits: nearDeposits,
+    loading: nearLoading,
+    refetch,
+  } = useNearDeposits();
+
+  const getDeposits = (): number => {
+    let total = 0;
+    if (!nearDeposits?.deposits) return total;
+
+    const ONE_WEEK_IN_SECONDS = 604800;
+
+    const isDepositActive = (startTimeInMs: number) => {
+      const startTimeInSeconds = startTimeInMs / 1000; // Convert ms to seconds
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+      const endTimeInSeconds = startTimeInSeconds + ONE_WEEK_IN_SECONDS;
+
+      // Return true only if current time is less than end time
+      return currentTimeInSeconds <= endTimeInSeconds;
+    };
+
+    Object.values(nearDeposits.deposits).map((deposit) => {
+      const startTimeInMs = Number(deposit.startTime) / 1000000; // Convert to milliseconds
+
+      if (isDepositActive(startTimeInMs))
+        total += Number(deposit.multiplier) / 1e16;
+    });
+    return total;
+  };
 
   useEffect(() => {
     if (selectedTab) {
@@ -62,22 +108,50 @@ function Home() {
     }
   }, [selectedTab, leader, userTasks, tg, user, tasksCat]);
 
+  useEffect(() => {
+    if (!nearAddress) return;
+    getUser();
+  }, [nearAddress]);
+
+  useEffect(() => {
+    if (!nearConnected || !user) return;
+    if (user.wallet) return;
+
+    const updateWallet = async () => {
+      const res = await axios("/api/claim", {
+        headers: {
+          "content-type": "application/json",
+        },
+        method: "POST",
+        data: JSON.stringify({
+          username: user.username,
+          wallet: nearAddress,
+          type: "updateWallet",
+        }),
+      });
+      console.log(res);
+    };
+    updateWallet();
+  }, [nearConnected, user]);
+
   const getUser = async () => {
     try {
+      let res: AxiosResponse;
       const username = tg?.initDataUnsafe?.user?.username;
-      if (!username) {
-        console.error("No username available");
+      if (username) {
+        res = await axios("/api/allroute?type=getUser&username=" + username);
+      } else if (nearAddress) {
+        res = await axios(
+          "/api/allroute?type=getUserByWallet&wallet=" + nearAddress
+        );
+      } else {
+        console.error("No username or wallet available");
         setLoadingPage(false);
         return;
+        // res = await axios("/api/allroute?type=getUser&username=" + username);
       }
 
-      //   /api/allroute?type=getTasksInfo&username=ArizeJoel
-      const res = await axios(
-        "/api/allroute?type=getUser&username=" + username
-      );
-      //   const res = await axios(
-      //     "/api/allroute?type=getUser&username=" + "A"
-      //   );
+      console.log(res.data);
 
       if (res.status === 200 && res.data) {
         setUser(res.data);
@@ -192,6 +266,16 @@ function Home() {
   ) => {
     console.log(type);
     setLoading(true);
+
+    let total = 0;
+    if (nearDeposits?.deposits) {
+      total = getDeposits();
+    } else if (deposits?.length > 0) {
+      for (let index = 0; index < deposits?.length; index++) {
+        total += Number(deposits[index].multiplier);
+      }
+    }
+
     const res = await (
       await fetch("/api/claim", {
         headers: {
@@ -201,6 +285,7 @@ function Home() {
         body: JSON.stringify({
           username: tg?.initDataUnsafe.user?.username,
           type,
+          userMultipler: total,
         }),
       })
     ).json();
@@ -219,6 +304,10 @@ function Home() {
   const handlePageChange = (page: string) => {
     setSelectedTab(page);
   };
+
+  // if (!nearAd) {
+  //   return <WelcomeModal />;
+  // }
 
   return (
     <div className="min-h-screen bg-[#0B0B14]">

@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, type, data } = await req.json();
+    const { username, type, data, userMultipler } = await req.json();
 
     const user = await prisma.user.findUnique({
       where: {
@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
               data: {
                 referralCount: invitor.referralCount + 1,
                 totalPoints:
-                  invitor.totalPoints + (user.isPremium ? 200000 : 100000),
+                  invitor.totalPoints +
+                  (100 * userMultipler >= 1 ? userMultipler : 1),
               },
             });
           }
@@ -66,7 +67,11 @@ export async function POST(req: NextRequest) {
         let day = ((user?.claimCount ?? 0) + 1) * 2;
         day = day - 2;
 
-        await addLeaderboard(user, 60 * (day <= 0 ? 1 : day), null);
+        await addLeaderboard(
+          user,
+          60 * (day <= 0 ? 1 : day) * userMultipler >= 1 ? userMultipler : 1,
+          null
+        );
 
         const res = await prisma.user.update({
           where: {
@@ -106,12 +111,14 @@ export async function POST(req: NextRequest) {
       const lastClaim = new Date(user?.lastClaim ?? Date.now());
       const nextClaim = new Date(new Date().getTime() + 1000 * 60 * 60 * 5);
 
-      console.log(user);
-
       if (new Date(Date.now()) > lastClaim) {
         const np = type.split("--")[1];
 
-        await addLeaderboard(user, np, null);
+        await addLeaderboard(
+          user,
+          np * userMultipler >= 1 ? userMultipler : 1,
+          null
+        );
 
         const res = await prisma.user.update({
           where: {
@@ -132,7 +139,11 @@ export async function POST(req: NextRequest) {
       console.log(type);
       const np = type.split("--")[1];
 
-      const res = await addLeaderboard(user, np, "game");
+      const res = await addLeaderboard(
+        user,
+        np * userMultipler >= 1 ? userMultipler : 1,
+        "game"
+      );
       return NextResponse.json(user, { status: 200 });
     }
 
