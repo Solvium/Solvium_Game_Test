@@ -76,34 +76,34 @@ function Home() {
     } else setSelectedTab("Home");
   }, [selectedTab]);
 
-  useEffect(() => {
-    switch (selectedTab) {
-      case "Leaderboard":
-        if (!leader) return;
-        setCurPage(<LeaderBoard leader={leader} user={user} />);
-        break;
-      case "Game":
-        setCurPage(<Game userDetails={user} claimPoints={claimPoints} />);
-        break;
-      case "Contest":
-        setCurPage(<ContestBoard user={user} />);
-        break;
-      case "Wheel":
-        setCurPage(<WheelOfFortune />);
-        break;
-      default:
-        setCurPage(
-          <UserProfile
-            tasks={tasks}
-            userTasks={userTasks}
-            userDetails={user}
-            getAllInfo={getAllInfo}
-            claimPoints={claimPoints}
-          />
-        );
-        break;
-    }
-  }, [selectedTab, leader, userTasks, tg, user, tasksCat]);
+  // useEffect(() => {
+  //   switch (selectedTab) {
+  //     case "Leaderboard":
+  //       if (!leader) return;
+  //       setCurPage(<LeaderBoard leader={leader} user={user} />);
+  //       break;
+  //     case "Game":
+  //       setCurPage(<Game userDetails={user} claimPoints={claimPoints} />);
+  //       break;
+  //     case "Contest":
+  //       setCurPage(<ContestBoard user={user} />);
+  //       break;
+  //     case "Wheel":
+  //       setCurPage(<WheelOfFortune />);
+  //       break;
+  //     default:
+  //       setCurPage(
+  //         <UserProfile
+  //           tasks={tasks}
+  //           userTasks={userTasks}
+  //           userDetails={user}
+  //           getAllInfo={getAllInfo}
+  //           claimPoints={claimPoints}
+  //         />
+  //       );
+  //       break;
+  //   }
+  // }, [selectedTab, leader, userTasks, tg, user, tasksCat]);
 
   useEffect(() => {
     if (!nearAddress || user?.username) return;
@@ -326,7 +326,7 @@ function Home() {
                     />
                   )}
                   {selectedTab === "Contest" && <ContestBoard user={user} />}
-                  {selectedTab === "Wheel" && <WheelOfFortune />}
+                  {selectedTab === "Wheel" && <WheelOfFortune user={user} />}
                   {selectedTab === "Game" && (
                     <Game userDetails={user} claimPoints={claimPoints} />
                   )}

@@ -7,6 +7,7 @@ import { CodeResult } from "near-api-js/lib/providers/provider";
 import dynamic from "next/dynamic";
 import { CONTRACTID, MEME_TOKEN_ADDRESS } from "./constants/contractId";
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import BuySpin from "./BuySpin";
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
   { ssr: false }
@@ -45,7 +46,7 @@ const CountdownTimer = ({ targetTime }: { targetTime: number }) => {
   );
 };
 
-export const WheelOfFortune = () => {
+export const WheelOfFortune = ({ user }: { user: any }) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [winner, setWinner] = useState("");
@@ -450,6 +451,7 @@ export const WheelOfFortune = () => {
           </div>
         </div>
       </div>
+      {/* <BuySpin user={user} /> */}
       <ToastContainer
         position="bottom-right"
         autoClose={5000}
