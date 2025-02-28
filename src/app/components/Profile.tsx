@@ -12,6 +12,8 @@ import WalletSelector from "./walletSelector";
 import UnifiedWalletConnector from "./walletSelector";
 import { useNearDeposits } from "../contracts/near_deposits";
 import { utils } from "near-api-js";
+import { Wallet } from "lucide-react";
+import { useWallet } from "../contexts/WalletContext";
 
 const UserProfile = ({
   userDetails,
@@ -266,6 +268,10 @@ const Tasks = ({
   const { deposits } = useMultiplierContract(address);
 
   const {
+    state: { accountId: nearAddress },
+  } = useWallet();
+
+  const {
     deposits: nearDeposits,
     loading: nearLoading,
     refetch,
@@ -349,6 +355,8 @@ const Tasks = ({
     ).json();
 
     getAllInfo();
+
+    if (!data?.link) return;
     data.link && window?.open(data.link);
   };
 
@@ -420,6 +428,15 @@ const Tasks = ({
         }
       }
 
+      if (data.name.includes("connect wallet")) {
+        if (nearAddress) sendComplete(data);
+        else {
+          setError("Kindly Connect Your Wallet");
+          setLoading({ id: data.id, status: false });
+          return;
+        }
+      }
+
       return;
       sendComplete(data);
     }
@@ -479,6 +496,10 @@ const Tasks = ({
               curCat = "yt";
               icon = <FaYoutube className="text-[#4C6FFF] text-xl" />;
               break;
+            case "connect wallet".toLowerCase():
+              curCat = "wallet";
+              icon = <Wallet className="text-[#4C6FFF] text-xl" />;
+              break;
             default:
               break;
           }
@@ -495,6 +516,7 @@ const Tasks = ({
             });
 
           if (found) return <div key={task.name + "task"}> </div>;
+          if (task.points == 0) return <div key={task.name + "task"}> </div>;
 
           // const found = userDetails?.completedTasks?.find(
           //   (completedTask: any) =>

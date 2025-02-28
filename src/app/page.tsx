@@ -237,7 +237,7 @@ function Home() {
   };
 
   useEffect(() => {
-    if (tasks && !tasks.error && user.username) {
+    if (tasks && !tasks.error && user?.username) {
       setLoadingPage(false);
     }
   }, [tasks]);
@@ -312,9 +312,9 @@ function Home() {
       ) : (
         <div>
           {nearAddress ? (
-            <div className="max-w-[430px] mx-auto relative min-h-screen">
-              <div className="flex flex-col h-screen">
-                <div className="flex-1 overflow-y-auto pb-20 h-[90vh]">
+            <div className="max-w-[430px] no-scrollbar mx-auto relative min-h-screen">
+              <div className="flex flex-col no-scrollbar h-screen">
+                <div className="flex-1 overflow-y-auto no-scrollbar pb-20 h-[90vh]">
                   {selectedTab === "Home" && (
                     <UserProfile
                       userDetails={user}
