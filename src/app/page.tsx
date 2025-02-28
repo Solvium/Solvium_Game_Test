@@ -112,7 +112,7 @@ function Home() {
 
   useEffect(() => {
     if (!nearConnected || !user) return;
-    if (user.wallet) return;
+    if (user?.wallet) return;
 
     const updateWallet = async () => {
       const res = await axios("/api/allroute", {
