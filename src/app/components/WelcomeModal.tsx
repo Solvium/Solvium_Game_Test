@@ -22,7 +22,7 @@ export const WelcomeModal = ({ setUser }: { setUser: any }) => {
     let decoded: any = jwtDecode(resp?.credential);
     const email = decoded?.email;
     const name = decoded?.name;
-    const ref = location.search?.split("?ref=")[1]?.split("&")[0] ?? null;
+    const ref = location.search?.split("?ref=")[1]?.split("&")[0] ?? "null";
 
     const res = await axios("/api/allroute", {
       method: "POST",
@@ -84,7 +84,7 @@ export const WelcomeModal = ({ setUser }: { setUser: any }) => {
               <div className="mb-4">
                 <select
                   defaultValue="Pick User Type"
-                  className="select text-black ring"
+                  className="select text-black ring dark:text-white"
                   onChange={(e) => {
                     setSelectedAuth(e.target.value);
                   }}
