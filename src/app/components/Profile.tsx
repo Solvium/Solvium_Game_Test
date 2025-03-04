@@ -515,8 +515,9 @@ const Tasks = ({
               }
             });
 
-          if (found) return <div key={task.name + "task"}> </div>;
-          if (task.points == 0) return <div key={task.name + "task"}> </div>;
+          if (found) return <div key={i + task.name + "task" + i}> </div>;
+          if (task.points == 0)
+            return <div key={task.name + task.id + "task" + i}> </div>;
 
           // const found = userDetails?.completedTasks?.find(
           //   (completedTask: any) =>
@@ -528,7 +529,7 @@ const Tasks = ({
 
           return (
             <div
-              key={task.name + "task"}
+              key={"bbb" + task.name + "task" + i}
               className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
