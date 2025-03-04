@@ -15,13 +15,14 @@ export const WelcomeModal = ({ setUser }: { setUser: any }) => {
   } = useWallet();
 
   const [loading, setLoading] = useState(false);
+  const [selectedAuth, setSelectedAuth] = useState<string>("");
 
   const handleLogin = async (resp: any) => {
     setLoading(true);
     let decoded: any = jwtDecode(resp?.credential);
     const email = decoded?.email;
     const name = decoded?.name;
-    const ref = location.search.split("?ref=")[1].split("&")[0];
+    const ref = location.search?.split("?ref=")[1]?.split("&")[0] ?? null;
 
     const res = await axios("/api/allroute", {
       method: "POST",
@@ -61,7 +62,6 @@ export const WelcomeModal = ({ setUser }: { setUser: any }) => {
       {/* Dark overlay */}
 
       {/* Modal content */}
-
       {loading ? (
         <div className="flex justify-center items-center h-screen">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
@@ -79,21 +79,48 @@ export const WelcomeModal = ({ setUser }: { setUser: any }) => {
                 alt=""
               />
             </div>
-            <div className="mb-2 mx-auto w-[73%]">
-              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <GoogleLogin
-                  size="medium"
-                  theme="filled_blue"
-                  logo_alignment="center"
-                  type="standard"
-                  text="signin_with"
-                  onSuccess={handleLogin}
-                  onError={handleLoginError}
-                />
-              </GoogleOAuthProvider>
-            </div>
 
-            <UnifiedWalletConnector />
+            <div className="flex flex-col items-center justify-center  p-4">
+              <div className="mb-4">
+                <select
+                  defaultValue="Pick User Type"
+                  className="select text-black ring"
+                  onChange={(e) => {
+                    setSelectedAuth(e.target.value);
+                  }}
+                >
+                  <option disabled={true}>Pick User Type</option>
+                  <option value={"google"}>New User</option>
+                  <option value={"wallet"}>Old User</option>
+                </select>
+              </div>
+
+              {selectedAuth === "google" && (
+                <div className="mb-2 mx-auto w-[81%]">
+                  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                    <GoogleLogin
+                      size="large"
+                      theme="filled_blue"
+                      logo_alignment="center"
+                      type="standard"
+                      text="signin_with"
+                      onSuccess={(e) => handleLogin(e)}
+                      onError={() => handleLoginError()}
+                    />
+                  </GoogleOAuthProvider>
+                </div>
+              )}
+
+              {selectedAuth === "wallet" && (
+                <div>
+                  <UnifiedWalletConnector />
+                  <p className="text-black mt-1 text-sm">
+                    Connect the same Near wallet to regain old data from
+                    Telegram.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

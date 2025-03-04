@@ -300,7 +300,7 @@ function Home() {
         },
         method: "POST",
         body: JSON.stringify({
-          username: tg?.initDataUnsafe.user?.username,
+          username: user?.username,
           type,
           userMultipler: total,
         }),
