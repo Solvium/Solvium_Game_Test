@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import copy from "./../assets/userProfile/copy.svg";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
@@ -12,6 +12,8 @@ import WalletSelector from "./walletSelector";
 import UnifiedWalletConnector from "./walletSelector";
 import { useNearDeposits } from "../contracts/near_deposits";
 import { utils } from "near-api-js";
+import { Wallet } from "lucide-react";
+import { useWallet } from "../contexts/WalletContext";
 
 const UserProfile = ({
   userDetails,
@@ -149,17 +151,17 @@ const Link = ({ userDetails }: any) => {
         <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
         <div className="relative">
           <p className="text-sm text-[#8E8EA8] break-all text-center md:text-left mb-3">
-            {`https://t.me/Solvium_bot?start=${userDetails?.username}`}
+            {`https://solvium.xyz?ref=${userDetails?.username}`}
           </p>
-          {/* <CopyToClipboard
-            text={`https://t.me/Solvium_bot?start=${userDetails?.username}`}
+          <CopyToClipboard
+            text={`https://solvium.xyz?ref=${userDetails?.username}`}
             onCopy={() => setCopyState("Copied")}
-          > */}
-          <button className="w-full px-4 py-3 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-            <span>{copyState}</span>
-            <img src={copy.src} alt="copy" className="w-4 h-4 invert" />
-          </button>
-          {/* </CopyToClipboard> */}
+          >
+            <button className="w-full px-4 py-3 bg-[#4C6FFF] hover:bg-[#4C6FFF]/90 text-white rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+              <span>{copyState}</span>
+              <img src={copy.src} alt="copy" className="w-4 h-4 invert" />
+            </button>
+          </CopyToClipboard>
         </div>
       </div>
     </div>
@@ -266,6 +268,10 @@ const Tasks = ({
   const { deposits } = useMultiplierContract(address);
 
   const {
+    state: { accountId: nearAddress },
+  } = useWallet();
+
+  const {
     deposits: nearDeposits,
     loading: nearLoading,
     refetch,
@@ -349,6 +355,8 @@ const Tasks = ({
     ).json();
 
     getAllInfo();
+
+    if (!data?.link) return;
     data.link && window?.open(data.link);
   };
 
@@ -420,6 +428,15 @@ const Tasks = ({
         }
       }
 
+      if (data.name.includes("connect wallet")) {
+        if (nearAddress) sendComplete(data);
+        else {
+          setError("Kindly Connect Your Wallet");
+          setLoading({ id: data.id, status: false });
+          return;
+        }
+      }
+
       return;
       sendComplete(data);
     }
@@ -479,6 +496,10 @@ const Tasks = ({
               curCat = "yt";
               icon = <FaYoutube className="text-[#4C6FFF] text-xl" />;
               break;
+            case "connect wallet".toLowerCase():
+              curCat = "wallet";
+              icon = <Wallet className="text-[#4C6FFF] text-xl" />;
+              break;
             default:
               break;
           }
@@ -495,6 +516,7 @@ const Tasks = ({
             });
 
           if (found) return <div key={task.name + "task"}> </div>;
+          if (task.points == 0) return <div key={task.name + "task"}> </div>;
 
           // const found = userDetails?.completedTasks?.find(
           //   (completedTask: any) =>
