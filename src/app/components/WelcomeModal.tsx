@@ -7,11 +7,7 @@ import axios from "axios";
 import { GOOGLE_CLIENT_ID } from "../config/google";
 import { jwtDecode } from "jwt-decode";
 
-export const WelcomeModal = ({
-  setUser,
-}: {
-  setUser: (arg0: Object) => {};
-}) => {
+export const WelcomeModal = ({ setUser }: { setUser: any }) => {
   // const { connected: tonConnected } = useTonConnect();
   const {
     state: { selector, accountId: nearAddress, isConnected: nearConnected },
