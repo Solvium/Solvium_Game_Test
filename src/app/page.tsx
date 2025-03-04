@@ -132,9 +132,11 @@ function Home() {
   }, [nearConnected, user]);
 
   const getUser = async () => {
+    const user = getUserData();
+
     try {
       let res: AxiosResponse;
-      const username = tg?.initDataUnsafe?.user?.username;
+      const username = user?.username;
       if (username) {
         res = await axios("/api/allroute?type=getUser&username=" + username);
       } else if (nearAddress) {
@@ -143,16 +145,21 @@ function Home() {
         );
       } else {
         console.error("No username or wallet available");
-        alert("No username or wallet available");
         setLoadingPage(false);
         return;
-        // res = await axios("/api/allroute?type=getUser&username=" + username);
       }
 
       if (res.status === 200 && res.data) {
         setUser(res.data);
         getTasks();
         getAllUserTasks(res.data);
+
+        const expiryTime = Date.now() + 15 * 24 * 60 * 60 * 1000; // 15 days in milliseconds
+        const data = {
+          userData: res.data,
+          expiryTime,
+        };
+        localStorage.setItem("userSession", JSON.stringify(data));
       } else {
         console.error("Failed to get user:", res.status, res.data);
         setLoadingPage(false);
@@ -172,6 +179,19 @@ function Home() {
         );
       }
     }
+  };
+
+  const getUserData = () => {
+    const storedData = localStorage.getItem("userSession");
+    if (storedData) {
+      const { userData, expiryTime } = JSON.parse(storedData);
+      if (Date.now() < expiryTime) {
+        return userData; // Still valid
+      } else {
+        localStorage.removeItem("userSession"); // Expired
+      }
+    }
+    return null;
   };
 
   const getLeaderBoard = async () => {
@@ -250,7 +270,6 @@ function Home() {
         await getAllInfo();
       } catch (error) {
         console.error("Error initializing app:", error);
-        alert(error);
         setLoadingPage(false);
       }
     };
@@ -311,7 +330,7 @@ function Home() {
         </div>
       ) : (
         <div>
-          {nearAddress ? (
+          {user ? (
             <div className="max-w-[430px] no-scrollbar mx-auto relative min-h-screen">
               <div className="flex flex-col no-scrollbar h-screen">
                 <div className="flex-1 overflow-y-auto no-scrollbar pb-20 h-[90vh]">
@@ -458,7 +477,7 @@ function Home() {
               </div>
             </div>
           ) : (
-            <WelcomeModal />
+            <WelcomeModal setUser={setUser} />
           )}
         </div>
       )}

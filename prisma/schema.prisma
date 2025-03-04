@@ -22,6 +22,7 @@ model User {
   username      String        @unique
   name          String?
   wallet        String?       @unique
+  email         String?       @unique
   referredBy    String
   chain         String?
   level         Int           @default(1)

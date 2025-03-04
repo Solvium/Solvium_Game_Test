@@ -23,11 +23,15 @@ export async function POST(req: NextRequest) {
       type,
       wallet,
       data,
+      ref,
+      email,
+      name,
       message,
       userMultipler,
     } = await req.json();
 
     const username = _username ?? message.chat.username;
+
     if (!username) {
       replyNoUsername(message, null);
       return NextResponse.json("error", { status: 404 });
@@ -97,6 +101,26 @@ export async function POST(req: NextRequest) {
       const isCreated = await getUserTasks(data);
       console.log(isCreated);
       !isCreated && (await registerForTasks(data));
+    }
+
+    if (type == "createAccount") {
+      if (user) {
+        return NextResponse.json(user);
+      }
+
+      const newUser = await prisma.user.create({
+        data: {
+          referralCount: 0,
+          referredBy: ref,
+          name,
+          chatId: "null",
+          email,
+          username: username,
+          totalPoints: 0,
+        },
+      });
+
+      return NextResponse.json(newUser);
     }
 
     if (type == "updateWallet") {
