@@ -231,7 +231,6 @@ export async function GET(req: any) {
     if (type == "leaderboard") {
       const users = await prisma.user.findMany({
         orderBy: { totalPoints: "desc" },
-        take: 100, // Limit to top 100 users for performance
       });
 
       return NextResponse.json(users || []);

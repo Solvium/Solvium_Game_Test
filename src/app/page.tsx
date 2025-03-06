@@ -345,7 +345,9 @@ function Home() {
                     />
                   )}
                   {selectedTab === "Contest" && <ContestBoard user={user} />}
-                  {selectedTab === "Wheel" && <WheelOfFortune user={user} />}
+                  {selectedTab === "Wheel" && (
+                    <WheelOfFortune user={user} claimPoints={claimPoints} />
+                  )}
                   {selectedTab === "Game" && (
                     <Game userDetails={user} claimPoints={claimPoints} />
                   )}
