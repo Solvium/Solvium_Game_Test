@@ -319,9 +319,14 @@ export const WheelOfFortune = ({
           <h2 className="text-2xl mt-10 font-bold text-center text-white mb-1">
             Spin The Wheel
           </h2>
-          <p className="mb-8 text-sm text-center text-[#6C5CE7]">
-            {" "}
+          <p className="mb-4 text-sm text-center text-[#6C5CE7]">
             You need to have made atleast a deposit before playing
+          </p>
+          <p className="mb-8 text-sm text-center text-[#6C5CE7]">
+            Spins Left:{" "}
+            {new Date(cooldownTime) > new Date(Date.now())
+              ? user?.dailySpinCount
+              : 2}
           </p>
 
           {/* Wheel Container */}
@@ -447,7 +452,11 @@ export const WheelOfFortune = ({
                 ) : (
                   <button
                     onClick={handleSpinClick}
-                    disabled={hasPlayed || mustSpin}
+                    disabled={
+                      (hasPlayed &&
+                        new Date(cooldownTime) > new Date(Date.now())) ||
+                      mustSpin
+                    }
                     className="w-full py-4 bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] text-white text-lg font-bold rounded-xl
                          hover:opacity-90 transition-all duration-300
                          disabled:opacity-50 disabled:cursor-not-allowed
@@ -467,18 +476,19 @@ export const WheelOfFortune = ({
                 </div>
               </div>
             )}
-            {user.dailySpinCount <= 0 && (
-              <button
-                onClick={() => setBuySpins(true)}
-                className="w-full py-4 bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] text-white text-lg font-bold rounded-xl
+            {user.dailySpinCount <= 0 &&
+              new Date(cooldownTime) > new Date(Date.now()) && (
+                <button
+                  onClick={() => setBuySpins(true)}
+                  className="w-full py-4 bg-gradient-to-r from-[#4C6FFF] to-[#6C5CE7] text-white text-lg font-bold rounded-xl
                          hover:opacity-90 transition-all duration-300
                          disabled:opacity-50 disabled:cursor-not-allowed
                          relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-all duration-1000"></div>
-                <span className="relative">BUY SPIN</span>
-              </button>
-            )}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-all duration-1000"></div>
+                  <span className="relative">BUY SPIN</span>
+                </button>
+              )}
             {buySpins && (
               <BuySpin
                 user={user}
