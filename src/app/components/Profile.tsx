@@ -364,81 +364,75 @@ const Tasks = ({
     setLoading({ id: data.id, status: true });
     setError("");
 
-    console.log(type);
-    if (type != "") {
-      if (data.name.includes("Join Solvium Telegram Group")) {
-        try {
-          const response = await axios.get(
-            `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solvium_puzzle&user_id=${userDetails.chatId}`
-          );
+    if (data.name.includes("Join Solvium Telegram Group")) {
+      try {
+        const response = await axios.get(
+          `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solvium_puzzle&user_id=${userDetails.chatId}`
+        );
 
-          console.log(response);
-          if (response.data.result.user.username == userDetails.username) {
-            if (response.data.result.status == "member") {
-              sendComplete(data);
-              return;
-            } else {
-              setError("You have not Joined Group yet!");
-              setLoading({ id: data.id, status: false });
-              setTimeout(() => {
-                data.link && tg?.openLink(data.link);
-              }, 2000);
-              return;
-            }
+        console.log(response);
+        if (response.data.result.user.username == userDetails.username) {
+          if (response.data.result.status == "member") {
+            sendComplete(data);
+            return;
           } else {
-            setError("An error occurred, Please try again!");
+            setError("You have not Joined Group yet!");
             setLoading({ id: data.id, status: false });
+            setTimeout(() => {
+              data.link && tg?.openLink(data.link);
+            }, 2000);
             return;
           }
-        } catch (error) {
+        } else {
           setError("An error occurred, Please try again!");
           setLoading({ id: data.id, status: false });
           return;
         }
+      } catch (error) {
+        setError("An error occurred, Please try again!");
+        setLoading({ id: data.id, status: false });
+        return;
       }
+    }
 
-      if (data.name.includes("Join Solvium Chat")) {
-        try {
-          const response = await axios.get(
-            `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solviumupdate&user_id=${userDetails.chatId}`
-          );
+    if (data.name.includes("Join Solvium Chat")) {
+      try {
+        const response = await axios.get(
+          `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solviumupdate&user_id=${userDetails.chatId}`
+        );
 
-          console.log(response);
-          if (response.data.result.user.username == userDetails.username) {
-            if (response.data.result.status == "member") {
-              sendComplete(data);
-              return;
-            } else {
-              setError("You have not Joined Group yet!");
-              setLoading({ id: data.id, status: false });
-              setTimeout(() => {
-                data.link && tg?.openLink(data.link);
-              }, 2000);
-              return;
-            }
+        console.log(response);
+        if (response.data.result.user.username == userDetails.username) {
+          if (response.data.result.status == "member") {
+            sendComplete(data);
+            return;
           } else {
-            setError("An error occurred, Please try again!");
+            setError("You have not Joined Group yet!");
             setLoading({ id: data.id, status: false });
+            setTimeout(() => {
+              data.link && tg?.openLink(data.link);
+            }, 2000);
             return;
           }
-        } catch (error) {
+        } else {
           setError("An error occurred, Please try again!");
           setLoading({ id: data.id, status: false });
           return;
         }
+      } catch (error) {
+        setError("An error occurred, Please try again!");
+        setLoading({ id: data.id, status: false });
+        return;
       }
+    }
 
-      if (data.name.includes("connect wallet")) {
-        if (nearAddress) sendComplete(data);
-        else {
-          setError("Kindly Connect Your Wallet");
-          setLoading({ id: data.id, status: false });
-          return;
-        }
+    if (data.name.includes("Connect Wallet")) {
+      if (nearAddress) sendComplete(data);
+      else {
+        setError("Kindly Connect Your Wallet");
+        setLoading({ id: data.id, status: false });
+        return;
       }
-
-      return;
-      sendComplete(data);
     }
 
     sendComplete(data);
