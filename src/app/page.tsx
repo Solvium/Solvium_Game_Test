@@ -40,6 +40,7 @@ function Home() {
         setCurPage(<LeaderBoard leader={leader} user={user} />);
         break;
       case "Game":
+        if (!user) return null;
         setCurPage(<Game userDetails={user} claimPoints={claimPoints} />);
         break;
       case "Contest":
