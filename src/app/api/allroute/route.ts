@@ -1,9 +1,9 @@
 import { getCurrentYear, getISOWeekNumber } from "@/app/utils/utils";
 import { telegramClient } from "../../clients/TelegramApiClient";
 import { InlineKeyboardMarkup } from "@grammyjs/types";
-import { PrismaClient } from "@prisma/client"; 
+import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
- 
+
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 // export const prisma =
@@ -11,7 +11,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 //   new PrismaClient({
 //     log: ["query"],
 //   });
-  const prisma = globalForPrisma.prisma || new PrismaClient();
+const prisma = globalForPrisma.prisma || new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
@@ -21,12 +21,17 @@ export async function POST(req: NextRequest) {
       username: _username,
       id,
       type,
+      wallet,
       data,
+      ref,
+      email,
+      name,
       message,
       userMultipler,
     } = await req.json();
 
     const username = _username ?? message.chat.username;
+
     if (!username) {
       replyNoUsername(message, null);
       return NextResponse.json("error", { status: 404 });
@@ -98,6 +103,35 @@ export async function POST(req: NextRequest) {
       !isCreated && (await registerForTasks(data));
     }
 
+    if (type == "createAccount") {
+      if (user) {
+        return NextResponse.json(user);
+      }
+
+      const newUser = await prisma.user.create({
+        data: {
+          referralCount: 0,
+          referredBy: ref,
+          name,
+          chatId: "null",
+          email,
+          username: username,
+          totalPoints: 0,
+        },
+      });
+
+      return NextResponse.json(newUser);
+    }
+
+    if (type == "updateWallet") {
+      await prisma.user.update({
+        where: { username },
+        data: {
+          wallet,
+        },
+      });
+    }
+
     if (type == "completetasks") {
       if (!user?.isOfficial) {
         const res = await prisma.user.update({
@@ -124,7 +158,9 @@ export async function POST(req: NextRequest) {
               },
               data: {
                 referralCount: invitor.referralCount + 1,
-                totalPoints: invitor.totalPoints + 100,
+                totalPoints: {
+                  increment: 100,
+                },
               },
             });
           }
@@ -150,6 +186,7 @@ export async function GET(req: any) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type");
   const username = searchParams.get("username");
+  const wallet = searchParams.get("wallet");
   const userId = searchParams.get("id");
 
   try {
@@ -172,10 +209,28 @@ export async function GET(req: any) {
       return NextResponse.json(user);
     }
 
+    if (type == "getUserByWallet") {
+      if (!wallet) {
+        return NextResponse.json(
+          { error: "wallet is required" },
+          { status: 400 }
+        );
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { wallet },
+      });
+
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      return NextResponse.json(user);
+    }
+
     if (type == "leaderboard") {
       const users = await prisma.user.findMany({
         orderBy: { totalPoints: "desc" },
-        take: 100, // Limit to top 100 users for performance
       });
 
       return NextResponse.json(users || []);

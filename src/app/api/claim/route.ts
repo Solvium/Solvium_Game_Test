@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, type, data } = await req.json();
+    const { username, type, data, userMultipler } = await req.json();
 
     const user = await prisma.user.findUnique({
       where: {
@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
               data: {
                 referralCount: invitor.referralCount + 1,
                 totalPoints:
-                  invitor.totalPoints + (user.isPremium ? 200000 : 100000),
+                  invitor.totalPoints +
+                  (100 * userMultipler >= 1 ? userMultipler : 1),
               },
             });
           }
@@ -66,7 +67,11 @@ export async function POST(req: NextRequest) {
         let day = ((user?.claimCount ?? 0) + 1) * 2;
         day = day - 2;
 
-        await addLeaderboard(user, 60 * (day <= 0 ? 1 : day), null);
+        await addLeaderboard(
+          user,
+          60 * (day <= 0 ? 1 : day) * userMultipler >= 1 ? userMultipler : 1,
+          null
+        );
 
         const res = await prisma.user.update({
           where: {
@@ -102,16 +107,69 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(res);
     }
 
+    if (type.includes("spin claim") && user) {
+      console.log(user);
+      const newDay =
+        new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000) <
+        new Date(Date.now());
+
+      console.log(
+        new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000),
+        new Date(Date.now())
+      );
+
+      if (user?.dailySpinCount <= 0 && !newDay)
+        return NextResponse.json("No Free spins available");
+      const res = await prisma.user.update({
+        where: {
+          username,
+        },
+
+        data: {
+          lastSpinClaim: new Date(Date.now()),
+          spinCount: {
+            increment: 1,
+          },
+          dailySpinCount: newDay ? 1 : user?.dailySpinCount - 1,
+        },
+      });
+
+      return NextResponse.json(res);
+    }
+
+    if (type.includes("buy spins")) {
+      const np = JSON.parse(type.split("--")[1]);
+
+      const res = await prisma.user.update({
+        where: {
+          username,
+        },
+
+        data: {
+          totalPoints: {
+            decrement: np.solvPrice,
+          },
+          dailySpinCount: {
+            increment: np.spinCount,
+          },
+        },
+      });
+
+      return NextResponse.json(res);
+    }
+
     if (type.includes("farm claim")) {
       const lastClaim = new Date(user?.lastClaim ?? Date.now());
       const nextClaim = new Date(new Date().getTime() + 1000 * 60 * 60 * 5);
 
-      console.log(user);
-
       if (new Date(Date.now()) > lastClaim) {
         const np = type.split("--")[1];
 
-        await addLeaderboard(user, np, null);
+        await addLeaderboard(
+          user,
+          np * userMultipler >= 1 ? userMultipler : np,
+          null
+        );
 
         const res = await prisma.user.update({
           where: {
@@ -132,7 +190,11 @@ export async function POST(req: NextRequest) {
       console.log(type);
       const np = type.split("--")[1];
 
-      const res = await addLeaderboard(user, np, "game");
+      const res = await addLeaderboard(
+        user,
+        np * userMultipler >= 1 ? userMultipler : np,
+        "game"
+      );
       return NextResponse.json(user, { status: 200 });
     }
 
@@ -158,6 +220,8 @@ export async function GET(req: any) {
 const addLeaderboard = async (user: any, np: number, type: any) => {
   const userId = user.id;
   const points = np;
+
+  console.log(np);
   try {
     if (!userId || points === undefined) {
       return NextResponse.json(

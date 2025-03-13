@@ -1,17 +1,17 @@
 import "@twa-dev/sdk";
 import type { Metadata } from "next";
-import { Space_Grotesk } from 'next/font/google';
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import App from "./components/App";
 
 const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  display: 'swap',
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Solvuim Task Bot",
-  description: "Earn with Solvuim Tasks on TON Blockchain",
+  title: "Solvium Task Bot",
+  description: "Earn with Solvium Tasks on NEAR Blockchain",
 };
 
 export default function RootLayout({
