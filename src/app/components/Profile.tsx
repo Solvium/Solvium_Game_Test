@@ -14,6 +14,8 @@ import { useNearDeposits } from "../contracts/near_deposits";
 import { utils } from "near-api-js";
 import { Wallet } from "lucide-react";
 import { useWallet } from "../contexts/WalletContext";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { SolDepositModal } from "./UI/SolDeposit";
 
 const UserProfile = ({
   userDetails,
@@ -27,7 +29,8 @@ const UserProfile = ({
     <div className="min-h-screen w-full bg-[#0B0B14] py-4 px-4 md:py-6">
       <div className="max-w-4xl mx-auto space-y-4">
         <div className="flex justify-end">
-          <UnifiedWalletConnector />
+          {/* <UnifiedWalletConnector /> */}
+          <WalletMultiButton />
         </div>
 
         {/* Profile Header */}
@@ -263,6 +266,7 @@ const Tasks = ({
 }) => {
   const [loading, setLoading] = useState({ id: "", status: false });
   const [onGoing, setOnGoing] = useState(false);
+  const [isOpenSolModal, setIsOpenSolModal] = useState(false);
   const [error, setError] = useState("");
   const address = useTonAddress();
   const { deposits } = useMultiplierContract(address);
@@ -466,9 +470,15 @@ const Tasks = ({
           <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
           <div className="relative">
             <p className="text-sm font-medium text-[#8E8EA8]">
-              Support on NEAR chain
+              Support on Solana chain
             </p>
-            <DepositMultiplier user={userDetails} />
+            <button
+              onClick={() => setIsOpenSolModal(true)}
+              className="mt-3 text-[13px] border-blue-80 border-[2px] text-white h-8 flex items-center justify-center rounded-lg px-3"
+            >
+              Start
+            </button>
+            {/* <DepositMultiplier user={userDetails} /> */}
           </div>
         </div>
 
@@ -571,6 +581,11 @@ const Tasks = ({
           );
         })}
       </div>
+
+      <SolDepositModal
+        isOpen={isOpenSolModal}
+        onClose={() => setIsOpenSolModal(false)}
+      />
     </div>
   );
 };

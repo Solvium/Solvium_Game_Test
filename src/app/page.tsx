@@ -15,14 +15,17 @@ import { useTonAddress } from "@tonconnect/ui-react";
 import { useTonConnect } from "./hooks/useTonConnect";
 import { useWallet } from "./contexts/WalletContext";
 import { WelcomeModal } from "./components/WelcomeModal";
+import MultiChainLoginModule from "./components/MultiChainLoginModule";
+import { useMultiLogin } from "./hooks/useMultiLogin";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 function Home() {
   const [selectedTab, setSelectedTab]: any = useState();
   const [tg, setTg] = useState<typeof WebApp | null>(null);
-  const [user, setUser]: any = useState();
+  // const [user, setUser]: any = useState();
   const [leader, setLeader]: any = useState();
   const [loading, setLoading] = useState(false);
-  const [loadingPage, setLoadingPage] = useState(true);
+  // const [loadingPage, setLoadingPage] = useState(true);
   const [curPage, setCurPage]: any = useState();
   const [userTasks, setUserTasks]: any = useState();
   const [tasks, setTasks]: any = useState();
@@ -40,6 +43,19 @@ function Home() {
     loading: nearLoading,
     refetch,
   } = useNearDeposits();
+
+  const {
+    isAuthenticated,
+    userData: user,
+    isLoading: loadingPage,
+    error: loginError,
+    loginWithTelegram,
+    loginWithGoogle,
+    loginWithWallet,
+    generateWalletSignMessage,
+    signWithEthWallet,
+    logout,
+  } = useMultiLogin();
 
   const getDeposits = (): number => {
     let total = 0;
@@ -65,50 +81,32 @@ function Home() {
     return total;
   };
 
+  console.log(user);
+
   useEffect(() => {
-    if (selectedTab) {
+    if (tg) return;
+    let count = 0;
+    const getTg = setInterval(() => {
       const _tg = window?.Telegram?.WebApp;
       if (_tg) {
         setTg(_tg);
-        getUser();
-        getLeaderBoard();
+        clearInterval(getTg);
       }
-    } else setSelectedTab("Home");
-  }, [selectedTab]);
 
-  // useEffect(() => {
-  //   switch (selectedTab) {
-  //     case "Leaderboard":
-  //       if (!leader) return;
-  //       setCurPage(<LeaderBoard leader={leader} user={user} />);
-  //       break;
-  //     case "Game":
-  //       setCurPage(<Game userDetails={user} claimPoints={claimPoints} />);
-  //       break;
-  //     case "Contest":
-  //       setCurPage(<ContestBoard user={user} />);
-  //       break;
-  //     case "Wheel":
-  //       setCurPage(<WheelOfFortune />);
-  //       break;
-  //     default:
-  //       setCurPage(
-  //         <UserProfile
-  //           tasks={tasks}
-  //           userTasks={userTasks}
-  //           userDetails={user}
-  //           getAllInfo={getAllInfo}
-  //           claimPoints={claimPoints}
-  //         />
-  //       );
-  //       break;
-  //   }
-  // }, [selectedTab, leader, userTasks, tg, user, tasksCat]);
+      console.log(count);
+
+      if (count > 10) {
+        clearInterval(getTg);
+      }
+      count++;
+    }, 10000);
+  }, []);
 
   useEffect(() => {
-    if (!nearAddress || user?.username) return;
-    getUser();
-  }, [nearAddress]);
+    if (selectedTab) {
+      getLeaderBoard();
+    } else setSelectedTab("Home");
+  }, [selectedTab]);
 
   useEffect(() => {
     if (!nearConnected || !user) return;
@@ -131,69 +129,6 @@ function Home() {
     updateWallet();
   }, [nearConnected, user]);
 
-  const getUser = async () => {
-    const user = getUserData();
-
-    try {
-      let res: AxiosResponse;
-      const username = user?.username;
-      if (username) {
-        res = await axios("/api/allroute?type=getUser&username=" + username);
-      } else if (nearAddress) {
-        res = await axios(
-          "/api/allroute?type=getUserByWallet&wallet=" + nearAddress
-        );
-      } else {
-        console.error("No username or wallet available");
-        setLoadingPage(false);
-        return;
-      }
-
-      if (res.status === 200 && res.data) {
-        setUser(res.data);
-        getTasks();
-        getAllUserTasks(res.data);
-
-        const expiryTime = Date.now() + 15 * 24 * 60 * 60 * 1000; // 15 days in milliseconds
-        const data = {
-          userData: res.data,
-          expiryTime,
-        };
-        localStorage.setItem("userSession", JSON.stringify(data));
-      } else {
-        console.error("Failed to get user:", res.status, res.data);
-        setLoadingPage(false);
-      }
-    } catch (error: any) {
-      if (error?.response?.status === 404) {
-        // User doesn't exist, we could handle new user registration here
-        console.log("User not found - new user flow needed");
-        setLoadingPage(false);
-        alert("User not found - new user flow needed");
-      } else {
-        alert(error);
-        setLoadingPage(false);
-        console.error(
-          "Error fetching user:",
-          error?.response?.data || error.message
-        );
-      }
-    }
-  };
-
-  const getUserData = () => {
-    const storedData = localStorage.getItem("userSession");
-    if (storedData) {
-      const { userData, expiryTime } = JSON.parse(storedData);
-      if (Date.now() < expiryTime) {
-        return userData; // Still valid
-      } else {
-        localStorage.removeItem("userSession"); // Expired
-      }
-    }
-    return null;
-  };
-
   const getLeaderBoard = async () => {
     try {
       const res = await axios("/api/allroute?type=leaderboard");
@@ -211,7 +146,7 @@ function Home() {
   };
 
   const getAllInfo = async () => {
-    await getUser();
+    // await getAllUserTasks()
     await getLeaderBoard();
     await getTasks();
   };
@@ -258,19 +193,17 @@ function Home() {
 
   useEffect(() => {
     if (tasks && !tasks.error && user?.username) {
-      setLoadingPage(false);
+      // setLoadingPage(false);
     }
   }, [tasks]);
 
   useEffect(() => {
     if (!tg) return;
-
     const initializeApp = async () => {
       try {
         await getAllInfo();
       } catch (error) {
         console.error("Error initializing app:", error);
-        setLoadingPage(false);
       }
     };
 
@@ -311,7 +244,6 @@ function Home() {
 
     if (res.username != null) {
       setLoading(false);
-      getUser();
       getLeaderBoard();
       func(false);
     }
@@ -479,7 +411,7 @@ function Home() {
               </div>
             </div>
           ) : (
-            <WelcomeModal setUser={setUser} />
+            <MultiChainLoginModule />
           )}
         </div>
       )}

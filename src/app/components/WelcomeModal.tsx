@@ -6,8 +6,15 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { GOOGLE_CLIENT_ID } from "../config/google";
 import { jwtDecode } from "jwt-decode";
+import WebApp from "@twa-dev/sdk";
 
-export const WelcomeModal = ({ setUser }: { setUser: any }) => {
+export const WelcomeModal = ({
+  setUser,
+  tg,
+}: {
+  setUser: any;
+  tg: null | typeof WebApp;
+}) => {
   // const { connected: tonConnected } = useTonConnect();
   const {
     state: { selector, accountId: nearAddress, isConnected: nearConnected },

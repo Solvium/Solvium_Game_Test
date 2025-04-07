@@ -27,7 +27,7 @@ const nextConfig = {
   // Increase page generation timeout
   staticPageGenerationTimeout: 120,
   // Increase chunk loading timeout
-  pageLoadTimeout: 60000,
+  // pageLoadTimeout: 60000,
 };
 
 export default nextConfig;
