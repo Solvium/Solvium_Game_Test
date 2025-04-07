@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextResponse, res: NextApiResponse) {
+export async function POST(req: NextRequest) {
   const {
     username,
     id,
@@ -24,9 +24,10 @@ export async function POST(req: NextResponse, res: NextApiResponse) {
   if (type == "loginWithTg") {
     try {
       if (!username) {
-        return res
-          .status(400)
-          .json({ message: "Username and password are required" });
+        return NextResponse.json(
+          { message: "Username and password are required" },
+          { status: 400 }
+        );
       }
 
       // Find user
@@ -35,7 +36,10 @@ export async function POST(req: NextResponse, res: NextApiResponse) {
       });
 
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return NextResponse.json(
+          { message: "Invalid credentials" },
+          { status: 401 }
+        );
       }
 
       // Assuming you have a password field in your schema (add it if missing)
@@ -58,41 +62,49 @@ export async function POST(req: NextResponse, res: NextApiResponse) {
       );
 
       // Set HTTP-only cookie
-      res.setHeader(
-        "Set-Cookie",
-        cookie.serialize("auth_token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV !== "development",
-          sameSite: "strict",
-          maxAge: 60 * 60 * 24 * 7, // 1 week
-          path: "/",
-        })
+      const response = NextResponse.json(
+        {
+          message: "Login successful",
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            name: user.name,
+            level: user.level,
+            totalPoints: user.totalPoints,
+            isPremium: user.isPremium,
+          },
+        },
+        { status: 200 }
       );
 
-      return res.status(200).json({
-        message: "Login successful",
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          name: user.name,
-          level: user.level,
-          totalPoints: user.totalPoints,
-          isPremium: user.isPremium,
-        },
+      // Manually serialize the cookie
+      const serialized = cookie.serialize("auth_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        path: "/",
       });
+
+      response.headers.set("Set-Cookie", serialized);
+      return response;
     } catch (error) {
       console.error("Login error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return NextResponse.json(
+        { message: "Internal server error" },
+        { status: 500 }
+      );
     }
   }
 
   if (type == "loginWithGoogle") {
     try {
       if (!email) {
-        return res
-          .status(400)
-          .json({ message: "email and password are required" });
+        NextResponse.json(
+          { message: "email and password are required" },
+          { status: 400 }
+        );
       }
 
       console.log(email);
