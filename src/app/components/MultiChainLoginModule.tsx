@@ -1,10 +1,13 @@
 // src/components/MultiChainLoginModule.tsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useMultiChain, ChainType } from "../hooks/useMultiChain";
 import { useMultiLogin, LoginMethod } from "../hooks/useMultiLogin";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "../config/google";
 import { jwtDecode } from "jwt-decode";
+import { ArrowBigLeftDashIcon } from "lucide-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
 const chainConfig = {
   EVM: {
@@ -29,10 +32,11 @@ const chainConfig = {
   },
 };
 
-export const MultiChainLoginModule: React.FC = () => {
+export const MultiChainLoginModule = () => {
   const [selectedLoginMethod, setSelectedLoginMethod] =
     useState<LoginMethod | null>(null);
   const [selectedChain, setSelectedChain] = useState<ChainType>("EVM");
+  const [tgError, setTgError] = useState("");
 
   const {
     activeChain,
@@ -56,7 +60,7 @@ export const MultiChainLoginModule: React.FC = () => {
     generateWalletSignMessage,
     signWithEthWallet,
     logout,
-  } = useMultiLogin();
+  } = useMultiLoginContext();
 
   // Handle wallet login flow
   const handleWalletLogin = useCallback(
@@ -123,11 +127,14 @@ export const MultiChainLoginModule: React.FC = () => {
 
   // Handle Telegram login (for Mini App context)
   const handleTelegramLogin = useCallback(async () => {
-    if (window.Telegram?.WebApp) {
-      const initData = window.Telegram.WebApp.initData;
+    const data = window.Telegram?.WebApp.initDataUnsafe.chat?.username;
+    if (data) {
+      const initData = window.Telegram.WebApp.initDataUnsafe;
+      console.log(initData);
       await loginWithTelegram(initData);
     } else {
-      console.error("Not in Telegram Mini App context");
+      console.log("Not in Telegram Mini App context");
+      setTgError("Not in Telegram Mini App context");
     }
   }, [loginWithTelegram]);
 
@@ -144,19 +151,27 @@ export const MultiChainLoginModule: React.FC = () => {
     throw "Login Failed";
   };
 
+  useEffect(() => {
+    if (tgError != "") {
+      setTimeout(() => {
+        setTgError("");
+      }, 5000);
+    }
+  }, [tgError]);
+
   // UI Rendering
   return (
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-6">Multi-Chain Login</h1>
 
       {/* Login Method Selection */}
-      {!isAuthenticated && (
+      {!isAuthenticated && !selectedLoginMethod && (
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3">Choose Login Method</h2>
           <div className="flex flex-col space-y-3">
             <button
               className="p-2 border rounded hover:bg-gray-100"
-              onClick={() => setSelectedLoginMethod("Telegram")}
+              onClick={handleTelegramLogin}
             >
               Continue with Telegram
             </button>
@@ -178,12 +193,12 @@ export const MultiChainLoginModule: React.FC = () => {
               </GoogleOAuthProvider>
             </button>
 
-            <button
+            {/* <button
               className="p-2 border rounded hover:bg-gray-100"
               onClick={() => setSelectedLoginMethod("Wallet")}
             >
               Connect Wallet
-            </button>
+            </button> */}
           </div>
         </div>
       )}
@@ -191,6 +206,9 @@ export const MultiChainLoginModule: React.FC = () => {
       {/* Wallet Selection (if wallet login chosen) */}
       {!isAuthenticated && selectedLoginMethod === "Wallet" && (
         <div className="mb-6">
+          <div className="" onClick={() => setSelectedLoginMethod(null)}>
+            <ArrowBigLeftDashIcon />
+          </div>
           <h2 className="text-lg font-semibold mb-3">Select Blockchain</h2>
           <div className="flex space-x-2 mb-4">
             {(["EVM", "Solana", "NEAR", "TON"] as ChainType[]).map((chain) => (
@@ -208,6 +226,7 @@ export const MultiChainLoginModule: React.FC = () => {
 
           <h2 className="text-lg font-semibold mb-3">Select Wallet</h2>
           <div className="flex flex-col space-y-2">
+            {activeChain == "Solana" && <WalletMultiButton />}
             {getSupportedWallets().map((wallet) => (
               <button
                 key={wallet}
@@ -222,70 +241,12 @@ export const MultiChainLoginModule: React.FC = () => {
         </div>
       )}
 
-      {/* Telegram Login Flow */}
-      {!isAuthenticated && selectedLoginMethod === "Telegram" && (
-        <div className="mb-6">
-          <button
-            className="p-2 border rounded hover:bg-gray-100 w-full"
-            onClick={handleTelegramLogin}
-          >
-            Login with Telegram
-          </button>
-        </div>
-      )}
-
-      {/* Logged In State */}
-      {isAuthenticated && userData && (
-        <div className="border p-4 rounded mb-6">
-          <h2 className="text-lg font-semibold mb-2">Logged In</h2>
-          <p>
-            <strong>User ID:</strong> {userData.id}
-          </p>
-          {userData.name && (
-            <p>
-              <strong>Name:</strong> {userData.name}
-            </p>
-          )}
-          {userData.email && (
-            <p>
-              <strong>Email:</strong> {userData.email}
-            </p>
-          )}
-
-          <h3 className="font-medium mt-3 mb-1">Linked Accounts</h3>
-          <ul className="list-disc pl-5">
-            {userData.linkedAccounts.map((method) => (
-              <li key={method}>{method}</li>
-            ))}
-          </ul>
-
-          {userData.wallets && userData.wallets.length > 0 && (
-            <>
-              <h3 className="font-medium mt-3 mb-1">Linked Wallets</h3>
-              <ul className="list-disc pl-5">
-                {userData.wallets.map((wallet, idx) => (
-                  <li key={idx}>
-                    {wallet.chain}: {wallet.address.slice(0, 6)}...
-                    {wallet.address.slice(-4)}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          <button
-            className="mt-4 p-2 bg-red-100 border border-red-300 rounded hover:bg-red-200"
-            onClick={() => logout()}
-          >
-            Logout
-          </button>
-        </div>
-      )}
-
       {/* Error Handling */}
-      {(chainError || loginError) && (
+      {(chainError || loginError || tgError != "") && (
         <div className="p-3 bg-red-100 border border-red-300 rounded mb-4">
-          <p className="text-red-800">{chainError || loginError}</p>
+          <p className="text-red-800">
+            {tgError != "" ? tgError : chainError || loginError}
+          </p>
         </div>
       )}
     </div>

@@ -17,6 +17,7 @@ import {
   UnsafeBurnerWalletAdapter,
   PhantomWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
+import { MultiLoginProvider } from "../contexts/MultiLoginContext";
 
 const manifestUrl = "https://solvium.xyz/tonconnect-manifest.json";
 
@@ -82,7 +83,9 @@ export default function App({
                   <head>
                     <Script src="https://telegram.org/js/telegram-web-app.js"></Script>
                   </head>
-                  <body>{children}</body>
+                  <MultiLoginProvider>
+                    <body>{children}</body>
+                  </MultiLoginProvider>
                 </html>
               </TonWalletProvider>
             </QueryClientProvider>

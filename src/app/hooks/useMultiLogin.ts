@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import WebApp from "@twa-dev/sdk";
 
 export type LoginMethod = "Telegram" | "Google" | "Wallet";
 
@@ -35,7 +36,6 @@ export const useMultiLogin = () => {
 
   // Initialize: Check if user is already logged in
   useEffect(() => {
-    console.log("getting user");
     const checkAuthStatus = async () => {
       try {
         const response = await axios.get("/api/user?type=getme");
@@ -61,17 +61,26 @@ export const useMultiLogin = () => {
 
   // Login with Telegram (Mini App)
   const loginWithTelegram = useCallback(
-    async (telegramInitData: string, options?: LoginOptions) => {
+    async (
+      telegramInitData: typeof WebApp.initDataUnsafe,
+      options?: LoginOptions
+    ) => {
       setIsLoading(true);
       setError(null);
 
       try {
-        // Send Telegram auth data to your backend
-        const response = await axios.post("/api/auth/telegram", {
-          telegramInitData,
+        const response = await axios("/api/user", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          data: JSON.stringify({
+            type: "loginWithTg",
+            username: telegramInitData.chat?.username,
+          }),
         });
 
-        if (response.data.success) {
+        if (response.status == 200) {
           setIsAuthenticated(true);
           setUserData(response.data.user);
 
@@ -104,6 +113,7 @@ export const useMultiLogin = () => {
     [router]
   );
 
+  console.log(userData);
   // Login with Google
   const loginWithGoogle = useCallback(
     async (
@@ -130,7 +140,7 @@ export const useMultiLogin = () => {
 
         console.log(response);
 
-        if (response.data.success) {
+        if (response.status == 200) {
           setIsAuthenticated(true);
           setUserData(response.data.user);
 
@@ -284,22 +294,22 @@ export const useMultiLogin = () => {
   );
 
   // Logout
-  const logout = useCallback(
-    async (redirectPath = "/login") => {
-      try {
-        await axios.post("/api/auth/logout");
-        setIsAuthenticated(false);
-        setUserData(null);
+  const logout = useCallback(async () => {
+    try {
+      await axios("/api/user", {
+        method: "POST",
 
-        if (redirectPath) {
-          router.push(redirectPath);
-        }
-      } catch (err) {
-        console.error("Logout error:", err);
-      }
-    },
-    [router]
-  );
+        data: JSON.stringify({
+          type: "logout",
+        }),
+      });
+
+      setIsAuthenticated(false);
+      setUserData(null);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  }, [router]);
 
   return {
     isAuthenticated,
