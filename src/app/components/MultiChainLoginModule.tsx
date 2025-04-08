@@ -1,5 +1,5 @@
 // src/components/MultiChainLoginModule.tsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useMultiChain, ChainType } from "../hooks/useMultiChain";
 import { useMultiLogin, LoginMethod } from "../hooks/useMultiLogin";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
@@ -36,6 +36,7 @@ export const MultiChainLoginModule = () => {
   const [selectedLoginMethod, setSelectedLoginMethod] =
     useState<LoginMethod | null>(null);
   const [selectedChain, setSelectedChain] = useState<ChainType>("EVM");
+  const [tgError, setTgError] = useState("");
 
   const {
     activeChain,
@@ -126,11 +127,14 @@ export const MultiChainLoginModule = () => {
 
   // Handle Telegram login (for Mini App context)
   const handleTelegramLogin = useCallback(async () => {
-    if (window.Telegram?.WebApp.initDataUnsafe) {
+    const data = window.Telegram?.WebApp.initDataUnsafe.chat?.username;
+    if (data) {
       const initData = window.Telegram.WebApp.initDataUnsafe;
+      console.log(initData);
       await loginWithTelegram(initData);
     } else {
-      console.error("Not in Telegram Mini App context");
+      console.log("Not in Telegram Mini App context");
+      setTgError("Not in Telegram Mini App context");
     }
   }, [loginWithTelegram]);
 
@@ -146,6 +150,14 @@ export const MultiChainLoginModule = () => {
   const handleLoginError = () => {
     throw "Login Failed";
   };
+
+  useEffect(() => {
+    if (tgError != "") {
+      setTimeout(() => {
+        setTgError("");
+      }, 5000);
+    }
+  }, [tgError]);
 
   // UI Rendering
   return (
@@ -230,9 +242,11 @@ export const MultiChainLoginModule = () => {
       )}
 
       {/* Error Handling */}
-      {(chainError || loginError) && (
+      {(chainError || loginError || tgError != "") && (
         <div className="p-3 bg-red-100 border border-red-300 rounded mb-4">
-          <p className="text-red-800">{chainError || loginError}</p>
+          <p className="text-red-800">
+            {tgError != "" ? tgError : chainError || loginError}
+          </p>
         </div>
       )}
     </div>
