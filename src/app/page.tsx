@@ -18,6 +18,7 @@ import { WelcomeModal } from "./components/WelcomeModal";
 import MultiChainLoginModule from "./components/MultiChainLoginModule";
 import { useMultiLogin } from "./hooks/useMultiLogin";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useMultiLoginContext } from "./contexts/MultiLoginContext";
 
 function Home() {
   const [selectedTab, setSelectedTab]: any = useState();
@@ -25,8 +26,7 @@ function Home() {
   // const [user, setUser]: any = useState();
   const [leader, setLeader]: any = useState();
   const [loading, setLoading] = useState(false);
-  // const [loadingPage, setLoadingPage] = useState(true);
-  const [curPage, setCurPage]: any = useState();
+  const [showLoginModal, setShowLoginModal] = useState(true);
   const [userTasks, setUserTasks]: any = useState();
   const [tasks, setTasks]: any = useState();
   const [tasksCat, setTasksCat]: any = useState();
@@ -55,7 +55,7 @@ function Home() {
     generateWalletSignMessage,
     signWithEthWallet,
     logout,
-  } = useMultiLogin();
+  } = useMultiLoginContext();
 
   const getDeposits = (): number => {
     let total = 0;
@@ -80,8 +80,6 @@ function Home() {
     });
     return total;
   };
-
-  console.log(user);
 
   useEffect(() => {
     if (tg) return;
@@ -253,6 +251,8 @@ function Home() {
   const handlePageChange = (page: string) => {
     setSelectedTab(page);
   };
+
+  console.log(user);
 
   return (
     <div className="min-h-screen bg-[#0B0B14]">

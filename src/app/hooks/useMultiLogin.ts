@@ -80,7 +80,7 @@ export const useMultiLogin = () => {
           }),
         });
 
-        if (response.data.success) {
+        if (response.status == 200) {
           setIsAuthenticated(true);
           setUserData(response.data.user);
 
@@ -113,6 +113,7 @@ export const useMultiLogin = () => {
     [router]
   );
 
+  console.log(userData);
   // Login with Google
   const loginWithGoogle = useCallback(
     async (
@@ -139,7 +140,7 @@ export const useMultiLogin = () => {
 
         console.log(response);
 
-        if (response.data.success) {
+        if (response.status == 200) {
           setIsAuthenticated(true);
           setUserData(response.data.user);
 

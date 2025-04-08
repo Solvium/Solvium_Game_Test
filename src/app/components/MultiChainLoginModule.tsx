@@ -7,6 +7,7 @@ import { GOOGLE_CLIENT_ID } from "../config/google";
 import { jwtDecode } from "jwt-decode";
 import { ArrowBigLeftDashIcon } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
 const chainConfig = {
   EVM: {
@@ -31,7 +32,7 @@ const chainConfig = {
   },
 };
 
-export const MultiChainLoginModule: React.FC = () => {
+export const MultiChainLoginModule = () => {
   const [selectedLoginMethod, setSelectedLoginMethod] =
     useState<LoginMethod | null>(null);
   const [selectedChain, setSelectedChain] = useState<ChainType>("EVM");
@@ -58,7 +59,7 @@ export const MultiChainLoginModule: React.FC = () => {
     generateWalletSignMessage,
     signWithEthWallet,
     logout,
-  } = useMultiLogin();
+  } = useMultiLoginContext();
 
   // Handle wallet login flow
   const handleWalletLogin = useCallback(
@@ -225,54 +226,6 @@ export const MultiChainLoginModule: React.FC = () => {
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Logged In State */}
-      {isAuthenticated && userData && (
-        <div className="border p-4 rounded mb-6">
-          <h2 className="text-lg font-semibold mb-2">Logged In</h2>
-          <p>
-            <strong>User ID:</strong> {userData.id}
-          </p>
-          {userData.name && (
-            <p>
-              <strong>Name:</strong> {userData.name}
-            </p>
-          )}
-          {userData.email && (
-            <p>
-              <strong>Email:</strong> {userData.email}
-            </p>
-          )}
-
-          <h3 className="font-medium mt-3 mb-1">Linked Accounts</h3>
-          <ul className="list-disc pl-5">
-            {userData.linkedAccounts.map((method) => (
-              <li key={method}>{method}</li>
-            ))}
-          </ul>
-
-          {userData.wallets && userData.wallets.length > 0 && (
-            <>
-              <h3 className="font-medium mt-3 mb-1">Linked Wallets</h3>
-              <ul className="list-disc pl-5">
-                {userData.wallets.map((wallet, idx) => (
-                  <li key={idx}>
-                    {wallet.chain}: {wallet.address.slice(0, 6)}...
-                    {wallet.address.slice(-4)}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          <button
-            className="mt-4 p-2 bg-red-100 border border-red-300 rounded hover:bg-red-200"
-            onClick={() => logout()}
-          >
-            Logout
-          </button>
         </div>
       )}
 
