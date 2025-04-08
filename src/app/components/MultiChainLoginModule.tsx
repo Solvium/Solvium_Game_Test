@@ -5,6 +5,8 @@ import { useMultiLogin, LoginMethod } from "../hooks/useMultiLogin";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "../config/google";
 import { jwtDecode } from "jwt-decode";
+import { ArrowBigLeftDashIcon } from "lucide-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const chainConfig = {
   EVM: {
@@ -123,8 +125,8 @@ export const MultiChainLoginModule: React.FC = () => {
 
   // Handle Telegram login (for Mini App context)
   const handleTelegramLogin = useCallback(async () => {
-    if (window.Telegram?.WebApp) {
-      const initData = window.Telegram.WebApp.initData;
+    if (window.Telegram?.WebApp.initDataUnsafe) {
+      const initData = window.Telegram.WebApp.initDataUnsafe;
       await loginWithTelegram(initData);
     } else {
       console.error("Not in Telegram Mini App context");
@@ -150,13 +152,13 @@ export const MultiChainLoginModule: React.FC = () => {
       <h1 className="text-2xl font-bold mb-6">Multi-Chain Login</h1>
 
       {/* Login Method Selection */}
-      {!isAuthenticated && (
+      {!isAuthenticated && !selectedLoginMethod && (
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3">Choose Login Method</h2>
           <div className="flex flex-col space-y-3">
             <button
               className="p-2 border rounded hover:bg-gray-100"
-              onClick={() => setSelectedLoginMethod("Telegram")}
+              onClick={handleTelegramLogin}
             >
               Continue with Telegram
             </button>
@@ -178,12 +180,12 @@ export const MultiChainLoginModule: React.FC = () => {
               </GoogleOAuthProvider>
             </button>
 
-            <button
+            {/* <button
               className="p-2 border rounded hover:bg-gray-100"
               onClick={() => setSelectedLoginMethod("Wallet")}
             >
               Connect Wallet
-            </button>
+            </button> */}
           </div>
         </div>
       )}
@@ -191,6 +193,9 @@ export const MultiChainLoginModule: React.FC = () => {
       {/* Wallet Selection (if wallet login chosen) */}
       {!isAuthenticated && selectedLoginMethod === "Wallet" && (
         <div className="mb-6">
+          <div className="" onClick={() => setSelectedLoginMethod(null)}>
+            <ArrowBigLeftDashIcon />
+          </div>
           <h2 className="text-lg font-semibold mb-3">Select Blockchain</h2>
           <div className="flex space-x-2 mb-4">
             {(["EVM", "Solana", "NEAR", "TON"] as ChainType[]).map((chain) => (
@@ -208,6 +213,7 @@ export const MultiChainLoginModule: React.FC = () => {
 
           <h2 className="text-lg font-semibold mb-3">Select Wallet</h2>
           <div className="flex flex-col space-y-2">
+            {activeChain == "Solana" && <WalletMultiButton />}
             {getSupportedWallets().map((wallet) => (
               <button
                 key={wallet}
@@ -219,18 +225,6 @@ export const MultiChainLoginModule: React.FC = () => {
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Telegram Login Flow */}
-      {!isAuthenticated && selectedLoginMethod === "Telegram" && (
-        <div className="mb-6">
-          <button
-            className="p-2 border rounded hover:bg-gray-100 w-full"
-            onClick={handleTelegramLogin}
-          >
-            Login with Telegram
-          </button>
         </div>
       )}
 
