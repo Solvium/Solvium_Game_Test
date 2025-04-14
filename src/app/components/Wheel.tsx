@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import { CONTRACTID, MEME_TOKEN_ADDRESS } from "./constants/contractId";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import BuySpin from "./BuySpin";
+import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
   { ssr: false }
@@ -47,13 +48,9 @@ const CountdownTimer = ({ targetTime }: { targetTime: Date }) => {
   );
 };
 
-export const WheelOfFortune = ({
-  user,
-  claimPoints,
-}: {
-  user: any;
-  claimPoints: any;
-}) => {
+export const WheelOfFortune = () => {
+  const { userData: user, claimPoints } = useMultiLoginContext();
+
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [winner, setWinner] = useState("");
@@ -137,17 +134,17 @@ export const WheelOfFortune = ({
   // Add useEffect to check last played time
   useEffect(() => {
     setSpinningSound(new Audio(location.origin + "/spin.mp3"));
-    setLastPlayed(user.lastSpinClaim);
+    setLastPlayed(Number(user?.lastSpinClaim));
     const now = new Date(Date.now());
     const cooldownEnd = new Date(
-      new Date(user.lastSpinClaim).getTime() + 24 * 60 * 60 * 1000
+      new Date(user?.lastSpinClaim ?? 0).getTime() + 24 * 60 * 60 * 1000
     );
     console.log(now);
     console.log(cooldownEnd);
     if (now < cooldownEnd) {
       setCooldownTime(cooldownEnd);
     }
-    if (user.dailySpinCount <= 0) setHasPlayed(true);
+    if ((user?.dailySpinCount ?? 0) <= 0) setHasPlayed(true);
     else setHasPlayed(false);
 
     const unclaimedPrize = localStorage.getItem("unclaimedPrize");
@@ -476,7 +473,7 @@ export const WheelOfFortune = ({
                 </div>
               </div>
             )}
-            {user.dailySpinCount <= 0 &&
+            {(user?.dailySpinCount ?? 0) <= 0 &&
               new Date(cooldownTime) > new Date(Date.now()) && (
                 <button
                   onClick={() => setBuySpins(true)}
@@ -489,13 +486,7 @@ export const WheelOfFortune = ({
                   <span className="relative">BUY SPIN</span>
                 </button>
               )}
-            {buySpins && (
-              <BuySpin
-                user={user}
-                claimPoints={claimPoints}
-                setBuySpins={setBuySpins}
-              />
-            )}
+            {buySpins && <BuySpin setBuySpins={setBuySpins} />}
           </div>
         </div>
       </div>
