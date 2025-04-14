@@ -3,22 +3,17 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
 interface PurchaseButtonConfig {
   spinCount: 1 | 2 | 3 | 4;
   solvPrice: number;
 }
 
-export default function BuySpin({
-  user,
-  claimPoints,
-  setBuySpins,
-}: {
-  user: UserProfile;
-  claimPoints: any;
-  setBuySpins: any;
-}) {
+export default function BuySpin({ setBuySpins }: { setBuySpins: any }) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const { userData: user, claimPoints } = useMultiLoginContext();
+  const [solvBalance, setSolvBalance] = useState(0);
 
   const purchaseOptions: PurchaseButtonConfig[] = [
     { spinCount: 1, solvPrice: 500 },
@@ -27,7 +22,11 @@ export default function BuySpin({
     { spinCount: 4, solvPrice: 4000 },
   ];
 
-  const solvBalance = user.totalPoints;
+  useEffect(() => {
+    if (user) {
+      setSolvBalance(user.totalPoints);
+    }
+  }, [user]);
 
   console.log(isProcessing);
   const handlePurchase = async (config: PurchaseButtonConfig) => {

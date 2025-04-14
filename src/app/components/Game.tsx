@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-// import { getImageDimensions } from "./puzzle/utils";
 import { Button } from "@/components/ui/button";
 import { GameTimer } from "./Timer";
+import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
 const headbreaker = require("headbreaker");
 
@@ -118,11 +118,10 @@ const images = [
 ];
 
 function ImgIndex(min: number, max: number) {
-  // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export const Game = ({ claimPoints, userDetails }: any) => {
+export const Game = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [solved, setSolved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -132,6 +131,12 @@ export const Game = ({ claimPoints, userDetails }: any) => {
   const [displayImg, setDisplayImg] = useState<any>();
 
   const diff = ["", "EASY", "MEDIUM", "EXPERT"];
+
+  const {
+    userData: userDetails,
+    claimPoints,
+    loading,
+  } = useMultiLoginContext();
 
   useEffect(() => {
     if (isPlaying && !solved) return;
@@ -156,6 +161,10 @@ export const Game = ({ claimPoints, userDetails }: any) => {
     setIsPlaying(true);
     setDisplayImg(curImg);
     let audio = new Audio("click.mp3");
+
+    if (!userDetails) {
+      return;
+    }
 
     const initialWidth = window.innerWidth > 430 ? 430 : window.innerWidth - 50;
     const initialHeight = window.innerHeight / 2;
@@ -242,98 +251,107 @@ export const Game = ({ claimPoints, userDetails }: any) => {
     });
   };
 
-  return (
-    <div className="bg-[#0B0B14] h-[90vh] flex flex-col items-center justify-center w-full py-4 px-4 md:py-6">
-      <div>
-        <div
-          className={`${
-            !isPlaying || solved ? "hidden" : "block"
-          } flex flex-col items-center space-y-4 mb-6`}
-        >
-          <div className="bg-[#151524] rounded-xl p-4 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
-            <div className="flex flex-col items-center">
-              <span className="text-[#8E8EA8] text-sm mb-1">Time Elapsed</span>
-              <span className="text-[#4C6FFF] text-4xl font-bold">
-                <GameTimer time={timer} />
-              </span>
+  if (!userDetails) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  } else
+    return (
+      <div className="bg-[#0B0B14] h-[90vh] flex flex-col items-center justify-center w-full py-4 px-4 md:py-6">
+        <div>
+          <div
+            className={`${
+              !isPlaying || solved ? "hidden" : "block"
+            } flex flex-col items-center space-y-4 mb-6`}
+          >
+            <div className="bg-[#151524] rounded-xl p-4 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
+              <div className="flex flex-col items-center">
+                <span className="text-[#8E8EA8] text-sm mb-1">
+                  Time Elapsed
+                </span>
+                <span className="text-[#4C6FFF] text-4xl font-bold">
+                  <GameTimer time={timer} />
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center space-x-8">
+              <div className="flex flex-col items-center">
+                <span className="text-[#8E8EA8] text-sm mb-1">Level</span>
+                <span className="text-white text-xl font-semibold">
+                  {userDetails.level}
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[#8E8EA8] text-sm mb-1">Puzzle</span>
+                <span className="text-white text-xl font-semibold">
+                  {userDetails.puzzleCount}
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[#8E8EA8] text-sm mb-1">Difficulty</span>
+                <span className="text-white text-xl font-semibold">
+                  {diff[userDetails.difficulty]}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-8">
-            <div className="flex flex-col items-center">
-              <span className="text-[#8E8EA8] text-sm mb-1">Level</span>
-              <span className="text-white text-xl font-semibold">
-                {userDetails.level}
-              </span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-[#8E8EA8] text-sm mb-1">Puzzle</span>
-              <span className="text-white text-xl font-semibold">
-                {userDetails.puzzleCount}
-              </span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-[#8E8EA8] text-sm mb-1">Difficulty</span>
-              <span className="text-white text-xl font-semibold">
-                {diff[userDetails.difficulty]}
-              </span>
-            </div>
-          </div>
+          <div
+            className={`${
+              !isPlaying || solved ? "hidden" : "block"
+            } bg-[#151524] border border-[#2A2A45] rounded-2xl mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
+            id="canvas"
+            style={{ minHeight: "400px" }}
+          ></div>
         </div>
 
         <div
-          className={`${
-            !isPlaying || solved ? "hidden" : "block"
-          } bg-[#151524] border border-[#2A2A45] rounded-2xl mt-4 w-full max-w-[1200px] mx-auto overflow-hidden`}
-          id="canvas"
-          style={{ minHeight: "400px" }}
-        ></div>
-      </div>
-
-      <div
-        id="validated-canvas-overlay"
-        className={`z-[9999999999] w-[60vw] ${
-          !solved ? "hidden" : "flex"
-        } flex-col items-center bg-[#151524] border border-[#2A2A45] rounded-2xl p-6 shadow-[0_0_15px_rgba(41,41,69,0.5)] mt-4`}
-      >
-        <p className="text-2xl font-bold text-[#4C6FFF] mb-2">Huray!!</p>
-        <p className="text-white text-lg mb-2">You Solved This Puzzle</p>
-        <p className="text-[#8E8EA8] mb-4">
-          You have earned{" "}
-          <span className="text-[#4C6FFF] font-bold">{points} SOLV</span>
-        </p>
-        <img
-          className="my-4 rounded-lg border border-[#2A2A45] max-w-full h-auto"
-          src={displayImg?.src}
-          alt="Completed puzzle"
-        />
-        {userDetails?.level > 3 ? (
-          <p className="text-[#8E8EA8] text-center">
-            You have finished all stages for today, come back tomorrow
+          id="validated-canvas-overlay"
+          className={`z-[9999999999] w-[60vw] ${
+            !solved ? "hidden" : "flex"
+          } flex-col items-center bg-[#151524] border border-[#2A2A45] rounded-2xl p-6 shadow-[0_0_15px_rgba(41,41,69,0.5)] mt-4`}
+        >
+          <p className="text-2xl font-bold text-[#4C6FFF] mb-2">Huray!!</p>
+          <p className="text-white text-lg mb-2">You Solved This Puzzle</p>
+          <p className="text-[#8E8EA8] mb-4">
+            You have earned{" "}
+            <span className="text-[#4C6FFF] font-bold">{points} SOLV</span>
           </p>
-        ) : (
-          <Button
-            onClick={() => {
-              playGame();
-            }}
-            className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white"
-          >
-            Next Game
-          </Button>
+          <img
+            className="my-4 rounded-lg border border-[#2A2A45] max-w-full h-auto"
+            src={displayImg?.src}
+            alt="Completed puzzle"
+          />
+          {(userDetails?.level ?? 0) > 3 ? (
+            <p className="text-[#8E8EA8] text-center">
+              You have finished all stages for today, come back tomorrow
+            </p>
+          ) : (
+            <Button
+              onClick={() => {
+                playGame();
+              }}
+              className="bg-[#4C6FFF] hover:bg-[#4C6FFF]/80 text-white"
+            >
+              Next Game
+            </Button>
+          )}
+        </div>
+        {!isPlaying && curImg && (
+          <div className="flex items-center justify-center">
+            <Button
+              onClick={() => {
+                playGame();
+              }}
+              className="bg-[#4C6FFF]  hover:bg-[#4C6FFF]/80 text-white mt-4"
+            >
+              Play Game
+            </Button>
+          </div>
         )}
       </div>
-      {!isPlaying && curImg && (
-        <div className="flex items-center justify-center">
-          <Button
-            onClick={() => {
-              playGame();
-            }}
-            className="bg-[#4C6FFF]  hover:bg-[#4C6FFF]/80 text-white mt-4"
-          >
-            Play Game
-          </Button>
-        </div>
-      )}
-    </div>
-  );
+    );
 };

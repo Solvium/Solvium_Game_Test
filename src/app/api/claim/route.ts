@@ -1,21 +1,32 @@
-import { getCurrentYear, getISOWeekNumber } from "@/app/utils/utils";
+import {
+  getCurrentYear,
+  getISOWeekNumber,
+  sendTokensToUser,
+} from "@/app/utils/utils";
 import { telegramClient } from "../../clients/TelegramApiClient";
 import { InlineKeyboardMarkup } from "@grammyjs/types";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+import { RewardSigner } from "@/app/utils/rewardSigner";
+import { sign } from "crypto";
 
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, type, data, userMultipler } = await req.json();
+    const { username, type, data, userMultipler, solWallet } = await req.json();
 
-    const user = await prisma.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
+    let user;
+    try {
+      user = await prisma.user.findUnique({
+        where: {
+          username: username,
+        },
+      });
+    } catch (error) {
+      return NextResponse.json({ error });
+    }
 
     if (type == "claim welcome") {
       if (!user?.isOfficial) {
@@ -107,34 +118,79 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(res);
     }
 
+    // if (type.includes("spin claim") && user) {
+    //   console.log(user);
+    //   const newDay =
+    //     new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000) <
+    //     new Date(Date.now());
+
+    //   console.log(
+    //     new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000),
+    //     new Date(Date.now())
+    //   );
+
+    //   if (user?.dailySpinCount <= 0 && !newDay)
+    //     return NextResponse.json("No Free spins available");
+    //   const res = await prisma.user.update({
+    //     where: {
+    //       username,
+    //     },
+
+    //     data: {
+    //       lastSpinClaim: new Date(Date.now()),
+    //       spinCount: {
+    //         increment: 1,
+    //       },
+    //       dailySpinCount: newDay ? 1 : user?.dailySpinCount - 1,
+    //     },
+    //   });
+
+    //   return NextResponse.json(res);
+    // }
+
     if (type.includes("spin claim") && user) {
-      console.log(user);
-      const newDay =
-        new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000) <
-        new Date(Date.now());
+      try {
+        const [_, point, wallet] = type.split("--");
 
-      console.log(
-        new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000),
-        new Date(Date.now())
-      );
+        // console.log(user);
+        const newDay =
+          new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000) <
+          new Date(Date.now());
 
-      if (user?.dailySpinCount <= 0 && !newDay)
-        return NextResponse.json("No Free spins available");
-      const res = await prisma.user.update({
-        where: {
-          username,
-        },
+        console.log(
+          new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000),
+          new Date(Date.now())
+        );
 
-        data: {
-          lastSpinClaim: new Date(Date.now()),
-          spinCount: {
-            increment: 1,
+        console.log(user.dailySpinCount);
+
+        if (user?.dailySpinCount <= 0 && !newDay)
+          throw new Error("No Free spins available");
+
+        const res = await prisma.user.update({
+          where: {
+            username,
           },
-          dailySpinCount: newDay ? 1 : user?.dailySpinCount - 1,
-        },
-      });
 
-      return NextResponse.json(res);
+          data: {
+            lastSpinClaim: new Date(Date.now()),
+            spinCount: {
+              increment: 1,
+            },
+            dailySpinCount: newDay ? 1 : user?.dailySpinCount - 1,
+          },
+        });
+
+        await sendTokensToUser(
+          wallet,
+          point - 99,
+          "7aow41W5XU4KJ7oFgRqWDbAUAf1fsTeKrRtJhvdaAE67"
+        );
+
+        return NextResponse.json(res);
+      } catch (error) {
+        return NextResponse.json({ error });
+      }
     }
 
     if (type.includes("buy spins")) {

@@ -412,16 +412,22 @@ export const useSolviumMultiplier = (): SolviumMultiplierType => {
         userDepositsPDA
       )) as unknown as UserDeposits;
 
-      // Format the deposits
+      const d: FormattedDepositInfo[] = [];
+      data.deposits.map((deposit) => {
+        const date = (Number(deposit?.startTime) + 604800) * 1000;
+        if (date > Date.now())
+          d.push({
+            id: deposit.id.toNumber(),
+            amount: deposit.amount.toNumber() / LAMPORTS_PER_SOL,
+            multiplier: deposit.multiplier.toNumber(),
+            startTime: new Date(deposit.startTime.toNumber() * 1000),
+            active: deposit.active,
+          });
+      });
+
       const formattedDeposits: FormattedUserDeposits = {
         totalDeposits: data.totalDeposits.toNumber() / LAMPORTS_PER_SOL,
-        deposits: data.deposits.map((deposit) => ({
-          id: deposit.id.toNumber(),
-          amount: deposit.amount.toNumber() / LAMPORTS_PER_SOL,
-          multiplier: deposit.multiplier.toNumber(),
-          startTime: new Date(deposit.startTime.toNumber() * 1000),
-          active: deposit.active,
-        })),
+        deposits: d,
         lastDepositId: data.lastDepositId.toNumber(),
       };
 

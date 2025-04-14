@@ -42,6 +42,30 @@ model User {
   UserTasks      UserTask[]
   weeklyPoints   Int           @default(0)
   WeeklyScores   WeeklyScore[]
+  wallets        Wallet[] // Relation to the new Wallet model
+  linkedAccounts LoginMethod[] // Relation to the new LoginMethod model
+}
+
+// New model for wallets
+model Wallet {
+  id      Int    @id @default(autoincrement())
+  chain   String
+  address String
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, chain])
+}
+
+// New model for linked accounts
+model LoginMethod {
+  id     Int    @id @default(autoincrement())
+  type   String // e.g., "email", "wallet", "telegram"
+  value  String
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([type, value])
 }
 
 model WeeklyScore {

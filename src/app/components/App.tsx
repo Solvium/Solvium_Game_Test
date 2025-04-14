@@ -35,7 +35,7 @@ export default function App({
   // You can also provide a custom RPC endpoint.
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
-  const wallets = useMemo(() => [new PhantomWalletAdapter()], [network]);
+  const wallets = useMemo(() => [], [network]);
 
   useEffect(() => {
     function sessionStorageSet(key: string, value: string) {
