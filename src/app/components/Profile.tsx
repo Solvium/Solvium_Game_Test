@@ -16,15 +16,16 @@ import { Wallet } from "lucide-react";
 import { useWallet } from "../contexts/WalletContext";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { SolDepositModal } from "./UI/SolDeposit";
+import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
-const UserProfile = ({
-  userDetails,
-  tasks,
-  tg,
-  getAllInfo,
-  userTasks,
-  claimPoints,
-}: any) => {
+const UserProfile = ({ tg }: { tg: typeof WebApp | null }) => {
+  const {
+    userData: userDetails,
+    userTasks,
+    tasks,
+    multiplier,
+    getAllInfo,
+  } = useMultiLoginContext();
   return (
     <div className="min-h-screen w-full bg-[#0B0B14] py-4 px-4 md:py-6">
       <div className="max-w-4xl mx-auto space-y-4">
@@ -35,7 +36,7 @@ const UserProfile = ({
 
         {/* Profile Header */}
         <div className="bg-[#151524] rounded-2xl p-6 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
-          <ProfileHeader userDetails={userDetails} />
+          <ProfileHeader userDetails={userDetails} multiplier={multiplier} />
         </div>
 
         {/* Invite Link */}
@@ -45,7 +46,7 @@ const UserProfile = ({
 
         {/* Farming Section */}
         <div className="bg-[#151524] rounded-2xl p-6 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
-          <Farming userDetails={userDetails} claimPoints={claimPoints} />
+          <Farming />
         </div>
 
         {/* Tasks Section */}
@@ -63,7 +64,7 @@ const UserProfile = ({
   );
 };
 
-const ProfileHeader = ({ userDetails }: any) => {
+const ProfileHeader = ({ userDetails, multiplier }: any) => {
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="relative">
@@ -120,9 +121,24 @@ const ProfileHeader = ({ userDetails }: any) => {
                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                   </svg>
                   <p className="text-xs text-[#8E8EA8]">
-                    Referrals:{" "}
+                    Refs:{" "}
                     <span className="text-[#4C6FFF] font-bold">
                       {userDetails?.referralCount || 0}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="text-center h-full">
+            <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden h-full flex flex-col justify-between">
+              <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
+              <div className="relative">
+                <div className="flex items-center justify-center gap-2">
+                  <p className="text-xs text-[#8E8EA8]">
+                    Multiplier:{" "}
+                    <span className="text-[#4C6FFF] font-bold">
+                      {multiplier || 0}
                     </span>
                   </p>
                 </div>
@@ -171,19 +187,19 @@ const Link = ({ userDetails }: any) => {
   );
 };
 
-const Farming = ({ userDetails, claimPoints }: any) => {
+const Farming = () => {
+  const {
+    multiplier,
+    userData: userDetails,
+    claimPoints,
+  } = useMultiLoginContext();
+
   const [loadingFarm, setLoadingFarm] = useState(false);
   const address = useTonAddress();
-  const { deposits } = useMultiplierContract(address);
-  let total = 0;
-  for (let index = 0; index < deposits?.length; index++) {
-    total += Number(deposits[index].multiplier);
-  }
 
-  const userMultipler = total <= 0 ? 1 : total;
   const hashRate = 0.0035;
   const remainingTime =
-    new Date(userDetails?.lastClaim).getTime() - new Date().getTime();
+    new Date(userDetails?.lastClaim ?? 0).getTime() - new Date().getTime();
 
   return (
     <div className="space-y-4">
@@ -213,7 +229,7 @@ const Farming = ({ userDetails, claimPoints }: any) => {
             if (userDetails?.isMining) {
               if (remainingTime <= 0)
                 claimPoints(
-                  "farm claim--" + 18000 * hashRate * userMultipler,
+                  "farm claim--" + 18000 * hashRate * multiplier,
                   setLoadingFarm
                 );
               return;
@@ -231,14 +247,14 @@ const Farming = ({ userDetails, claimPoints }: any) => {
             <>
               {remainingTime > 0 ? (
                 <div className="flex items-center gap-2">
-                  <span>{`Mining ${(hashRate * userMultipler).toFixed(
+                  <span>{`Mining ${(hashRate * multiplier).toFixed(
                     4
                   )}/s`}</span>
-                  <TimerCountdown time={userDetails?.lastClaim} />
+                  <TimerCountdown time={Number(userDetails?.lastClaim)} />
                 </div>
               ) : (
                 <span>
-                  Claim {(18000 * hashRate * userMultipler).toFixed(2)} SOLV
+                  Claim {(18000 * hashRate * multiplier).toFixed(2)} SOLV
                 </span>
               )}
             </>

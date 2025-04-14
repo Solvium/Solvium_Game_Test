@@ -7,20 +7,6 @@ import WebApp from "@twa-dev/sdk";
 
 export type LoginMethod = "Telegram" | "Google" | "Wallet";
 
-interface UserData {
-  id: string;
-  email?: string;
-  name?: string;
-  wallet?: string;
-  username?: string;
-  telegramId?: string;
-  wallets?: {
-    chain: string;
-    address: string;
-  }[];
-  linkedAccounts: LoginMethod[];
-}
-
 interface LoginOptions {
   redirectAfterLogin?: string;
   onLoginSuccess?: (userData: UserData) => void;
@@ -36,28 +22,28 @@ export const useMultiLogin = () => {
 
   // Initialize: Check if user is already logged in
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const response = await axios.get("/api/user?type=getme");
-
-        console.log(response);
-        if (response.data.authenticated) {
-          setIsAuthenticated(true);
-          setUserData(response.data.user);
-        } else {
-          setIsAuthenticated(false);
-          setUserData(null);
-        }
-      } catch (err) {
-        setIsAuthenticated(false);
-        setUserData(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     checkAuthStatus();
   }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get("/api/user?type=getme");
+
+      console.log(response);
+      if (response.data.authenticated) {
+        setIsAuthenticated(true);
+        setUserData(response.data.user);
+      } else {
+        setIsAuthenticated(false);
+        setUserData(null);
+      }
+    } catch (err) {
+      setIsAuthenticated(false);
+      setUserData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Login with Telegram (Mini App)
   const loginWithTelegram = useCallback(
@@ -113,7 +99,7 @@ export const useMultiLogin = () => {
     [router]
   );
 
-  console.log(userData);
+  // console.log(userData);
   // Login with Google
   const loginWithGoogle = useCallback(
     async (
@@ -318,6 +304,7 @@ export const useMultiLogin = () => {
     error,
     loginWithTelegram,
     loginWithGoogle,
+    checkAuthStatus,
     loginWithWallet,
     generateWalletSignMessage,
     signWithEthWallet,

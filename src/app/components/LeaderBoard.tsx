@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
-const LeaderBoard = ({ leader, user }: any) => {
-  const [activeTab, setActiveTab] = useState('users'); // 'users' or 'general'
+const LeaderBoard = () => {
+  const { userData: user, leader } = useMultiLoginContext();
+  const [activeTab, setActiveTab] = useState("users");
   const myPos = leader?.findIndex((ele: any) => {
     return ele.username == user?.username;
   });
@@ -30,9 +32,7 @@ const LeaderBoard = ({ leader, user }: any) => {
         <p className="text-sm text-[#8E8EA8]">{userData?.totalPoints} SOLV</p>
       </div>
       <div className="flex items-center space-x-2">
-        <span className="font-semibold text-[#4C6FFF]">
-          #{position}
-        </span>
+        <span className="font-semibold text-[#4C6FFF]">#{position}</span>
       </div>
     </div>
   );
@@ -41,9 +41,9 @@ const LeaderBoard = ({ leader, user }: any) => {
     <button
       onClick={onClick}
       className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
-        isActive 
-          ? 'bg-[#4C6FFF] text-white' 
-          : 'bg-[#0B0B14] text-[#8E8EA8] hover:bg-[#1E1E2E]'
+        isActive
+          ? "bg-[#4C6FFF] text-white"
+          : "bg-[#0B0B14] text-[#8E8EA8] hover:bg-[#1E1E2E]"
       }`}
     >
       {label}
@@ -64,42 +64,31 @@ const LeaderBoard = ({ leader, user }: any) => {
         <div className="flex space-x-4 mb-6 justify-center">
           <TabButton
             label="Users Ranking"
-            isActive={activeTab === 'users'}
-            onClick={() => setActiveTab('users')}
+            isActive={activeTab === "users"}
+            onClick={() => setActiveTab("users")}
           />
           <TabButton
             label="General Ranking"
-            isActive={activeTab === 'general'}
-            onClick={() => setActiveTab('general')}
+            isActive={activeTab === "general"}
+            onClick={() => setActiveTab("general")}
           />
         </div>
 
-        {/* Current User's Ranking */}
-        {user && (
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Your Ranking</h3>
-            <UserRankCard userData={user} position={myPos + 1} />
-          </div>
-        )}
-
         {/* Rankings List */}
         <div className="space-y-4">
-          {activeTab === 'users' ? (
+          {activeTab === "users" ? (
             <>
-              {/* <h3 className="text-xl font-semibold text-white mb-4">Users Ranking</h3> */}
-              {usersRanking?.map((lead: any, i: number) => (
-                <UserRankCard 
-                  key={`user-${lead.username}-${i}`}
-                  userData={lead}
-                  position={i + 1}
-                />
-              ))}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-white mb-4">
+                  Your Ranking
+                </h3>
+                <UserRankCard userData={user} position={myPos + 1} />
+              </div>
             </>
           ) : (
             <>
-              {/* <h3 className="text-xl font-semibold text-white mb-4">General Ranking</h3> */}
               {generalRanking?.map((lead: any, i: number) => (
-                <UserRankCard 
+                <UserRankCard
                   key={`general-${lead.username}-${i}`}
                   userData={lead}
                   position={i + 1}

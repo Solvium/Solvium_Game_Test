@@ -4,32 +4,20 @@ import { MdOutlineLeaderboard } from "react-icons/md";
 import { useEffect, useState } from "react";
 import LeaderBoard from "./components/LeaderBoard";
 import { Game } from "./components/Game";
-import axios, { AxiosResponse } from "axios";
 import WebApp from "@twa-dev/sdk";
 import UserProfile from "./components/Profile";
 import ContestBoard from "./components/Contest";
-import { WheelOfFortune } from "./components/Wheel";
 import { useNearDeposits } from "./contracts/near_deposits";
 import { useMultiplierContract } from "./hooks/useDepositContract";
 import { useTonAddress } from "@tonconnect/ui-react";
-import { useTonConnect } from "./hooks/useTonConnect";
 import { useWallet } from "./contexts/WalletContext";
-import { WelcomeModal } from "./components/WelcomeModal";
 import MultiChainLoginModule from "./components/MultiChainLoginModule";
-import { useMultiLogin } from "./hooks/useMultiLogin";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useMultiLoginContext } from "./contexts/MultiLoginContext";
+import { SolWheelOfFortune } from "./components/SolWheel";
 
 function Home() {
-  const [selectedTab, setSelectedTab]: any = useState();
+  const [selectedTab, setSelectedTab]: any = useState("Home");
   const [tg, setTg] = useState<typeof WebApp | null>(null);
-  // const [user, setUser]: any = useState();
-  const [leader, setLeader]: any = useState();
-  const [loading, setLoading] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(true);
-  const [userTasks, setUserTasks]: any = useState();
-  const [tasks, setTasks]: any = useState();
-  const [tasksCat, setTasksCat]: any = useState();
 
   const {
     state: { selector, accountId: nearAddress, isConnected: nearConnected },
@@ -45,15 +33,8 @@ function Home() {
   } = useNearDeposits();
 
   const {
-    isAuthenticated,
     userData: user,
     isLoading: loadingPage,
-    error: loginError,
-    loginWithTelegram,
-    loginWithGoogle,
-    loginWithWallet,
-    generateWalletSignMessage,
-    signWithEthWallet,
     logout,
   } = useMultiLoginContext();
 
@@ -100,159 +81,9 @@ function Home() {
     }, 10000);
   }, []);
 
-  useEffect(() => {
-    if (selectedTab) {
-      getLeaderBoard();
-    } else setSelectedTab("Home");
-  }, [selectedTab]);
-
-  useEffect(() => {
-    if (!nearConnected || !user) return;
-    if (user?.wallet) return;
-
-    const updateWallet = async () => {
-      const res = await axios("/api/allroute", {
-        headers: {
-          "content-type": "application/json",
-        },
-        method: "POST",
-        data: JSON.stringify({
-          username: user.username,
-          wallet: nearAddress,
-          type: "updateWallet",
-        }),
-      });
-      console.log(res);
-    };
-    updateWallet();
-  }, [nearConnected, user]);
-
-  const getLeaderBoard = async () => {
-    try {
-      const res = await axios("/api/allroute?type=leaderboard");
-      if (res.status === 200) {
-        setLeader(res.data);
-      } else {
-        console.error("Failed to get leaderboard:", res.status, res.data);
-      }
-    } catch (error: any) {
-      console.error(
-        "Error fetching leaderboard:",
-        error?.response?.data || error.message
-      );
-    }
-  };
-
-  const getAllInfo = async () => {
-    // await getAllUserTasks()
-    await getLeaderBoard();
-    await getTasks();
-  };
-
-  const getTasks = async () => {
-    try {
-      const res = await axios(
-        "/api/allroute?type=getTasksInfo&username=" + user?.username
-      );
-
-      if (res.status == 200) {
-        setTasks(res.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getAllUserTasks = async (data: any) => {
-    try {
-      if (!data?.id) {
-        console.error("User ID is required for fetching tasks");
-        setUserTasks([]); // Set empty tasks instead of null
-        return;
-      }
-
-      const res = await axios.get(
-        `/api/allroute?type=allusertasks&id=${data.id}`
-      );
-      if (res.status === 200) {
-        setUserTasks(res.data);
-      } else {
-        console.error("Failed to get user tasks:", res.status, res.data);
-        setUserTasks([]); // Set empty tasks instead of null
-      }
-    } catch (error: any) {
-      console.error(
-        "Error fetching user tasks:",
-        error?.response?.data || error.message
-      );
-      setUserTasks([]); // Set empty tasks instead of null
-    }
-  };
-
-  useEffect(() => {
-    if (tasks && !tasks.error && user?.username) {
-      // setLoadingPage(false);
-    }
-  }, [tasks]);
-
-  useEffect(() => {
-    if (!tg) return;
-    const initializeApp = async () => {
-      try {
-        await getAllInfo();
-      } catch (error) {
-        console.error("Error initializing app:", error);
-      }
-    };
-
-    initializeApp();
-  }, [tg]);
-
-  const claimPoints = async (
-    type: string,
-    func: (param: boolean) => object
-  ) => {
-    console.log(type);
-    setLoading(true);
-
-    let total = 0;
-    if (nearDeposits?.deposits) {
-      total = getDeposits();
-    } else if (deposits?.length > 0) {
-      for (let index = 0; index < deposits?.length; index++) {
-        total += Number(deposits[index].multiplier);
-      }
-    }
-
-    const res = await (
-      await fetch("/api/claim", {
-        headers: {
-          "content-type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          username: user?.username,
-          type,
-          userMultipler: total,
-        }),
-      })
-    ).json();
-
-    console.log(res);
-
-    if (res.username != null) {
-      setLoading(false);
-      getLeaderBoard();
-      func(false);
-    }
-    setLoading(false);
-  };
-
   const handlePageChange = (page: string) => {
     setSelectedTab(page);
   };
-
-  console.log(user);
 
   return (
     <div className="min-h-screen bg-[#0B0B14]">
@@ -267,26 +98,11 @@ function Home() {
               <div className="flex flex-col no-scrollbar h-screen">
                 <button onClick={() => logout()}>Logout</button>
                 <div className="flex-1 overflow-y-auto no-scrollbar pb-20 h-[90vh]">
-                  {selectedTab === "Home" && (
-                    <UserProfile
-                      userDetails={user}
-                      tasks={tasks}
-                      tg={tg}
-                      getAllInfo={getAllInfo}
-                      userTasks={userTasks}
-                      claimPoints={claimPoints}
-                    />
-                  )}
-                  {selectedTab === "Contest" && <ContestBoard user={user} />}
-                  {selectedTab === "Wheel" && (
-                    <WheelOfFortune user={user} claimPoints={claimPoints} />
-                  )}
-                  {selectedTab === "Game" && (
-                    <Game userDetails={user} claimPoints={claimPoints} />
-                  )}
-                  {selectedTab === "Leaderboard" && (
-                    <LeaderBoard leader={leader} user={user} />
-                  )}
+                  {selectedTab === "Home" && <UserProfile tg={tg} />}
+                  {selectedTab === "Contest" && <ContestBoard />}
+                  {selectedTab === "Wheel" && <SolWheelOfFortune />}
+                  {selectedTab === "Game" && <Game />}
+                  {selectedTab === "Leaderboard" && <LeaderBoard />}
                 </div>
 
                 <div className="fixed bottom-0 left-0 right-0 bg-[#151524] border-t border-[#2A2A45] shadow-glow-blue">
@@ -412,7 +228,9 @@ function Home() {
               </div>
             </div>
           ) : (
-            <MultiChainLoginModule />
+            <div className="flex w-screen h-screen items-center justify-center">
+              <MultiChainLoginModule />
+            </div>
           )}
         </div>
       )}

@@ -42,14 +42,6 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Assuming you have a password field in your schema (add it if missing)
-      // Compare password (this example assumes you're storing hashed passwords)
-      // const isValid = await compare(password, user.password);
-
-      // if (!isValid) {
-      //   return res.status(401).json({ message: 'Invalid credentials' });
-      // }
-
       // Create JWT token
       const token = sign(
         {
@@ -65,15 +57,7 @@ export async function POST(req: NextRequest) {
       const response = NextResponse.json(
         {
           message: "Login successful",
-          user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            name: user.name,
-            level: user.level,
-            totalPoints: user.totalPoints,
-            isPremium: user.isPremium,
-          },
+          user,
         },
         { status: 200 }
       );
@@ -150,15 +134,7 @@ export async function POST(req: NextRequest) {
       const response = NextResponse.json(
         {
           message: "Login successful",
-          user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            name: user.name,
-            level: user.level,
-            totalPoints: user.totalPoints,
-            isPremium: user.isPremium,
-          },
+          user,
         },
         { status: 200 }
       );
@@ -305,18 +281,6 @@ export async function GET(req: NextRequest) {
       // Get user data
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
-        select: {
-          id: true,
-          username: true,
-          name: true,
-          email: true,
-          level: true,
-          totalPoints: true,
-          weeklyPoints: true,
-          isPremium: true,
-          isOfficial: true,
-          wallet: true,
-        },
       });
 
       if (!user) {
