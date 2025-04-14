@@ -157,13 +157,6 @@ export async function POST(req: NextRequest) {
           new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000) <
           new Date(Date.now());
 
-        console.log(
-          new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000),
-          new Date(Date.now())
-        );
-
-        console.log(user.dailySpinCount);
-
         if (user?.dailySpinCount <= 0 && !newDay)
           throw new Error("No Free spins available");
 
@@ -183,7 +176,7 @@ export async function POST(req: NextRequest) {
 
         await sendTokensToUser(
           wallet,
-          point - 99,
+          point,
           "7aow41W5XU4KJ7oFgRqWDbAUAf1fsTeKrRtJhvdaAE67"
         );
 
