@@ -85,7 +85,7 @@ export async function sendTokensToUser(
         backendTokenAccount, // source
         userTokenAccount, // destination
         backendKeypair.publicKey, // owner
-        amount // amount
+        amount * 10 ** 6 // amount
       )
     );
 
