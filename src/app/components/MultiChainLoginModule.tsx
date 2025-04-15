@@ -182,12 +182,12 @@ export const MultiChainLoginModule = () => {
       {!isAuthenticated && !selectedLoginMethod && (
         <div className="space-y-6">
           <div className="space-y-4">
-            <LoginMethodButton
+            {/* <LoginMethodButton
               icon={<FaTelegram className="h-5 w-5" />}
               label="Continue with Telegram"
               onClick={handleTelegramLogin}
               className="bg-[#0088cc] text-white hover:bg-[#0088cc]/90"
-            />
+            /> */}
 
             <div className="flex items-center justify-center rounded-xl overflow-hidden">
               <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
