@@ -135,7 +135,7 @@ export const MultiChainLoginModule = () => {
       await loginWithTelegram(initData);
     } else {
       console.log("Not in Telegram Mini App context");
-      setTgError("Not in Telegram Mini App context");
+      setTgError("Not in Telegram Mini App context!");
     }
   }, [loginWithTelegram]);
 
