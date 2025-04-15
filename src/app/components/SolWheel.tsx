@@ -311,7 +311,6 @@ export const SolWheelOfFortune = () => {
         setCanClaim
       );
 
-      console.log(res);
       if (res.username) {
         setIsClaimed(true);
 

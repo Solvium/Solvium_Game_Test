@@ -180,8 +180,6 @@ export const MultiLoginProvider = ({
   ) => {
     setLoading(true);
 
-    console.log(user);
-    console.log(type);
     if (!user) return;
 
     const res = await (
@@ -198,8 +196,6 @@ export const MultiLoginProvider = ({
         }),
       })
     ).json();
-
-    console.log(res);
 
     if (res.weeklyScore || res.id) {
       console.log(res);
