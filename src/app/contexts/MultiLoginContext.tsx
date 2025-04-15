@@ -21,6 +21,11 @@ const MultiLoginContext = createContext<
         type: string,
         func: (param: boolean) => void
       ) => Promise<object>;
+      engageTasks: (
+        type: string,
+        data: any,
+        func: (param: boolean) => void
+      ) => Promise<object>;
     })
   | null
 >(null);
@@ -162,6 +167,42 @@ export const MultiLoginProvider = ({
     setMultiplier(total);
   }, [userDeposits]);
 
+  const engageTasks = async (
+    type: string,
+    data: any,
+    func: (param: boolean) => void
+  ) => {
+    setLoading(true);
+
+    if (!user) return;
+
+    const res = await (
+      await fetch("/api/allroute", {
+        headers: {
+          "content-type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          data: { task: data, userId: user.id },
+          username: user.username,
+          userMultipler: multiplier,
+          type,
+        }),
+      })
+    ).json();
+
+    if (res.username != null) {
+      checkAuthStatus();
+      setLoading(false);
+      getLeaderBoard();
+      func(false);
+      return res;
+    }
+    setLoading(false);
+
+    return res;
+  };
+
   const claimPoints = async (type: string, func: (param: boolean) => void) => {
     console.log(type);
     setLoading(true);
@@ -207,6 +248,7 @@ export const MultiLoginProvider = ({
         userTasks,
         loading,
         multiplier,
+        engageTasks,
         getLeaderBoard,
         getAllInfo,
         getTasks,
