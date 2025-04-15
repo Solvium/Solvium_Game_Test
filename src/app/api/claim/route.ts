@@ -214,11 +214,7 @@ export async function POST(req: NextRequest) {
       if (new Date(Date.now()) > lastClaim) {
         const np = type.split("--")[1];
 
-        await addLeaderboard(
-          user,
-          np * userMultipler >= 1 ? userMultipler : np,
-          null
-        );
+        await addLeaderboard(user, np, null);
 
         const res = await prisma.user.update({
           where: {
@@ -232,6 +228,12 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json(res);
+      } else {
+        try {
+          throw new Error("Still Farming");
+        } catch (error) {
+          return NextResponse.json({ error });
+        }
       }
     }
 

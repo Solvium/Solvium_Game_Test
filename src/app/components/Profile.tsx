@@ -181,14 +181,20 @@ const Farming = () => {
   } = useMultiLoginContext();
 
   const [loadingFarm, setLoadingFarm] = useState(false);
+  const [amount, setAmount] = useState(0);
+  const [count, setCount] = useState(0);
   const address = useTonAddress();
 
   const hashRate = 0.0035;
   const remainingTime =
     new Date(userDetails?.lastClaim ?? 0).getTime() - new Date().getTime();
 
-  console.log(remainingTime);
-  console.log(userDetails?.lastClaim);
+  useEffect(() => {
+    setAmount(
+      hashRate * (multiplier == 0 ? 1 : multiplier) * (18000 - count / 1000)
+    );
+  }, [count]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-2">
@@ -217,7 +223,7 @@ const Farming = () => {
             if (userDetails?.isMining) {
               if (remainingTime <= 0)
                 claimPoints(
-                  "farm claim--" + 18000 * hashRate * multiplier,
+                  "farm claim--" + Math.round(amount),
                   setLoadingFarm
                 );
               return;
@@ -235,17 +241,16 @@ const Farming = () => {
             <>
               {remainingTime > 0 ? (
                 <div className="flex items-center gap-2">
-                  <span>{`Mining ${(hashRate * multiplier).toFixed(
-                    4
-                  )}/s`}</span>
+                  <span>{`Mining ${
+                    amount > 1 ? amount.toFixed(2) : amount.toFixed(4)
+                  }/s`}</span>
                   <TimerCountdown
+                    setCount={setCount}
                     time={new Date(userDetails?.lastClaim).getTime()}
                   />
                 </div>
               ) : (
-                <span>
-                  Claim {(18000 * hashRate * multiplier).toFixed(2)} SOLV
-                </span>
+                <span>Claim {(18000 * amount).toFixed(2)} SOLV</span>
               )}
             </>
           ) : (
