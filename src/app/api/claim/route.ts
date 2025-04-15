@@ -3,13 +3,8 @@ import {
   getISOWeekNumber,
   sendTokensToUser,
 } from "@/app/utils/utils";
-import { telegramClient } from "../../clients/TelegramApiClient";
-import { InlineKeyboardMarkup } from "@grammyjs/types";
 import { PrismaClient } from "@prisma/client";
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import { RewardSigner } from "@/app/utils/rewardSigner";
-import { sign } from "crypto";
 
 const prisma = new PrismaClient();
 
