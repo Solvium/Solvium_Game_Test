@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const TimerCountdown = ({ time }: { time: number }) => {
+const TimerCountdown = ({
+  setCount,
+  time,
+}: {
+  setCount: any;
+  time: number;
+}) => {
   const startDate = new Date(time);
   const [timeRemaining, setTimeRemaining] = useState(0);
 
@@ -13,7 +19,9 @@ const TimerCountdown = ({ time }: { time: number }) => {
       if (remaining <= 0) {
         clearInterval(interval);
         setTimeRemaining(0);
+        setCount(0);
       } else {
+        setCount(remaining);
         setTimeRemaining(remaining);
       }
     }, 1000);
