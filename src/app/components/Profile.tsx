@@ -250,7 +250,7 @@ const Farming = () => {
                   />
                 </div>
               ) : (
-                <span>Claim {(18000 * amount).toFixed(2)} SOLV</span>
+                <span>Claim {( amount).toFixed(2)} SOLV</span>
               )}
             </>
           ) : (

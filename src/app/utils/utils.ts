@@ -10,7 +10,9 @@ import {
   createAssociatedTokenAccountInstruction,
   createTransferInstruction,
 } from "@solana/spl-token";
-import * as wallet from "./wallet.json";
+import { configDotenv } from "dotenv";
+
+configDotenv();
 
 // utils/date-utils.ts
 export function getISOWeekNumber(date: Date): number {
@@ -42,7 +44,9 @@ export async function sendTokensToUser(
   );
 
   // Load backend wallet from keypair file (in production use secure key management)
-  const backendKeypair = Keypair.fromSecretKey(Buffer.from(wallet));
+  const backendKeypair = Keypair.fromSecretKey(
+    Uint8Array.from(JSON.parse(process.env.WALLET_KEY ?? ""))
+  );
 
   try {
     // Parse addresses
