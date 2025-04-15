@@ -49,12 +49,12 @@ export const MultiLoginProvider = ({
   const [tg, setTg] = useState<typeof WebApp | null>();
 
   // Get values from your app context
-  const nearConnected = false;
-  const nearAddress = "";
+  // const nearConnected = false;
+  // const nearAddress = "";
 
-  const nearDeposits: any = null;
-  const deposits: string | any[] = [];
-  const getDeposits = () => 0;
+  // const nearDeposits: any = null;
+  // const deposits: string | any[] = [];
+  // const getDeposits = () => 0;
 
   const getLeaderBoard = async () => {
     try {
@@ -86,7 +86,7 @@ export const MultiLoginProvider = ({
     }
   };
 
-  const getAllUserTasks = async (data: any) => {
+  const getAllUserTasks = async () => {
     try {
       if (!user?.id) {
         console.error("User ID is required for fetching tasks");
@@ -139,6 +139,12 @@ export const MultiLoginProvider = ({
   };
 
   useEffect(() => {
+    if (user?.username) {
+      getAllUserTasks();
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (tasks && !tasks.error && user?.username) {
       // setLoadingPage(false);
     }
@@ -174,6 +180,8 @@ export const MultiLoginProvider = ({
   ) => {
     setLoading(true);
 
+    console.log(user);
+    console.log(type);
     if (!user) return;
 
     const res = await (
@@ -191,15 +199,18 @@ export const MultiLoginProvider = ({
       })
     ).json();
 
-    if (res.username != null) {
+    console.log(res);
+
+    if (res.weeklyScore || res.id) {
+      console.log(res);
       checkAuthStatus();
       setLoading(false);
       getLeaderBoard();
       func(false);
       return res;
     }
-    setLoading(false);
 
+    setLoading(false);
     return res;
   };
 
