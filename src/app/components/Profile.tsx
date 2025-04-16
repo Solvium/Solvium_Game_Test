@@ -431,8 +431,8 @@ const Tasks = ({ tg }: { tg: typeof WebApp | null }) => {
         <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden">
           <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
           <div className="relative">
-            <p className="text-sm font-medium text-[#8E8EA8]">
-              Support on Solana chain
+            <p className="text-sm font-medium text-white">
+              Purchase Multiplier
             </p>
             <button
               onClick={() => setIsOpenSolModal(true)}
