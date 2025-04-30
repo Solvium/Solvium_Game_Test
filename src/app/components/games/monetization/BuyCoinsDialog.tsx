@@ -1,16 +1,15 @@
-
-import React from 'react';
-import { Coins, Info, CreditCard } from 'lucide-react';
-import { 
+import React from "react";
+import { Coins, Info, CreditCard } from "lucide-react";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+  DialogClose,
+} from "../../ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface CoinPackage {
   id: string;
@@ -27,16 +26,22 @@ interface BuyCoinsDialogProps {
 }
 
 const coinPackages: CoinPackage[] = [
-  { id: 'small', amount: 100, price: '$0.99', popular: false },
-  { id: 'medium', amount: 500, price: '$4.99', popular: true },
-  { id: 'large', amount: 1200, price: '$9.99', popular: false },
-  { id: 'mega', amount: 3000, price: '$19.99', bonus: '+500 FREE', popular: false },
+  { id: "small", amount: 100, price: "$0.99", popular: false },
+  { id: "medium", amount: 500, price: "$4.99", popular: true },
+  { id: "large", amount: 1200, price: "$9.99", popular: false },
+  {
+    id: "mega",
+    amount: 3000,
+    price: "$19.99",
+    bonus: "+500 FREE",
+    popular: false,
+  },
 ];
 
-const BuyCoinsDialog: React.FC<BuyCoinsDialogProps> = ({ 
-  open, 
+const BuyCoinsDialog: React.FC<BuyCoinsDialogProps> = ({
+  open,
   onOpenChange,
-  onBuyCoins 
+  onBuyCoins,
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,12 +55,13 @@ const BuyCoinsDialog: React.FC<BuyCoinsDialogProps> = ({
             Game coins let you unlock premium games, get hints, and more!
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
-          {coinPackages.map(pkg => (
-            <div key={pkg.id} 
+          {coinPackages.map((pkg) => (
+            <div
+              key={pkg.id}
               className={`relative rounded-lg border p-4 flex justify-between items-center ${
-                pkg.popular ? 'border-game-accent bg-game-accent/5' : ''
+                pkg.popular ? "border-game-accent bg-game-accent/5" : ""
               }`}
             >
               {pkg.popular && (
@@ -71,7 +77,9 @@ const BuyCoinsDialog: React.FC<BuyCoinsDialogProps> = ({
                   <p className="font-medium">{pkg.amount} Coins</p>
                   <p className="text-sm text-muted-foreground">{pkg.price}</p>
                   {pkg.bonus && (
-                    <p className="text-xs text-game-accent font-medium">{pkg.bonus}</p>
+                    <p className="text-xs text-game-accent font-medium">
+                      {pkg.bonus}
+                    </p>
                   )}
                 </div>
               </div>
@@ -81,14 +89,15 @@ const BuyCoinsDialog: React.FC<BuyCoinsDialogProps> = ({
             </div>
           ))}
         </div>
-        
+
         <div className="bg-muted/50 rounded-lg p-3 flex items-start gap-2 text-sm">
           <Info className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           <p className="text-muted-foreground">
-            Purchases are processed securely. Game coins are non-refundable and for use within this application only.
+            Purchases are processed securely. Game coins are non-refundable and
+            for use within this application only.
           </p>
         </div>
-        
+
         <DialogFooter className="sm:justify-between">
           <DialogClose asChild>
             <Button variant="outline">Close</Button>
