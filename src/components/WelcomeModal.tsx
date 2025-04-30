@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
-import { useWallet } from "../contexts/WalletContext";
+import { useWallet } from "@/app/contexts/WalletContext";
 import UnifiedWalletConnector from "./walletSelector";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { GOOGLE_CLIENT_ID } from "../config/google";
+import { GOOGLE_CLIENT_ID } from "@/app/config/google";
 import { jwtDecode } from "jwt-decode";
 import WebApp from "@twa-dev/sdk";
 

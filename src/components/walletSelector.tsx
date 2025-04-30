@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { TonConnectButton } from "@tonconnect/ui-react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { useWallet } from "../contexts/WalletContext";
+import { useWallet } from "@/app/contexts/WalletContext";
 
 const UnifiedWalletConnector = () => {
   const [showNetworkModal, setShowNetworkModal] = useState(false);

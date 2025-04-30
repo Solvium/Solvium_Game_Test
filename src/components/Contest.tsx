@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, ArrowUp } from "lucide-react";
 import axios from "axios";
-import { getISOWeekNumber } from "../utils/utils";
+import { getISOWeekNumber } from "@/app/utils/utils";
 
 interface LeaderboardEntry {
   userId: number;
@@ -91,7 +91,10 @@ const ContestBoard = ({ user }: any) => {
             <CardTitle className="text-2xl font-bold text-white">
               Weekly Leaderboard
             </CardTitle>
-            <Badge variant="secondary" className="text-sm min-w-fit bg-[#1A1A2F] text-[#4C6FFF] border border-[#2A2A45]">
+            <Badge
+              variant="secondary"
+              className="text-sm min-w-fit bg-[#1A1A2F] text-[#4C6FFF] border border-[#2A2A45]"
+            >
               Week {currentWeek.weekNumber} / {currentWeek.year}
             </Badge>
           </div>
@@ -121,7 +124,10 @@ const ContestBoard = ({ user }: any) => {
                   <span className="text-lg font-bold text-[#4C6FFF] mr-2">
                     {entry.points} pts
                   </span>
-                  <Badge variant="outline" className="text-sm bg-[#1A1A2F] text-[#8E8EA8] border border-[#2A2A45]">
+                  <Badge
+                    variant="outline"
+                    className="text-sm bg-[#1A1A2F] text-[#8E8EA8] border border-[#2A2A45]"
+                  >
                     #{index + 1}
                   </Badge>
                 </div>

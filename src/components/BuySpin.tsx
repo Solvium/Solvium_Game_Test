@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useMultiLoginContext } from "../contexts/MultiLoginContext";
+import { useMultiLoginContext } from "@/app/contexts/MultiLoginContext";
 
 interface PurchaseButtonConfig {
   spinCount: 1 | 2 | 3 | 4;

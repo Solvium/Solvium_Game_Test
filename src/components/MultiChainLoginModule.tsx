@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useMultiChain, ChainType } from "../hooks/useMultiChain";
-import { LoginMethod } from "../hooks/useMultiLogin";
+import { useMultiChain, ChainType } from "@/app/hooks/useMultiChain";
+import { LoginMethod } from "@/app/hooks/useMultiLogin";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { GOOGLE_CLIENT_ID } from "../config/google";
+import { GOOGLE_CLIENT_ID } from "@/app/config/google";
 import { jwtDecode } from "jwt-decode";
 import { ArrowLeft, Wallet, Mail } from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useMultiLoginContext } from "../contexts/MultiLoginContext";
+import { useMultiLoginContext } from "@/app/contexts/MultiLoginContext";
 
 import { cn } from "@/lib/utils";
 import { AlertTriangle, X } from "lucide-react";

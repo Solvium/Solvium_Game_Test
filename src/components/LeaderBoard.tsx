@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMultiLoginContext } from "../contexts/MultiLoginContext";
+import { useMultiLoginContext } from "@/app/contexts/MultiLoginContext";
 
 const LeaderBoard = () => {
   const { userData: user, leader } = useMultiLoginContext();

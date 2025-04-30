@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import Script from "next/script";
 import { useEffect, useMemo } from "react";
-import { WalletProvider as TonWalletProvider } from "../hooks/useNearWallet.context";
+import { WalletProvider as TonWalletProvider } from "@/app/hooks/useNearWallet.context";
 
 import {
   ConnectionProvider,
@@ -17,7 +17,7 @@ import {
   UnsafeBurnerWalletAdapter,
   PhantomWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import { MultiLoginProvider } from "../contexts/MultiLoginContext";
+import { MultiLoginProvider } from "@/app/contexts/MultiLoginContext";
 
 const manifestUrl = "https://solvium.xyz/tonconnect-manifest.json";
 

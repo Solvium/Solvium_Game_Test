@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { useWallet } from "../contexts/WalletContext";
+import { useWallet } from "@/app/contexts/WalletContext";
 import { providers, utils } from "near-api-js";
 import { CodeResult } from "near-api-js/lib/providers/provider";
 
@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { CONTRACTID, MEME_TOKEN_ADDRESS } from "./constants/contractId";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import BuySpin from "./BuySpin";
-import { useMultiLoginContext } from "../contexts/MultiLoginContext";
+import { useMultiLoginContext } from "@/app/contexts/MultiLoginContext";
 import { useWallet as SolWallet } from "@solana/wallet-adapter-react";
 
 const Wheel = dynamic(
