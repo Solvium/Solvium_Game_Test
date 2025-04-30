@@ -2,7 +2,7 @@ import "@twa-dev/sdk";
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import App from "./components/App";
+import App from "@/components/App";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],

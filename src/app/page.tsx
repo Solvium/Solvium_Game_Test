@@ -2,18 +2,18 @@
 import { GoHome } from "react-icons/go";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useEffect, useState } from "react";
-import LeaderBoard from "./components/LeaderBoard";
+import LeaderBoard from "@/components/LeaderBoard";
 import WebApp from "@twa-dev/sdk";
-import UserProfile from "./components/Profile";
-import ContestBoard from "./components/Contest";
+import UserProfile from "@/components/Profile";
+import ContestBoard from "@/components/Contest";
 import { useNearDeposits } from "./contracts/near_deposits";
 import { useMultiplierContract } from "./hooks/useDepositContract";
 import { useTonAddress } from "@tonconnect/ui-react";
 import { useWallet } from "./contexts/WalletContext";
-import MultiChainLoginModule from "./components/MultiChainLoginModule";
+import MultiChainLoginModule from "@/components/MultiChainLoginModule";
 import { useMultiLoginContext } from "./contexts/MultiLoginContext";
-import { SolWheelOfFortune } from "./components/SolWheel";
-import GamesPage from "./components/games/GamesPage";
+import { SolWheelOfFortune } from "@/components/SolWheel";
+import GamesPage from "@/components/games/GamesPage";
 
 function Home() {
   const [selectedTab, setSelectedTab]: any = useState("Home");
