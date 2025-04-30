@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { GameTimer } from "./Timer";
-import { useMultiLoginContext } from "../contexts/MultiLoginContext";
+import { useMultiLoginContext } from "@/app/contexts/MultiLoginContext";
+import { GameTimer } from "../../Timer";
 
 const headbreaker = require("headbreaker");
 
@@ -121,7 +121,7 @@ function ImgIndex(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export const Game = () => {
+export const PicturePuzzle = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [solved, setSolved] = useState(false);
   const [saving, setSaving] = useState(false);

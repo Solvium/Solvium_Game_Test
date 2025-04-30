@@ -3,7 +3,6 @@ import { GoHome } from "react-icons/go";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useEffect, useState } from "react";
 import LeaderBoard from "./components/LeaderBoard";
-import { Game } from "./components/Game";
 import WebApp from "@twa-dev/sdk";
 import UserProfile from "./components/Profile";
 import ContestBoard from "./components/Contest";
@@ -14,6 +13,7 @@ import { useWallet } from "./contexts/WalletContext";
 import MultiChainLoginModule from "./components/MultiChainLoginModule";
 import { useMultiLoginContext } from "./contexts/MultiLoginContext";
 import { SolWheelOfFortune } from "./components/SolWheel";
+import GamesPage from "./components/games/GamesPage";
 
 function Home() {
   const [selectedTab, setSelectedTab]: any = useState("Home");
@@ -101,7 +101,7 @@ function Home() {
                   {selectedTab === "Home" && <UserProfile tg={tg} />}
                   {selectedTab === "Contest" && <ContestBoard />}
                   {selectedTab === "Wheel" && <SolWheelOfFortune />}
-                  {selectedTab === "Game" && <Game />}
+                  {selectedTab === "Game" && <GamesPage />}
                   {selectedTab === "Leaderboard" && <LeaderBoard />}
                 </div>
 

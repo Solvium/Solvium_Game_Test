@@ -5,7 +5,7 @@ import WebApp from "@twa-dev/sdk";
 import axios from "axios";
 import { FaFacebook, FaXTwitter, FaTelegram, FaYoutube } from "react-icons/fa6";
 import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
-import DepositMultiplier, { Deposit } from "./UI/TonDeposit";
+import DepositMultiplier, { Deposit } from "./local_ui/TonDeposit";
 import { useMultiplierContract } from "../hooks/useDepositContract";
 import TimerCountdown from "./Timer";
 import WalletSelector from "./walletSelector";
@@ -15,7 +15,7 @@ import { utils } from "near-api-js";
 import { Wallet } from "lucide-react";
 import { useWallet } from "../contexts/WalletContext";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { SolDepositModal } from "./UI/SolDeposit";
+import { SolDepositModal } from "./local_ui/SolDeposit";
 import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
 import { useWallet as useSolWallet } from "@solana/wallet-adapter-react";

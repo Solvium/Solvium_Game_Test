@@ -62,7 +62,7 @@ export const useMultiLogin = () => {
           },
           data: JSON.stringify({
             type: "loginWithTg",
-            username: telegramInitData.chat?.username,
+            username: telegramInitData.user?.username,
           }),
         });
 
