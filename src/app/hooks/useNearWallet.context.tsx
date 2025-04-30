@@ -8,8 +8,8 @@ import "@near-wallet-selector/modal-ui/styles.css";
 import {
   initialState,
   walletReducer,
-} from "../components/reducers/useNearWallet.reducer";
-import { BLOCKCHAIN_NET, CONTRACTID } from "../components/constants/contractId";
+} from "@/components/reducers/useNearWallet.reducer";
+import { BLOCKCHAIN_NET, CONTRACTID } from "@/components/constants/contractId";
 import { map } from "rxjs";
 
 export const WalletContext = createContext<WalletContextValue | null>(null);

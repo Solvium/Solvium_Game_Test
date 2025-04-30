@@ -519,7 +519,7 @@ import React, {
   useMemo,
 } from "react";
 import { distinctUntilChanged, map } from "rxjs";
-import { CONTRACTID } from "../components/constants/contractId";
+import { CONTRACTID } from "@/components/constants/contractId";
 
 declare global {
   interface Window {

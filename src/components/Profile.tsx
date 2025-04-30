@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import copy from "./../assets/userProfile/copy.svg";
+import copy from "@/app/assets/userProfile/copy.svg";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import WebApp from "@twa-dev/sdk";
 import axios from "axios";
