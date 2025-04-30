@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GameTimer } from "../Timer";
-import { useMultiLoginContext } from "../../contexts/MultiLoginContext";
+import { useMultiLoginContext } from "@/app/contexts/MultiLoginContext";
 
 const headbreaker = require("headbreaker");
 
