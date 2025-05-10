@@ -3,13 +3,8 @@ import {
   getISOWeekNumber,
   sendTokensToUser,
 } from "@/app/utils/utils";
-import { telegramClient } from "../../clients/TelegramApiClient";
-import { InlineKeyboardMarkup } from "@grammyjs/types";
 import { PrismaClient } from "@prisma/client";
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import { RewardSigner } from "@/app/utils/rewardSigner";
-import { sign } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -152,7 +147,6 @@ export async function POST(req: NextRequest) {
       try {
         const [_, point, wallet] = type.split("--");
 
-        // console.log(user);
         const newDay =
           new Date(Number(user?.lastSpinClaim) + 24 * 60 * 60 * 1000) <
           new Date(Date.now());
@@ -164,7 +158,6 @@ export async function POST(req: NextRequest) {
           where: {
             username,
           },
-
           data: {
             lastSpinClaim: new Date(Date.now()),
             spinCount: {
@@ -182,6 +175,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(res);
       } catch (error) {
+        console.log(error);
         return NextResponse.json({ error });
       }
     }
@@ -213,14 +207,12 @@ export async function POST(req: NextRequest) {
 
       if (new Date(Date.now()) > lastClaim) {
         const np = type.split("--")[1];
-
         await addLeaderboard(user, np, null);
 
         const res = await prisma.user.update({
           where: {
             username,
           },
-
           data: {
             lastClaim: nextClaim,
             isMining: false,
@@ -241,11 +233,7 @@ export async function POST(req: NextRequest) {
       console.log(type);
       const np = type.split("--")[1];
 
-      const res = await addLeaderboard(
-        user,
-        np * userMultipler >= 1 ? userMultipler : np,
-        "game"
-      );
+      const res = await addLeaderboard(user, np, "game");
       return NextResponse.json(user, { status: 200 });
     }
 

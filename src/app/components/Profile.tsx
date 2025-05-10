@@ -18,6 +18,8 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { SolDepositModal } from "./UI/SolDeposit";
 import { useMultiLoginContext } from "../contexts/MultiLoginContext";
 
+import { useWallet as useSolWallet } from "@solana/wallet-adapter-react";
+
 const UserProfile = ({ tg }: { tg: typeof WebApp | null }) => {
   const {
     userData: userDetails,
@@ -51,13 +53,7 @@ const UserProfile = ({ tg }: { tg: typeof WebApp | null }) => {
 
         {/* Tasks Section */}
         <div className="bg-[#151524] rounded-2xl p-6 border border-[#2A2A45] shadow-[0_0_15px_rgba(41,41,69,0.5)]">
-          <Tasks
-            userTasks={userTasks}
-            userDetails={userDetails}
-            tasks={tasks}
-            tg={tg}
-            getAllInfo={getAllInfo}
-          />
+          <Tasks tg={tg} />
         </div>
       </div>
     </div>
@@ -250,7 +246,7 @@ const Farming = () => {
                   />
                 </div>
               ) : (
-                <span>Claim {(18000 * amount).toFixed(2)} SOLV</span>
+                <span>Claim {amount.toFixed(2)} SOLV</span>
               )}
             </>
           ) : (
@@ -262,19 +258,7 @@ const Farming = () => {
   );
 };
 
-const Tasks = ({
-  userDetails,
-  tasks,
-  tg,
-  getAllInfo,
-  userTasks,
-}: {
-  tg: typeof WebApp | null;
-  userDetails: any;
-  tasks: any;
-  getAllInfo: any;
-  userTasks: any;
-}) => {
+const Tasks = ({ tg }: { tg: typeof WebApp | null }) => {
   const [loading, setLoading] = useState({ id: "", status: false });
   const [onGoing, setOnGoing] = useState(false);
   const [isOpenSolModal, setIsOpenSolModal] = useState(false);
@@ -282,94 +266,61 @@ const Tasks = ({
   const address = useTonAddress();
   const { deposits } = useMultiplierContract(address);
 
-  const {
-    state: { accountId: nearAddress },
-  } = useWallet();
+  // const {
+  //   state: { accountId: nearAddress },
+  // } = useWallet();
+  const { publicKey } = useSolWallet();
+
+  // const {
+  //   deposits: nearDeposits,
+  //   loading: nearLoading,
+  //   refetch,
+  // } = useNearDeposits();
 
   const {
-    deposits: nearDeposits,
-    loading: nearLoading,
-    refetch,
-  } = useNearDeposits();
+    userData: userDetails,
+    userTasks,
+    tasks,
+    engageTasks,
+  } = useMultiLoginContext();
 
-  const getDeposits = (): number => {
-    let total = 0;
-    if (!nearDeposits?.deposits) return total;
+  // const getDeposits = (): number => {
+  //   let total = 0;
+  //   if (!nearDeposits?.deposits) return total;
 
-    const ONE_WEEK_IN_SECONDS = 604800;
+  //   const ONE_WEEK_IN_SECONDS = 604800;
 
-    const isDepositActive = (startTimeInMs: number) => {
-      const startTimeInSeconds = startTimeInMs / 1000; // Convert ms to seconds
-      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-      const endTimeInSeconds = startTimeInSeconds + ONE_WEEK_IN_SECONDS;
+  //   const isDepositActive = (startTimeInMs: number) => {
+  //     const startTimeInSeconds = startTimeInMs / 1000; // Convert ms to seconds
+  //     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+  //     const endTimeInSeconds = startTimeInSeconds + ONE_WEEK_IN_SECONDS;
 
-      // Return true only if current time is less than end time
-      return currentTimeInSeconds <= endTimeInSeconds;
-    };
+  //     // Return true only if current time is less than end time
+  //     return currentTimeInSeconds <= endTimeInSeconds;
+  //   };
 
-    Object.values(nearDeposits.deposits).map((deposit) => {
-      const startTimeInMs = Number(deposit.startTime) / 1000000; // Convert to milliseconds
+  //   Object.values(nearDeposits.deposits).map((deposit) => {
+  //     const startTimeInMs = Number(deposit.startTime) / 1000000; // Convert to milliseconds
 
-      if (isDepositActive(startTimeInMs))
-        total += Number(deposit.multiplier) / 1e16;
-    });
-    return total;
-  };
+  //     if (isDepositActive(startTimeInMs))
+  //       total += Number(deposit.multiplier) / 1e16;
+  //   });
+  //   return total;
+  // };
 
   const sendComplete = async (data: any) => {
-    let total = 0;
-    if (nearDeposits?.deposits) {
-      total = getDeposits();
-    } else if (deposits?.length > 0) {
-      for (let index = 0; index < deposits?.length; index++) {
-        total += Number(deposits[index].multiplier);
-      }
-    }
-
-    const userMultipler = total;
-
-    console.log(deposits);
-    console.log(userMultipler);
-
-    const res = await (
-      await fetch("/api/allroute", {
-        headers: {
-          "content-type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          data: { task: data, userId: userDetails.id },
-          username: userDetails.username,
-          userMultipler,
-          type: "completetasks",
-        }),
-      })
-    ).json();
-
-    if (res) {
-      await getAllInfo();
-    }
+    const res = await engageTasks("completetasks", data, () =>
+      setLoading({ id: data.id, status: false })
+    );
   };
 
   const ProcessLink = async (data: any) => {
     console.log(data);
     setLoading({ id: data.id, status: true });
 
-    await (
-      await fetch("/api/allroute", {
-        headers: {
-          "content-type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          data: { task: data, userId: userDetails.id },
-          username: userDetails.username,
-          type: "reg4tasks",
-        }),
-      })
-    ).json();
-
-    getAllInfo();
+    const res = await engageTasks("reg4tasks", data, () =>
+      setLoading({ id: data.id, status: false })
+    );
 
     if (!data?.link) return;
     data.link && window?.open(data.link);
@@ -382,11 +333,11 @@ const Tasks = ({
     if (data.name.includes("Join Solvium Telegram Group")) {
       try {
         const response = await axios.get(
-          `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solvium_puzzle&user_id=${userDetails.chatId}`
+          `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=-1002478373737&user_id=${userDetails?.chatId}`
         );
 
         console.log(response);
-        if (response.data.result.user.username == userDetails.username) {
+        if (response.data.result.user.username == userDetails?.username) {
           if (response.data.result.status == "member") {
             sendComplete(data);
             return;
@@ -413,11 +364,11 @@ const Tasks = ({
     if (data.name.includes("Join Solvium Chat")) {
       try {
         const response = await axios.get(
-          `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=@solviumupdate&user_id=${userDetails.chatId}`
+          `https://api.telegram.org/bot7858122446:AAEwouIyKmFuF5vnxpY4FUNY6r4VIEMtWH0/getChatMember?chat_id=-1002376352525&user_id=${userDetails?.chatId}`
         );
 
         console.log(response);
-        if (response.data.result.user.username == userDetails.username) {
+        if (response.data.result.user.username == userDetails?.username) {
           if (response.data.result.status == "member") {
             sendComplete(data);
             return;
@@ -442,7 +393,7 @@ const Tasks = ({
     }
 
     if (data.name.includes("Connect Wallet")) {
-      if (nearAddress) sendComplete(data);
+      if (publicKey) sendComplete(data);
       else {
         setError("Kindly Connect Your Wallet");
         setLoading({ id: data.id, status: false });
@@ -480,8 +431,8 @@ const Tasks = ({
         <div className="bg-[#1A1A2F] rounded-lg p-3 border border-[#2A2A45] relative overflow-hidden">
           <div className="absolute inset-0 bg-[#4C6FFF] blur-2xl opacity-5"></div>
           <div className="relative">
-            <p className="text-sm font-medium text-[#8E8EA8]">
-              Support on Solana chain
+            <p className="text-sm font-medium text-white">
+              Purchase Multiplier
             </p>
             <button
               onClick={() => setIsOpenSolModal(true)}

@@ -21,6 +21,11 @@ const MultiLoginContext = createContext<
         type: string,
         func: (param: boolean) => void
       ) => Promise<object>;
+      engageTasks: (
+        type: string,
+        data: any,
+        func: (param: boolean) => void
+      ) => Promise<object>;
     })
   | null
 >(null);
@@ -44,12 +49,12 @@ export const MultiLoginProvider = ({
   const [tg, setTg] = useState<typeof WebApp | null>();
 
   // Get values from your app context
-  const nearConnected = false;
-  const nearAddress = "";
+  // const nearConnected = false;
+  // const nearAddress = "";
 
-  const nearDeposits: any = null;
-  const deposits: string | any[] = [];
-  const getDeposits = () => 0;
+  // const nearDeposits: any = null;
+  // const deposits: string | any[] = [];
+  // const getDeposits = () => 0;
 
   const getLeaderBoard = async () => {
     try {
@@ -81,7 +86,7 @@ export const MultiLoginProvider = ({
     }
   };
 
-  const getAllUserTasks = async (data: any) => {
+  const getAllUserTasks = async () => {
     try {
       if (!user?.id) {
         console.error("User ID is required for fetching tasks");
@@ -134,6 +139,12 @@ export const MultiLoginProvider = ({
   };
 
   useEffect(() => {
+    if (user?.username) {
+      getAllUserTasks();
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (tasks && !tasks.error && user?.username) {
       // setLoadingPage(false);
     }
@@ -161,6 +172,43 @@ export const MultiLoginProvider = ({
     }
     setMultiplier(total);
   }, [userDeposits]);
+
+  const engageTasks = async (
+    type: string,
+    data: any,
+    func: (param: boolean) => void
+  ) => {
+    setLoading(true);
+
+    if (!user) return;
+
+    const res = await (
+      await fetch("/api/allroute", {
+        headers: {
+          "content-type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          data: { task: data, userId: user.id },
+          username: user.username,
+          userMultipler: multiplier,
+          type,
+        }),
+      })
+    ).json();
+
+    if (res.weeklyScore || res.id) {
+      console.log(res);
+      checkAuthStatus();
+      setLoading(false);
+      getLeaderBoard();
+      func(false);
+      return res;
+    }
+
+    setLoading(false);
+    return res;
+  };
 
   const claimPoints = async (type: string, func: (param: boolean) => void) => {
     console.log(type);
@@ -207,6 +255,7 @@ export const MultiLoginProvider = ({
         userTasks,
         loading,
         multiplier,
+        engageTasks,
         getLeaderBoard,
         getAllInfo,
         getTasks,

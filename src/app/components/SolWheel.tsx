@@ -311,7 +311,6 @@ export const SolWheelOfFortune = () => {
         setCanClaim
       );
 
-      console.log(res);
       if (res.username) {
         setIsClaimed(true);
 
@@ -351,11 +350,11 @@ export const SolWheelOfFortune = () => {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsClaimed(true);
-    }, 8000);
-  }, [isClaimed]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setIsClaimed(true);
+  //   }, 8000);
+  // }, [isClaimed]);
 
   return loadingPage ? (
     <div className="flex justify-center items-center h-screen">

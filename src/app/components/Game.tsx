@@ -135,6 +135,7 @@ export const Game = () => {
   const {
     userData: userDetails,
     claimPoints,
+    multiplier,
     loading,
   } = useMultiLoginContext();
 
@@ -205,13 +206,16 @@ export const Game = () => {
       const points =
         timeDiff < 120 ? 100 : timeDiff > 120 && timeDiff < 240 ? 75 : 50;
 
-      console.log(timeDiff);
-      console.log(points);
-
       setTimeout(() => {
-        setPoints(points * userDetails.level);
+        setPoints(
+          points * userDetails.level * (multiplier > 0 ? multiplier : 1)
+        );
         setSolved(true);
-        claimPoints("game claim--" + points * userDetails.level, setSaving);
+        claimPoints(
+          "game claim--" +
+            points * userDetails.level * (multiplier > 0 ? multiplier : 1),
+          setSaving
+        );
       }, 1500);
     });
 

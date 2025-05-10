@@ -98,9 +98,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (type == "reg4tasks") {
-      const isCreated = await getUserTasks(data);
+      console.log("reg4task");
+      let isCreated;
+      isCreated = await getUserTasks(data);
       console.log(isCreated);
-      !isCreated && (await registerForTasks(data));
+
+      if (!isCreated) isCreated = await registerForTasks(data);
+      return NextResponse.json(isCreated);
     }
 
     if (type == "createAccount") {
@@ -172,7 +176,8 @@ export async function POST(req: NextRequest) {
 
       const np = data.task.points * (userMultipler > 0 ? userMultipler : 1);
 
-      await addLeaderboard(user, np);
+      const res = await addLeaderboard(user, np);
+      return res;
     }
 
     return NextResponse.json("user");
@@ -332,7 +337,7 @@ const registerForTasks = async (data: any) => {
   const { userId, task } = data;
 
   try {
-    await prisma.userTask.create({
+    return await prisma.userTask.create({
       data: {
         userId: userId,
         taskId: task.id,
@@ -435,10 +440,10 @@ const addLeaderboard = async (user: any, np: number) => {
       return { weeklyScore, updatedUser };
     });
 
-    NextResponse.json(updatedScore, { status: 200 });
+    return NextResponse.json(updatedScore, { status: 200 });
   } catch (error) {
     console.error("Error adding weekly points:", error);
-    NextResponse.json(
+    return NextResponse.json(
       { error: "Failed to add weekly points kk" },
       { status: 500 }
     );

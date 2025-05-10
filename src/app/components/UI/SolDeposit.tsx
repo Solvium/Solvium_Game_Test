@@ -606,7 +606,7 @@ export function SolDepositModal({
                 )}
 
                 {/* Admin Tab */}
-                {activeTab === "admin" && isOwner && (
+                {activeTab === "admin" && isOwner && wallet.publicKey && (
                   <div className="space-y-6">
                     {/* Withdraw Form */}
                     <div className="bg-card border rounded-xl p-6 shadow-sm">
